@@ -1,4 +1,3 @@
-
 import { Article } from "./types";
 
 export const BRAND = {
@@ -7,6 +6,30 @@ export const BRAND = {
 };
 
 export const initialArticles: Article[] = [
+  {
+    id: "altstadtsommer-2025",
+    title: "Altstadtsommer 2025: Music & Culture",
+    author: "Events Desk",
+    date: "2025-08-28",
+    category: "Events",
+    excerpt: "The annual Old Town Summer festival returns with live music, food stalls, and artisan crafts.",
+    hero: "https://picsum.photos/seed/summerfest/800/450",
+    pullQuote: "A celebration of local talent and community spirit in the heart of the city.",
+    body:
+      "Bad Belzig's Altstadtsommer festival is back for its 2025 edition, promising a vibrant weekend for residents and visitors. The market square will transform into an open-air stage featuring local bands and folk music groups. Surrounding streets will host a variety of food vendors offering regional specialties, alongside stalls from local artisans showcasing handmade crafts. The festival runs from Friday evening to Sunday, with a special program for children on Saturday afternoon. It's a perfect opportunity to experience the town's lively culture and community.",
+  },
+  {
+    id: "guide-wiesenburg-park",
+    title: "A Walker's Guide to Wiesenburg Castle Park",
+    author: "Field Guide",
+    date: "2025-08-27",
+    category: "Guides",
+    excerpt: "Explore the landscaped grounds of Schlosspark Wiesenburg, one of Brandenburg's most significant English-style landscape gardens.",
+    hero: "https://picsum.photos/seed/wiesenburg/800/450",
+    pullQuote: "A masterful blend of natural beauty and sculpted landscapes, designed for quiet contemplation.",
+    body:
+      "Wiesenburg Castle Park is a jewel of landscape architecture in the Hoher Fläming. Designed in the 19th century with influences from Peter Joseph Lenné, the park blends natural woodland with carefully planned vistas, water features, and sculptures. Visitors can follow meandering paths to discover ancient trees, a charming pump house, and the impressive castle gate. The park is open year-round and offers a different character each season, from lush summer greens to stark winter beauty. It's an ideal destination for a peaceful walk and reflection.",
+  },
   {
     id: "events-weekly",
     title: "What’s On · Events This Month",
