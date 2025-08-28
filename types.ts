@@ -8,7 +8,7 @@ export interface Article {
   excerpt: string;
   hero: string;
   pullQuote?: string;
-  body: string;
+  body: string[];
 }
 
 export interface ValidationCheck {

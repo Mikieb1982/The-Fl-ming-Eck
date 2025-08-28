@@ -1,17 +1,20 @@
-
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Article } from '../types';
-import { isArticleSafe, fmtDate } from '../utils/helpers';
+import { isArticleSafe, fmtDate, calculateReadTime } from '../utils/helpers';
 import { generateSummary } from '../services/geminiService';
 import { Card, CardContent } from './Card';
 import SparklesIcon from './icons/SparklesIcon';
+import HeadlineCard from './HeadlineCard';
 
 interface ArticleViewProps {
   article: Article | undefined;
+  allArticles: Article[];
+  onSelectArticle: (id: string) => void;
+  onClose: () => void;
 }
 
-export default function ArticleView({ article }: ArticleViewProps) {
+export default function ArticleView({ article, allArticles, onSelectArticle, onClose }: ArticleViewProps) {
   const [summary, setSummary] = useState<string | null>(null);
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +25,7 @@ export default function ArticleView({ article }: ArticleViewProps) {
     setError(null);
     setSummary(null);
     try {
-      const result = await generateSummary(article.body);
+      const result = await generateSummary(article.body.join(' '));
       setSummary(result);
     } catch (e: any) {
       setError(e.message || 'An unknown error occurred.');
@@ -31,70 +34,112 @@ export default function ArticleView({ article }: ArticleViewProps) {
     }
   };
 
+  const navigationArticles = useMemo(() => {
+    if (!article) return [];
+    const otherArticles = allArticles.filter(a => a.id !== article.id);
+    const sameCategory = otherArticles.filter(a => a.category === article.category);
+    const differentCategory = otherArticles.filter(a => a.category !== article.category);
+    const related = [...sameCategory, ...differentCategory].slice(0, 2);
+    return [article, ...related];
+  }, [article, allArticles]);
+
   if (!isArticleSafe(article)) {
     return (
       <Card>
         <CardContent>
-          <p className="text-sm text-gray-700">Article is not available. Please select another item.</p>
+          <p className="text-sm text-slate-700 dark:text-slate-300">Article is not available. Please select another item.</p>
         </CardContent>
       </Card>
     );
   }
 
+  const readTime = calculateReadTime(article.body.join(' '));
+
   return (
     <motion.div
       key={article.id}
-      initial={{ rotateY: 90, opacity: 0, scale: 0.95 }}
-      animate={{ rotateY: 0, opacity: 1, scale: 1 }}
-      exit={{ rotateY: -90, opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.6, ease: "easeInOut" }}
-      className="bg-white rounded-2xl shadow-lg"
-      style={{ transformOrigin: "left center", perspective: 2000 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
     >
+        <button 
+            onClick={onClose}
+            className="mb-4 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+        >
+            &larr; Back to Magazine
+        </button>
+
       <div
-        className="aspect-[16/9] bg-gray-200 bg-cover bg-center rounded-t-2xl"
-        style={{ backgroundImage: `url(${article.hero})` }}
-        aria-label={article.title}
-        role="img"
-      />
-      <div className="p-6 md:p-8">
-        <p className="text-xs uppercase tracking-wider font-semibold text-blue-600">{article.category} · {fmtDate(article.date)}</p>
-        <h2 className="text-4xl font-extrabold mt-1 text-gray-900 tracking-tight">{article.title}</h2>
-        <p className="text-gray-500 text-sm mt-1">By {article.author}</p>
-        
-        {article.pullQuote && (
-          <blockquote className="border-l-4 border-blue-200 pl-4 italic text-gray-700 text-lg my-6">“{article.pullQuote}”</blockquote>
-        )}
+        className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden"
+      >
+        <div className="p-6 md:p-8">
+          <p className="text-xs uppercase tracking-wider font-semibold text-blue-700 dark:text-blue-400">{article.category} · {fmtDate(article.date)} · {readTime} min read</p>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold mt-1 text-slate-900 dark:text-slate-100 tracking-tight">{article.title}</h2>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">By {article.author}</p>
+          
+          <div className="my-6">
+            <img 
+              src={article.hero} 
+              alt={article.title}
+              className="max-w-2xl mx-auto rounded-xl shadow-inner w-full h-auto"
+            />
+          </div>
 
-        <p className="text-lg leading-relaxed text-gray-800 mt-6 prose prose-lg">
-          <span className="float-left text-7xl leading-none pr-3 font-serif text-gray-900">{article.body.charAt(0)}</span>
-          {article.body.slice(1)}
-        </p>
+          {article.pullQuote && (
+            <blockquote className="border-l-4 border-blue-200 dark:border-blue-800 pl-4 italic text-slate-700 dark:text-slate-300 text-xl md:text-2xl my-6 font-serif">“{article.pullQuote}”</blockquote>
+          )}
 
-        <div className="mt-8 pt-6 border-t border-gray-200">
-            <div className="flex items-center gap-4">
-                <h3 className="text-lg font-bold text-gray-800">TL;DR</h3>
-                 <button 
-                    onClick={handleGenerateSummary} 
-                    disabled={isSummarizing}
-                    className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-full shadow-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all transform hover:scale-105"
-                 >
-                    <SparklesIcon className="w-4 h-4" />
-                    {isSummarizing ? "Generating..." : "Generate with AI"}
-                 </button>
+          <div className="mt-6 prose md:prose-lg max-w-none dark:prose-invert">
+              {article.body.map((paragraph, index) => (
+              <p key={index}>
+                  {index === 0 && <span className="float-left text-5xl sm:text-6xl leading-none pr-3 font-serif text-blue-700 dark:text-blue-400 -mt-2">{paragraph.charAt(0)}</span>}
+                  {index === 0 ? paragraph.slice(1) : paragraph}
+              </p>
+              ))}
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-4">
+                  <h3 className="text-lg font-serif font-bold text-slate-800 dark:text-slate-200">TL;DR</h3>
+                  <button 
+                      onClick={handleGenerateSummary} 
+                      disabled={isSummarizing}
+                      className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-full shadow-md hover:bg-blue-700 disabled:bg-slate-400 disabled:cursor-not-allowed transition-all transform hover:scale-105"
+                  >
+                      <SparklesIcon className="w-4 h-4" />
+                      {isSummarizing ? "Generating..." : "Generate with AI"}
+                  </button>
+              </div>
+
+              {isSummarizing && <div className="mt-4 text-sm text-slate-500 dark:text-slate-400">Thinking...</div>}
+              {error && <div className="mt-4 text-sm text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-900/50 p-3 rounded-lg">{error}</div>}
+              {summary && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-4 p-4 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg"
+                >
+                  <p className="text-slate-700 dark:text-slate-300 italic">{summary}</p>
+                </motion.div>
+              )}
+          </div>
+          
+          {navigationArticles.length > 0 && (
+            <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700">
+              <h3 className="text-2xl font-serif font-bold text-slate-800 dark:text-slate-200 mb-4">More Articles</h3>
+              <div className="flex flex-col gap-4">
+                {navigationArticles.map(navArticle => (
+                  <HeadlineCard 
+                    key={navArticle.id} 
+                    article={navArticle} 
+                    onClick={() => onSelectArticle(navArticle.id)}
+                    isActive={navArticle.id === article.id}
+                  />
+                ))}
+              </div>
             </div>
-
-            {isSummarizing && <div className="mt-4 text-sm text-gray-500">Thinking...</div>}
-            {error && <div className="mt-4 text-sm text-red-600 bg-red-50 p-3 rounded-lg">{error}</div>}
-            {summary && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg"
-              >
-                <p className="text-gray-700 italic">{summary}</p>
-              </motion.div>
-            )}
+          )}
         </div>
       </div>
     </motion.div>

@@ -8,12 +8,11 @@ if (!process.env.API_KEY) {
   console.warn("API_KEY environment variable is not set. AI features will not work.");
 }
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "fallback_key" });
+// FIX: Per coding guidelines, initialize with apiKey from process.env without a fallback.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export async function generateSummary(articleBody: string): Promise<string> {
-    if (!process.env.API_KEY) {
-        return "AI features are disabled. Please configure the API Key.";
-    }
+    // FIX: Removed redundant API key check. The environment is assumed to be configured correctly.
     try {
         const prompt = `Summarize the following article for a 'Too Long; Didn't Read' section. Keep it to one concise paragraph. Article:\n\n${articleBody}`;
 

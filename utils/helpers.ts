@@ -1,4 +1,3 @@
-
 import { Article } from './types';
 
 export function sortByDateDesc(items: Article[]): Article[] {
@@ -22,4 +21,12 @@ export function englishHeuristic(text: string): boolean {
     return false;
   }
   return true;
+}
+
+export function calculateReadTime(text: string): number {
+  if (!text) return 0;
+  const wordsPerMinute = 250;
+  const wordCount = text.trim().split(/\s+/).length;
+  const readTime = Math.ceil(wordCount / wordsPerMinute);
+  return Math.max(1, readTime); // Ensure read time is at least 1 minute.
 }

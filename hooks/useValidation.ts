@@ -7,7 +7,7 @@ function validateArticles(articles: Article[], now: Date = new Date("2025-08-27T
   const checks: ValidationCheck[] = articles.map((a) => {
     const ageMs = Math.abs(now.getTime() - new Date(a.date).getTime());
     const ageDays = Math.ceil(ageMs / (1000 * 60 * 60 * 24));
-    const english = englishHeuristic(`${a.title} ${a.body}`);
+    const english = englishHeuristic(`${a.title} ${a.body.join(' ')}`);
     const hasRequired = Boolean(a && a.id && a.title && a.author && a.category && a.hero && a.date);
     return { id: a?.id ?? "?", english, fresh: ageDays <= maxAgeDays, ageDays, hasRequired };
   });
