@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 
 if (!process.env.API_KEY) {
@@ -8,11 +7,9 @@ if (!process.env.API_KEY) {
   console.warn("API_KEY environment variable is not set. AI features will not work.");
 }
 
-// FIX: Per coding guidelines, initialize with apiKey from process.env without a fallback.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export async function generateSummary(articleBody: string): Promise<string> {
-    // FIX: Removed redundant API key check. The environment is assumed to be configured correctly.
     try {
         const prompt = `Summarize the following article for a 'Too Long; Didn't Read' section. Keep it to one concise paragraph. Article:\n\n${articleBody}`;
 
@@ -26,27 +23,6 @@ export async function generateSummary(articleBody: string): Promise<string> {
     } catch (error) {
         console.error("Error generating summary:", error);
         throw new Error("Failed to generate summary. The model may be unavailable or the request timed out.");
-    }
-}
-
-export async function generateImage(prompt: string): Promise<string> {
-    try {
-        const response = await ai.models.generateImages({
-            model: 'imagen-4.0-generate-001',
-            prompt: prompt,
-            config: {
-              numberOfImages: 1,
-              outputMimeType: 'image/jpeg',
-              aspectRatio: '16:9',
-            },
-        });
-        
-        const base64ImageBytes = response.generatedImages[0].image.imageBytes;
-        return `data:image/jpeg;base64,${base64ImageBytes}`;
-
-    } catch (error) {
-        console.error("Error generating image:", error);
-        throw new Error("Failed to generate image. The model may be unavailable or the request timed out.");
     }
 }
 

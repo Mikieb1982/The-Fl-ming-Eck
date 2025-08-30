@@ -1,4 +1,3 @@
-
 import { Article, Post } from '../types';
 import { articles as initialArticles } from '../articles';
 import { initialPosts } from '../articles/communityPosts';
@@ -62,10 +61,6 @@ export async function generateSummary(articleBody: string): Promise<string> {
 
     // For now, we call the geminiService directly, simulating the backend's action.
     return gemini.generateSummary(articleBody);
-}
-
-export async function generateImage(prompt: string): Promise<string> {
-    return gemini.generateImage(prompt);
 }
 
 export async function moderateContent(text: string): Promise<{isAppropriate: boolean; reason: string}> {

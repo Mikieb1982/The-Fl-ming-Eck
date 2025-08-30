@@ -1,4 +1,3 @@
-
 import { DirectoryData } from '../types';
 
 export const directoryData: DirectoryData = {
@@ -45,7 +44,9 @@ export const directoryData: DirectoryData = {
             {specialization: "Gastroenterology", doctors: ["Dr. med. Thomas Wex"]},
             {specialization: "Orthopedics & Trauma Surgery", doctors: ["Dr. med. Jörg-Peter Zische"]},
             {specialization: "Radiology", doctors: ["Dr. med. Ulrike Massel"]},
-            {specialization: "Urology", doctors: ["Dr. med. Jörg Köbe"]}
+            {specialization: "Urology", doctors: ["Dr. med. Jörg Köbe"]},
+            {specialization: "Dermatology", doctors: ["Dr. med. Kathrin Eberle"]},
+            {specialization: "ENT", doctors: ["Dr. med. Stefan Erfurth"]}
         ]
       },
       independent_practices: [
@@ -60,6 +61,36 @@ export const directoryData: DirectoryData = {
           specialization: "General Medicine",
           address: "Ragösener Straße 45, 14806 Bad Belzig"
         },
+        {
+          name: "Kinderarztpraxis Dr. med. Antje Karras",
+          specialization: "Pediatrics",
+          address: "Straße der Einheit 38, 14806 Bad Belzig",
+          phone: "+49 33841 31631",
+        },
+        {
+          name: "Zahnarztpraxis Dr. med. dent. Ines Peter",
+          specialization: "Dentistry",
+          address: "Niemegker Str. 2, 14806 Bad Belzig",
+          phone: "+49 33841 31215",
+        },
+        {
+          name: "Zahnarztpraxis Dipl.-Stom. U. Martens",
+          specialization: "Dentistry",
+          address: "Puschkinstraße 15, 14806 Bad Belzig",
+          phone: "+49 33841 32185",
+        },
+        {
+          name: "Physiotherapie & Rehasport Bad Belzig",
+          specialization: "Physiotherapy",
+          address: "Puschkinstraße 14, 14806 Bad Belzig",
+          phone: "+49 33841 45353",
+        },
+        {
+          name: "Augenoptikermeister Franke",
+          specialization: "Optician",
+          address: "Wiesenburger Str. 8, 14806 Bad Belzig",
+          phone: "+49 33841 31548",
+        }
       ],
       pharmacies: [
         { name: "Burgen-Apotheke", address: "Straße der Einheit 42, 14806 Bad Belzig", phone: "+49 33841 31375" },
@@ -70,8 +101,25 @@ export const directoryData: DirectoryData = {
       retail_shopping: {
         supermarkets: [
             { name: "REWE", address: "Brücker Landstraße 22, 14806 Bad Belzig" },
+            { name: "EDEKA", address: "Berliner Str. 16, 14806 Bad Belzig" },
+            { name: "LIDL", address: "Brücker Landstraße 22B, 14806 Bad Belzig" },
             { name: "Netto Marken-Discount", address: "Berliner Str. 5, 14806 Bad Belzig" },
             { name: "ALDI Nord", address: "Brücker Landstraße 22A, 14806 Bad Belzig" }
+        ],
+        drugstores: [
+            { name: "Rossmann", address: "Wiesenburger Str. 3, 14806 Bad Belzig" }
+        ],
+        bakeries: [
+            { name: "Bäckerei & Konditorei Gericke", address: "Straße der Einheit 25, 14806 Bad Belzig" }
+        ],
+        butchers: [
+            { name: "Fleischerei J. Lehmann", address: "Straße der Einheit 43, 14806 Bad Belzig" }
+        ],
+        bookstores: [
+            { name: "Buchhandlung 'Zum Eselsohr'", address: "Straße der Einheit 27, 14806 Bad Belzig" }
+        ],
+        florists: [
+            { name: "Blumen-Schubert", address: "Wiesenburger Str. 12, 14806 Bad Belzig" }
         ]
       },
       financial_postal_services: {
@@ -83,7 +131,8 @@ export const directoryData: DirectoryData = {
           provider: "Deutsche Post / DHL",
           model: "Utilizes partner businesses as 'Postfilialen' and 'DHL Paketshops'.",
           locations: [
-            { name: "Partner Filiale im REWE", address: "Brücker Landstraße 22, 14806 Bad Belzig" }
+            { name: "Partner Filiale im REWE", address: "Brücker Landstraße 22, 14806 Bad Belzig" },
+            { name: "DHL Paketshop bei 'Zum Eselsohr'", address: "Straße der Einheit 27, 14806 Bad Belzig" }
           ]
         }
       }
@@ -91,21 +140,30 @@ export const directoryData: DirectoryData = {
     tourism_hospitality: {
         accommodation: [
             { name: "Burghotel Eisenhardt", type: "Hotel", address: "Wittenberger Str. 14, 14806 Bad Belzig", phone: "+49 33841 38830", website: "https://burghotel-bad-belzig.de/" },
-            { name: "Paulinenhof", type: "Hotel & Seminarhaus", address: "Kuhlowitzer Dorfstraße 1, 14806 Bad Belzig", phone: "+49 33841 44080", website: "https://www.paulinenhof.de/" }
+            { name: "Paulinenhof", type: "Hotel & Seminarhaus", address: "Kuhlowitzer Dorfstraße 1, 14806 Bad Belzig", phone: "+49 33841 44080", website: "https://www.paulinenhof.de/" },
+            { name: "Pension zur alten Posthalterei", type: "Guesthouse", address: "Sandberger Str. 3, 14806 Bad Belzig", phone: "+49 33841 45290", website: "https://www.pension-bad-belzig.de/" },
+            { name: "Hotel & Restaurant 'Am Schlosstor'", type: "Hotel", address: "Schloßstraße 1, 14827 Wiesenburg/Mark", phone: "+49 33849 7980", website: "https://www.schlosstor-wiesenburg.de/" }
         ],
         gastronomy: {
             restaurants: {
                 german_regional: [
                     { name: "Restaurant im Burghotel", cuisine: "German (Modern/Regional)", address: "Wittenberger Str. 14, 14806 Bad Belzig" },
-                    { name: "Restaurant KURPARK15", cuisine: "German (Healthy/Regional)", address: "Am Kurpark 15, 14806 Bad Belzig" }
+                    { name: "Restaurant KURPARK15", cuisine: "German (Healthy/Regional)", address: "Am Kurpark 15, 14806 Bad Belzig" },
+                    { name: "Gasthof zur Post", cuisine: "German (Traditional)", address: "Dorfstraße 19, 14806 Bad Belzig OT Lüsse" }
                 ],
                 international: [
-                    { name: "Pizzeria 'La Piazzetta'", cuisine: "Italian" },
-                    { name: "China-Bistro \"Panda\"", cuisine: "Asian" }
+                    { name: "Pizzeria 'La Piazzetta'", cuisine: "Italian", address: "Straße der Einheit 45, 14806 Bad Belzig" },
+                    { name: "Delphi", cuisine: "Greek", address: "Wittenberger Str. 7, 14806 Bad Belzig" },
+                    { name: "China-Bistro \"Panda\"", cuisine: "Asian", address: "Wiesenburger Str. 1, 14806 Bad Belzig" }
                 ]
             },
             cafes_bistros_ice_cream: [
-                { name: "Burg-Café", cuisine: "Café & Cakes" }
+                { name: "Burg-Café", cuisine: "Café & Cakes", address: "Wittenberger Str. 14, 14806 Bad Belzig" },
+                { name: "Conditorei & Café Jester", cuisine: "Café & Confectionery", address: "Straße der Einheit 33, 14806 Bad Belzig" },
+                { name: "Eiscafé am Markt", cuisine: "Ice Cream Parlor", address: "Marktplatz 3, 14806 Bad Belzig" }
+            ],
+            bars_pubs: [
+                { name: "Assel-Beiz", cuisine: "Pub / Kneipe", address: "Straße der Einheit 50, 14806 Bad Belzig" }
             ]
         }
     },
@@ -117,8 +175,16 @@ export const directoryData: DirectoryData = {
           facilities: {
             "Keep (Bergfried)": "Offers panoramic views of the town and region.",
             "Museum": "Exhibits on local and castle history.",
-            "Library": "Public library with regular events."
           }
+        },
+        {
+            name: "Stadtbibliothek 'Bücher-Wurm'",
+            type: "Public Library",
+            facilities: {
+                "Location": "Located within the grounds of Burg Eisenhardt.",
+                "Services": "Book and media lending, public computers, children's section, events."
+            },
+            hours: "Check website for current hours."
         },
         {
           name: "SteinTherme Bad Belzig",
@@ -129,6 +195,47 @@ export const directoryData: DirectoryData = {
             "Wellness & Beauty": "Massages, cosmetic treatments, Hamam rituals."
           },
           hours: "Daily, with extended hours on Fridays and Saturdays until 22:00."
+        },
+        {
+          name: "Hofgartenkino",
+          type: "Cinema",
+          facilities: {
+            "Programming": "Mix of current blockbusters and art-house films ('Xtra-Film' series)."
+          },
+          hours: "Check website for current showtimes."
+        },
+        {
+          name: "Schlosspark Wiesenburg",
+          type: "Landscaped Park",
+          facilities: {
+            "Features": "One of Brandenburg's most significant English-style landscape gardens."
+          }
+        },
+        {
+            name: "Naturparkzentrum Hoher Fläming",
+            type: "Nature Park Visitor Center",
+            facilities: {
+                "Location": "At the 'Alte Schmiede' in Raben.",
+                "Exhibition": "Interactive displays on the region's nature and history.",
+                "Shop": "Regional products and maps.",
+                "Events": "Guided tours and workshops."
+            },
+            hours: "Located in Raben, check website for seasonal hours."
+        },
+        {
+            name: "Heinrich-Rau-Stadion",
+            type: "Sports Facility",
+            facilities: {
+                "Home of": "FC Viktoria 1913 Bad Belzig e.V.",
+                "Features": "Football pitch and athletics facilities."
+            }
+        },
+        {
+            name: "Freilichtbühne an der Burg",
+            type: "Open-Air Stage",
+            facilities: {
+                "Events": "Hosts concerts, theatre performances, and the annual summer cinema."
+            }
         }
       ]
     },
@@ -160,6 +267,11 @@ export const directoryData: DirectoryData = {
               name: "Noelte Service GmbH",
               phone: "+49 33841 33331",
               services: ["Passenger transport", "Medical transport"]
+            },
+            {
+              name: "Taxi-Belzig e.K.",
+              phone: "+49 33841 445566",
+              services: ["Passenger transport", "Airport transfers"]
             }
           ],
           fares: {

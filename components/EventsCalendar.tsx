@@ -51,14 +51,11 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle }: Eve
 
   const { body } = eventsArticle;
 
-  // FIX: The body from eventsArticle is an array of ArticleBodyBlock, not strings.
-  // We need to extract the 'content' string from each paragraph block to work with it.
   const eventParagraphs = useMemo(() => body.filter((b): b is { type: 'paragraph'; content: string } => b.type === 'paragraph'), [body]);
   const [introBlock, ...eventBlocks] = eventParagraphs;
   const intro = introBlock?.content || '';
 
   const events = useMemo(() => {
-    // FIX: Extract content from ArticleBodyBlock and then filter out headers.
     return eventBlocks
         .map(item => item.content)
         .filter(content => !content.startsWith('**'));
@@ -66,7 +63,6 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle }: Eve
   
   const eventDates = useMemo(() => {
     const dates = new Set<number>();
-    // FIX: `events` is now a string[], so `eventString` is a string.
     events.forEach(eventString => {
         const dateStr = eventString.split('::')[0];
         const date = parseEventDate(dateStr);
@@ -79,7 +75,6 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle }: Eve
 
   const categories = useMemo(() => {
     const allCategories = new Set<string>();
-    // FIX: `events` is now a string[], so `eventString` is a string.
     events.forEach(eventString => {
       const parts = eventString.split('::');
       if (parts.length > 6 && parts[6]) {
@@ -101,7 +96,6 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle }: Eve
 
   const filteredSections = useMemo(() => {
     const dayAndCategoryFilteredEvents = events.filter(eventString => {
-        // FIX: `eventString` is now a string, so this logic is correct.
         const parts = eventString.split('::');
         const date = parts[0]?.trim() || '';
         const category = parts[6]?.trim() || '';
@@ -128,8 +122,6 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle }: Eve
         const sections: { header: string; events: string[] }[] = [];
         let currentSection: { header: string; events: string[] } | null = null;
         
-        // FIX: The original `eventStrings` was ArticleBodyBlock[], now we use `eventBlocks`
-        // and extract the content string to build sections.
         eventBlocks.forEach(item => {
             const content = item.content;
             if (content.startsWith('**')) {
@@ -144,12 +136,10 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle }: Eve
         return sections
             .map(section => ({
                 ...section,
-                // FIX: `event` is a string, and `dayAndCategoryFilteredEvents` is string[], so this is correct now.
                 events: section.events.filter(event => dayAndCategoryFilteredEvents.includes(event)),
             }))
             .filter(section => section.events.length > 0);
     } else {
-        // FIX: `dayAndCategoryFilteredEvents` is string[], so `e.toLowerCase()` and `e.split()` are valid.
         const recurring = dayAndCategoryFilteredEvents.filter(e => e.toLowerCase().startsWith('every'));
         const onDate = dayAndCategoryFilteredEvents.filter(e => {
              const eventDate = parseEventDate(e.split('::')[0]);
@@ -278,7 +268,6 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle }: Eve
             </div>
 
             <div className="flex-grow overflow-y-auto p-4 space-y-4">
-              {/* FIX: `intro` is now a string and can be rendered directly. */}
               { !selectedDate && <p className="text-sm text-charcoal dark:text-slate-300">{intro}</p>}
               {filteredSections.length > 0 ? (
                 filteredSections.map(section => (

@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useUser } from '../context/UserContext';
 
 export const communityCategories = ['General', 'Food', 'Nature', 'Events', 'History', 'Local Life'];
 
@@ -10,6 +11,7 @@ interface PostFormProps {
 }
 
 export default function PostForm({ onSave, onCancel, isReply = false }: PostFormProps) {
+    const { user } = useUser();
     const [author, setAuthor] = useState('');
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -17,6 +19,12 @@ export default function PostForm({ onSave, onCancel, isReply = false }: PostForm
     const [tags, setTags] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            setAuthor(user.name);
+        }
+    }, [user]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,8 +37,10 @@ export default function PostForm({ onSave, onCancel, isReply = false }: PostForm
         try {
             const parsedTags = tags.split(',').map(tag => tag.trim().toLowerCase().replace(/\s+/g, '-')).filter(Boolean);
             await onSave({ author, title, content, category, tags: parsedTags });
-            // Clear form on success
-            setAuthor('');
+            // Clear form on success, but keep author name if logged in
+            if (!user) {
+                setAuthor('');
+            }
             setTitle('');
             setContent('');
             setTags('');
@@ -52,8 +62,9 @@ export default function PostForm({ onSave, onCancel, isReply = false }: PostForm
                     id="author"
                     value={author}
                     onChange={(e) => setAuthor(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-sandstone-ochre focus:ring-sandstone-ochre sm:text-sm bg-white dark:bg-slate-800"
+                    className="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-sandstone-ochre focus:ring-sandstone-ochre sm:text-sm bg-white dark:bg-slate-800 disabled:bg-slate-100 disabled:dark:bg-slate-800 disabled:cursor-not-allowed"
                     required
+                    disabled={!!user}
                 />
             </div>
 

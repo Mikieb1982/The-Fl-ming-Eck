@@ -67,14 +67,19 @@ export interface Post {
   tags?: string[];
 }
 
+// User Profile Type
+export interface User {
+  name: string;
+  email: string;
+  picture: string;
+}
+
 // New Directory Types
-// FIX: Export directory-related interfaces.
 export interface EmergencyNumbers {
   police: string;
   fire_rescue: string;
 }
 
-// FIX: Export directory-related interfaces.
 export interface CivicEntry {
   name: string;
   address: string;
@@ -82,7 +87,6 @@ export interface CivicEntry {
   hours?: string;
 }
 
-// FIX: Export directory-related interfaces.
 export interface CivicInfrastructure {
   emergency_numbers: EmergencyNumbers;
   municipal_administration: CivicEntry;
@@ -90,7 +94,6 @@ export interface CivicInfrastructure {
   police: CivicEntry;
 }
 
-// FIX: Export directory-related interfaces.
 export interface Hospital {
   name: string;
   address: string;
@@ -99,13 +102,11 @@ export interface Hospital {
   website: string;
 }
 
-// FIX: Export directory-related interfaces.
 export interface Specialization {
   specialization: string;
   doctors: string[];
 }
 
-// FIX: Export directory-related interfaces.
 export interface MedicalCenter {
   name: string;
   address: string;
@@ -113,7 +114,6 @@ export interface MedicalCenter {
   specializations: Specialization[];
 }
 
-// FIX: Export directory-related interfaces.
 export interface Practice {
   name: string;
   specialization: string;
@@ -122,14 +122,12 @@ export interface Practice {
   doctors?: string[];
 }
 
-// FIX: Export directory-related interfaces.
 export interface Pharmacy {
   name: string;
   address: string;
   phone: string;
 }
 
-// FIX: Export directory-related interfaces.
 export interface Healthcare {
   hospital: Hospital;
   medical_center: MedicalCenter;
@@ -137,28 +135,29 @@ export interface Healthcare {
   pharmacies: Pharmacy[];
 }
 
-// FIX: Export directory-related interfaces.
 export interface RetailEntry {
   name: string;
   address: string;
 }
 
-// FIX: Export directory-related interfaces.
 export interface BankEntry extends RetailEntry {
   services: string[];
 }
 
-// FIX: Export directory-related interfaces.
 export interface PostalService {
   provider: string;
   model: string;
   locations: RetailEntry[];
 }
 
-// FIX: Export directory-related interfaces.
 export interface Commerce {
   retail_shopping: {
     supermarkets: RetailEntry[];
+    drugstores: RetailEntry[];
+    bakeries: RetailEntry[];
+    butchers: RetailEntry[];
+    bookstores: RetailEntry[];
+    florists: RetailEntry[];
   };
   financial_postal_services: {
     banks: BankEntry[];
@@ -166,7 +165,6 @@ export interface Commerce {
   };
 }
 
-// FIX: Export directory-related interfaces.
 export interface Accommodation {
   name: string;
   type: string;
@@ -175,14 +173,12 @@ export interface Accommodation {
   website: string;
 }
 
-// FIX: Export directory-related interfaces.
 export interface Restaurant {
   name: string;
   cuisine: string;
   address?: string;
 }
 
-// FIX: Export directory-related interfaces.
 export interface Tourism {
   accommodation: Accommodation[];
   gastronomy: {
@@ -191,10 +187,10 @@ export interface Tourism {
       international: Restaurant[];
     };
     cafes_bistros_ice_cream: Restaurant[];
+    bars_pubs: Restaurant[];
   };
 }
 
-// FIX: Export directory-related interfaces.
 export interface Attraction {
     name: string;
     type: string;
@@ -202,12 +198,10 @@ export interface Attraction {
     hours?: string;
 }
 
-// FIX: Export directory-related interfaces.
 export interface Culture {
     key_attractions: Attraction[];
 }
 
-// FIX: Export directory-related interfaces.
 export interface RailTransport {
     station: string;
     address: string;
@@ -216,7 +210,6 @@ export interface RailTransport {
     frequency: string;
 }
 
-// FIX: Export directory-related interfaces.
 export interface BusTransport {
     operator: string;
     tourist_line: {
@@ -228,14 +221,12 @@ export interface BusTransport {
     regional_lines: string;
 }
 
-// FIX: Export directory-related interfaces.
 export interface TaxiCompany {
     name: string;
     phone: string;
     services: string[];
 }
 
-// FIX: Export directory-related interfaces.
 export interface TaxiService {
     note: string;
     companies: TaxiCompany[];
@@ -246,14 +237,12 @@ export interface TaxiService {
     };
 }
 
-// FIX: Export directory-related interfaces.
 export interface RideSharing {
     provider: string;
     service: string;
     details: string;
 }
 
-// FIX: Export directory-related interfaces.
 export interface Transportation {
     public_transport: {
         rail: RailTransport;

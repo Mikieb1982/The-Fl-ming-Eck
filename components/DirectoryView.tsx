@@ -6,7 +6,6 @@ import { directoryData } from '../articles/directoryData';
 import { DirectoryData, CivicEntry, Hospital, MedicalCenter, Practice, Pharmacy, BankEntry, RetailEntry, Restaurant, Accommodation, Attraction, RailTransport, BusTransport, TaxiService, RideSharing } from '../types';
 
 import ChevronDownIcon from './icons/ChevronDownIcon';
-// FIX: Import ChevronRightIcon to fix "Cannot find name" error.
 import ChevronRightIcon from './icons/ChevronRightIcon';
 import AlertTriangleIcon from './icons/AlertTriangleIcon';
 import HospitalIcon from './icons/HospitalIcon';
