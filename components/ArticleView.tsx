@@ -1,23 +1,102 @@
-import React, { useState, useMemo } from 'react';
+
+import React, { useState, useMemo, Fragment, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Article } from '../types';
-import { isArticleSafe, fmtDate, calculateReadTime } from '../utils/helpers';
-import { generateSummary } from '../services/geminiService';
+import { Article, ArticleBodyBlock } from '../types';
+import { isArticleSafe, fmtDate, calculateReadTime, extractTextFromArticleBody } from '../utils/helpers';
+import { generateSummary } from '../services/apiService';
 import { Card, CardContent } from './Card';
 import SparklesIcon from './icons/SparklesIcon';
-import HeadlineCard from './HeadlineCard';
+import { useGeneratedPlaceholder } from '../hooks/useGeneratedPlaceholder';
+import ShareButtons from './ShareButtons';
+import FontSizeAdjuster from './FontSizeAdjuster';
+import ArticleCard from './ArticleCard';
+import Tag from './Tag';
+import AudioPlayer from './AudioPlayer';
+import VideoEmbed from './VideoEmbed';
 
 interface ArticleViewProps {
   article: Article | undefined;
   allArticles: Article[];
   onSelectArticle: (id: string) => void;
+  onSelectTag: (tag: string) => void;
   onClose: () => void;
 }
 
-export default function ArticleView({ article, allArticles, onSelectArticle, onClose }: ArticleViewProps) {
+// Helper to render text with clickable links
+const renderWithLinks = (text: string) => {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+  
+  return parts.map((part, index) => {
+    if (part.match(urlRegex)) {
+      // Remove trailing punctuation from the URL
+      let url = part;
+      let trailingPunctuation = '';
+      const punctuationMatch = url.match(/[.,!?)"]+$/);
+      if (punctuationMatch) {
+        trailingPunctuation = punctuationMatch[0];
+        url = url.slice(0, -trailingPunctuation.length);
+      }
+      return (
+        <Fragment key={index}>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-brand-green hover:underline decoration-brand-green"
+          >
+            {url}
+          </a>
+          {trailingPunctuation}
+        </Fragment>
+      );
+    }
+    return part;
+  });
+};
+
+const fontSizes = ['prose', 'prose-lg', 'prose-xl', 'prose-2xl'];
+
+export default function ArticleView({ article, allArticles, onSelectArticle, onSelectTag, onClose }: ArticleViewProps) {
   const [summary, setSummary] = useState<string | null>(null);
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fontSizeIndex, setFontSizeIndex] = useState(1); // Default to prose-lg
+
+  useEffect(() => {
+    if (article?.eventDetails) {
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.id = 'event-structured-data';
+
+        const eventData = {
+            '@context': 'https://schema.org',
+            '@type': 'Event',
+            name: article.title,
+            startDate: article.eventDetails.startDate,
+            ...(article.eventDetails.endDate && { endDate: article.eventDetails.endDate }),
+            location: {
+                '@type': 'Place',
+                name: article.eventDetails.locationName,
+                address: article.eventDetails.locationAddress || 'Bad Belzig, Germany',
+            },
+            image: article.hero,
+            description: article.excerpt,
+            eventAttendanceMode: article.eventDetails.isOnline ? 'https://schema.org/OnlineEventAttendanceMode' : 'https://schema.org/OfflineEventAttendanceMode',
+            eventStatus: 'https://schema.org/EventScheduled',
+        };
+
+        script.innerHTML = JSON.stringify(eventData);
+        document.head.appendChild(script);
+
+        return () => {
+            const scriptToRemove = document.getElementById('event-structured-data');
+            if (scriptToRemove) {
+                document.head.removeChild(scriptToRemove);
+            }
+        };
+    }
+  }, [article]);
 
   const handleGenerateSummary = async () => {
     if (!article) return;
@@ -25,7 +104,8 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onC
     setError(null);
     setSummary(null);
     try {
-      const result = await generateSummary(article.body.join(' '));
+      const articleText = extractTextFromArticleBody(article.body);
+      const result = await generateSummary(articleText);
       setSummary(result);
     } catch (e: any) {
       setError(e.message || 'An unknown error occurred.');
@@ -33,27 +113,70 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onC
       setIsSummarizing(false);
     }
   };
+  
+  const handleIncreaseFont = () => {
+    setFontSizeIndex((prev) => Math.min(prev + 1, fontSizes.length - 1));
+  };
 
-  const navigationArticles = useMemo(() => {
+  const handleDecreaseFont = () => {
+    setFontSizeIndex((prev) => Math.max(prev - 1, 0));
+  };
+
+  const relatedArticles = useMemo(() => {
     if (!article) return [];
-    const otherArticles = allArticles.filter(a => a.id !== article.id);
-    const sameCategory = otherArticles.filter(a => a.category === article.category);
-    const differentCategory = otherArticles.filter(a => a.category !== article.category);
-    const related = [...sameCategory, ...differentCategory].slice(0, 2);
-    return [article, ...related];
+    return allArticles
+        .filter(a => a.id !== article.id && a.category === article.category)
+        .slice(0, 3);
   }, [article, allArticles]);
+  
+  const firstParagraphBlockIndex = useMemo(() => {
+    if (!article?.body) return -1;
+    return article.body.findIndex(block => block.type === 'paragraph');
+  }, [article?.body]);
 
   if (!isArticleSafe(article)) {
     return (
       <Card>
         <CardContent>
-          <p className="text-sm text-slate-700 dark:text-slate-300">Article is not available. Please select another item.</p>
+          <p className="text-sm text-charcoal dark:text-slate-300">Article is not available. Please select another item.</p>
         </CardContent>
       </Card>
     );
   }
+  
+  const hasHero = article.hero && article.hero.length > 0 && article.hero[0];
+  const { generatedUrl, isLoading } = useGeneratedPlaceholder(article, !hasHero);
+  const heroUrl = hasHero ? article.hero[0] : generatedUrl;
 
-  const readTime = calculateReadTime(article.body.join(' '));
+  const readTime = calculateReadTime(article.body);
+
+  const renderArticleBody = (block: ArticleBodyBlock, index: number) => {
+    switch (block.type) {
+        case 'subheading':
+            return (
+                <h3 key={index} className="text-2xl font-serif font-bold mt-8 mb-4 text-charcoal dark:text-slate-100 border-b-2 border-slate-200 dark:border-slate-700 pb-2">
+                    {renderWithLinks(block.content)}
+                </h3>
+            );
+        case 'video':
+            return <VideoEmbed key={index} youtubeId={block.youtubeId} caption={block.caption} />;
+        case 'audio':
+            return <AudioPlayer key={index} src={block.src} caption={block.caption} />;
+        case 'paragraph':
+        default:
+            const isFirstParagraph = index === firstParagraphBlockIndex;
+            const dropCapChar = block.content.charAt(0);
+            const remainingText = block.content.slice(1);
+
+            return (
+                <p key={index}>
+                    {isFirstParagraph && <span className="float-left text-5xl sm:text-6xl leading-none pr-3 font-serif text-brand-green dark:text-green-400 -mt-2">{dropCapChar}</span>}
+                    {isFirstParagraph ? renderWithLinks(remainingText) : renderWithLinks(block.content)}
+                </p>
+            );
+    }
+  }
+
 
   return (
     <motion.div
@@ -65,7 +188,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onC
     >
         <button 
             onClick={onClose}
-            className="mb-4 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            className="mb-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-slate-300 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-light-grey dark:hover:bg-slate-700 transition-colors"
         >
             &larr; Back to Magazine
         </button>
@@ -73,39 +196,83 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onC
       <div
         className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden"
       >
-        <div className="p-6 md:p-8">
-          <p className="text-xs uppercase tracking-wider font-semibold text-blue-700 dark:text-blue-400">{article.category} · {fmtDate(article.date)} · {readTime} min read</p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold mt-1 text-slate-900 dark:text-slate-100 tracking-tight">{article.title}</h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">By {article.author}</p>
-          
-          <div className="my-6">
+        {/* HERO SECTION */}
+        <div className="relative h-[60vh] min-h-[400px] text-white">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10" />
+          {isLoading && <div className="absolute inset-0 w-full h-full bg-slate-200 dark:bg-slate-700 animate-pulse" />}
+          {!isLoading && heroUrl && (
             <img 
-              src={article.hero} 
+              src={heroUrl}
               alt={article.title}
-              className="max-w-2xl mx-auto rounded-xl shadow-inner w-full h-auto"
+              loading="eager"
+              fetchPriority="high"
+              className="absolute inset-0 w-full h-full object-cover"
             />
-          </div>
-
-          {article.pullQuote && (
-            <blockquote className="border-l-4 border-blue-200 dark:border-blue-800 pl-4 italic text-slate-700 dark:text-slate-300 text-xl md:text-2xl my-6 font-serif">“{article.pullQuote}”</blockquote>
           )}
-
-          <div className="mt-6 prose md:prose-lg max-w-none dark:prose-invert">
-              {article.body.map((paragraph, index) => (
-              <p key={index}>
-                  {index === 0 && <span className="float-left text-5xl sm:text-6xl leading-none pr-3 font-serif text-blue-700 dark:text-blue-400 -mt-2">{paragraph.charAt(0)}</span>}
-                  {index === 0 ? paragraph.slice(1) : paragraph}
-              </p>
-              ))}
+          <div className="relative z-20 flex flex-col justify-end h-full p-6 md:p-8">
+            <p className="font-mono text-sm uppercase tracking-wider font-semibold text-sandstone-ochre">{article.category}</p>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold mt-2 tracking-tight leading-tight">{article.title}</h1>
+            <div className="text-sm mt-4 text-slate-200 flex items-center gap-x-4 gap-y-1 flex-wrap">
+              <span>By {article.author}</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-slate-400 hidden sm:block" />
+              <span>{fmtDate(article.date)}</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-slate-400 hidden sm:block" />
+              <span>{readTime} min read</span>
+            </div>
           </div>
+        </div>
+        
+        {/* ARTICLE BODY & METADATA */}
+        <div className="grid grid-cols-12 gap-8 p-6 md:p-8">
+           {/* Share & Font Tools - Sidebar */}
+          <aside className="col-span-12 lg:col-span-3">
+            <div className="lg:sticky lg:top-24 h-fit">
+              <div className="flex flex-row lg:flex-col items-center lg:items-start justify-between lg:justify-start gap-4 border-b lg:border-b-0 lg:border-l border-slate-200 dark:border-slate-700 pb-4 lg:pb-0 lg:pl-4">
+                  <ShareButtons article={article} />
+                  <FontSizeAdjuster 
+                    onIncrease={handleIncreaseFont}
+                    onDecrease={handleDecreaseFont}
+                    isMin={fontSizeIndex === 0}
+                    isMax={fontSizeIndex === fontSizes.length - 1}
+                  />
+              </div>
+            </div>
+          </aside>
 
-          <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
+           {/* Main Content */}
+          <main className="col-span-12 lg:col-span-9 lg:-order-1">
+             <article className={`prose ${fontSizes[fontSizeIndex]} max-w-prose mx-auto dark:prose-invert prose-headings:text-charcoal dark:prose-headings:text-slate-100 prose-p:text-charcoal dark:prose-p:text-slate-300`}>
+              {article.pullQuote && (
+                <div className="not-prose my-6">
+                    <div className="relative p-6 bg-light-grey dark:bg-slate-800/50 rounded-lg">
+                        <span className="absolute top-0 left-4 h-full w-1 bg-sandstone-ochre"></span>
+                        <blockquote className="pl-4 italic text-charcoal dark:text-slate-300 text-xl md:text-2xl font-serif">“{article.pullQuote}”</blockquote>
+                    </div>
+                </div>
+              )}
+              {article.body.map(renderArticleBody)}
+            </article>
+
+            {/* TAGS Section */}
+            {article.tags && article.tags.length > 0 && (
+              <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700 max-w-prose mx-auto">
+                <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">Tags</h3>
+                <div className="flex flex-wrap gap-2">
+                  {article.tags.map(tag => (
+                    <Tag key={tag} tag={tag} onClick={onSelectTag} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+             {/* TL;DR Section */}
+            <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700 max-w-prose mx-auto">
               <div className="flex items-center gap-4">
-                  <h3 className="text-lg font-serif font-bold text-slate-800 dark:text-slate-200">TL;DR</h3>
+                  <h3 className="text-lg font-serif font-bold text-charcoal dark:text-slate-200">TL;DR</h3>
                   <button 
                       onClick={handleGenerateSummary} 
                       disabled={isSummarizing}
-                      className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-full shadow-md hover:bg-blue-700 disabled:bg-slate-400 disabled:cursor-not-allowed transition-all transform hover:scale-105"
+                      className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-sandstone-ochre rounded-full shadow-md hover:bg-warm-terracotta disabled:bg-slate-400 disabled:cursor-not-allowed transition-all transform hover:scale-105"
                   >
                       <SparklesIcon className="w-4 h-4" />
                       {isSummarizing ? "Generating..." : "Generate with AI"}
@@ -118,29 +285,30 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onC
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-4 p-4 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg"
+                  className="mt-4 p-4 bg-light-grey dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg"
                 >
-                  <p className="text-slate-700 dark:text-slate-300 italic">{summary}</p>
+                  <p className="text-charcoal dark:text-slate-300 italic">{summary}</p>
                 </motion.div>
               )}
-          </div>
-          
-          {navigationArticles.length > 0 && (
-            <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700">
-              <h3 className="text-2xl font-serif font-bold text-slate-800 dark:text-slate-200 mb-4">More Articles</h3>
-              <div className="flex flex-col gap-4">
-                {navigationArticles.map(navArticle => (
-                  <HeadlineCard 
+            </div>
+          </main>
+        </div>
+        
+        {/* RELATED ARTICLES */}
+        {relatedArticles.length > 0 && (
+          <div className="p-6 md:p-8 border-t border-slate-200 dark:border-slate-700 bg-light-grey dark:bg-slate-800/50">
+            <h3 className="text-2xl font-serif font-bold text-charcoal dark:text-slate-200 mb-6 text-center">More in {article.category}</h3>
+            <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {relatedArticles.map(navArticle => (
+                  <ArticleCard 
                     key={navArticle.id} 
                     article={navArticle} 
                     onClick={() => onSelectArticle(navArticle.id)}
-                    isActive={navArticle.id === article.id}
                   />
-                ))}
-              </div>
+              ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </motion.div>
   );

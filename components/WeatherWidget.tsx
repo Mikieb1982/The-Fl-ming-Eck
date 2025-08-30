@@ -101,7 +101,7 @@ export default function WeatherWidget() {
     <div className="flex items-center gap-4 text-slate-800 dark:text-slate-300">
       {/* Current Weather */}
       <div className="flex items-center gap-2">
-        <div className="text-blue-600 dark:text-blue-400">
+        <div className="text-brand-green dark:text-green-400">
           <WeatherIcon condition={weather.current.condition} className="w-10 h-10" />
         </div>
         <div>

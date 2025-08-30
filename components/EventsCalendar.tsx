@@ -10,6 +10,7 @@ import ChevronDownIcon from './icons/ChevronDownIcon';
 interface EventsCalendarProps {
   isOpen: boolean;
   onClose: () => void;
+  onSelectArticle: (id: string) => void;
 }
 
 // Helper component for filter buttons
@@ -18,7 +19,7 @@ const FilterButton = ({ label, isActive, onClick }: { label: string; isActive: b
     onClick={onClick}
     className={`px-3 py-1.5 text-sm font-semibold rounded-full transition-colors duration-200 ${
       isActive
-        ? 'bg-blue-600 text-white shadow'
+        ? 'bg-brand-green text-white shadow'
         : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
     }`}
   >
@@ -42,21 +43,30 @@ function parseEventDate(dateStr: string): Date | null {
 }
 
 
-export default function EventsCalendar({ isOpen, onClose }: EventsCalendarProps) {
+export default function EventsCalendar({ isOpen, onClose, onSelectArticle }: EventsCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [dayFilter, setDayFilter] = useState('All'); // 'All', 'Weekdays', 'Weekend'
   const [categoryFilter, setCategoryFilter] = useState('All'); // 'All', 'Music', etc.
   const [isFilterVisible, setIsFilterVisible] = useState(false);
 
   const { body } = eventsArticle;
-  const [intro, ...eventStrings] = body;
+
+  // FIX: The body from eventsArticle is an array of ArticleBodyBlock, not strings.
+  // We need to extract the 'content' string from each paragraph block to work with it.
+  const eventParagraphs = useMemo(() => body.filter((b): b is { type: 'paragraph'; content: string } => b.type === 'paragraph'), [body]);
+  const [introBlock, ...eventBlocks] = eventParagraphs;
+  const intro = introBlock?.content || '';
 
   const events = useMemo(() => {
-    return eventStrings.filter(item => !item.startsWith('**'));
-  }, [eventStrings]);
+    // FIX: Extract content from ArticleBodyBlock and then filter out headers.
+    return eventBlocks
+        .map(item => item.content)
+        .filter(content => !content.startsWith('**'));
+  }, [eventBlocks]);
   
   const eventDates = useMemo(() => {
     const dates = new Set<number>();
+    // FIX: `events` is now a string[], so `eventString` is a string.
     events.forEach(eventString => {
         const dateStr = eventString.split('::')[0];
         const date = parseEventDate(dateStr);
@@ -69,6 +79,7 @@ export default function EventsCalendar({ isOpen, onClose }: EventsCalendarProps)
 
   const categories = useMemo(() => {
     const allCategories = new Set<string>();
+    // FIX: `events` is now a string[], so `eventString` is a string.
     events.forEach(eventString => {
       const parts = eventString.split('::');
       if (parts.length > 6 && parts[6]) {
@@ -90,6 +101,7 @@ export default function EventsCalendar({ isOpen, onClose }: EventsCalendarProps)
 
   const filteredSections = useMemo(() => {
     const dayAndCategoryFilteredEvents = events.filter(eventString => {
+        // FIX: `eventString` is now a string, so this logic is correct.
         const parts = eventString.split('::');
         const date = parts[0]?.trim() || '';
         const category = parts[6]?.trim() || '';
@@ -115,12 +127,16 @@ export default function EventsCalendar({ isOpen, onClose }: EventsCalendarProps)
     if (!selectedDate) {
         const sections: { header: string; events: string[] }[] = [];
         let currentSection: { header: string; events: string[] } | null = null;
-        eventStrings.forEach(item => {
-            if (item.startsWith('**')) {
+        
+        // FIX: The original `eventStrings` was ArticleBodyBlock[], now we use `eventBlocks`
+        // and extract the content string to build sections.
+        eventBlocks.forEach(item => {
+            const content = item.content;
+            if (content.startsWith('**')) {
                 if (currentSection) sections.push(currentSection);
-                currentSection = { header: item, events: [] };
+                currentSection = { header: content, events: [] };
             } else if(currentSection) {
-                currentSection.events.push(item);
+                currentSection.events.push(content);
             }
         });
         if (currentSection) sections.push(currentSection);
@@ -128,10 +144,12 @@ export default function EventsCalendar({ isOpen, onClose }: EventsCalendarProps)
         return sections
             .map(section => ({
                 ...section,
+                // FIX: `event` is a string, and `dayAndCategoryFilteredEvents` is string[], so this is correct now.
                 events: section.events.filter(event => dayAndCategoryFilteredEvents.includes(event)),
             }))
             .filter(section => section.events.length > 0);
     } else {
+        // FIX: `dayAndCategoryFilteredEvents` is string[], so `e.toLowerCase()` and `e.split()` are valid.
         const recurring = dayAndCategoryFilteredEvents.filter(e => e.toLowerCase().startsWith('every'));
         const onDate = dayAndCategoryFilteredEvents.filter(e => {
              const eventDate = parseEventDate(e.split('::')[0]);
@@ -148,7 +166,7 @@ export default function EventsCalendar({ isOpen, onClose }: EventsCalendarProps)
         }
         return sections;
     }
-  }, [events, eventStrings, dayFilter, categoryFilter, selectedDate]);
+  }, [events, eventBlocks, dayFilter, categoryFilter, selectedDate]);
 
 
   const sidebarVariants = {
@@ -184,12 +202,12 @@ export default function EventsCalendar({ isOpen, onClose }: EventsCalendarProps)
             animate="open"
             exit="closed"
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed top-0 right-0 h-full w-full sm:max-w-md bg-warm-white dark:bg-slate-900 z-50 shadow-2xl flex flex-col"
+            className="fixed top-0 right-0 h-full w-full sm:max-w-md bg-off-white dark:bg-slate-900 z-50 shadow-2xl flex flex-col"
             aria-modal="true"
             role="dialog"
           >
             <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700 shrink-0">
-              <h3 className="text-2xl font-serif font-bold text-slate-800 dark:text-slate-200">
+              <h3 className="text-2xl font-serif font-bold text-charcoal dark:text-slate-200">
                 What's On
               </h3>
               <button 
@@ -209,7 +227,7 @@ export default function EventsCalendar({ isOpen, onClose }: EventsCalendarProps)
                 aria-expanded={isFilterVisible}
                 aria-controls="filter-panel"
               >
-                <span className="font-semibold text-slate-800 dark:text-slate-200">Filter by Date & Category</span>
+                <span className="font-semibold text-charcoal dark:text-slate-200">Filter by Date & Category</span>
                 <motion.div animate={{ rotate: isFilterVisible ? 180 : 0 }} transition={{ duration: 0.2 }}>
                   <ChevronDownIcon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                 </motion.div>
@@ -260,16 +278,21 @@ export default function EventsCalendar({ isOpen, onClose }: EventsCalendarProps)
             </div>
 
             <div className="flex-grow overflow-y-auto p-4 space-y-4">
-              { !selectedDate && <p className="text-sm text-slate-700 dark:text-slate-300">{intro}</p>}
+              {/* FIX: `intro` is now a string and can be rendered directly. */}
+              { !selectedDate && <p className="text-sm text-charcoal dark:text-slate-300">{intro}</p>}
               {filteredSections.length > 0 ? (
                 filteredSections.map(section => (
                   <div key={section.header} className="pt-2 first:pt-0">
-                    <h4 className="text-lg font-serif font-bold text-slate-800 dark:text-slate-200 mb-2">
+                    <h4 className="text-lg font-serif font-bold text-charcoal dark:text-slate-200 mb-2">
                       {section.header.replace(/\*\*/g, '')}
                     </h4>
                     <div className="space-y-2">
                       {section.events.map((item, index) => (
-                         <EventCard key={`${section.header}-${index}`} eventString={item} />
+                         <EventCard 
+                            key={`${section.header}-${index}`} 
+                            eventString={item} 
+                            onSelectArticle={onSelectArticle}
+                         />
                       ))}
                     </div>
                   </div>
@@ -282,7 +305,7 @@ export default function EventsCalendar({ isOpen, onClose }: EventsCalendarProps)
                       { selectedDate && (
                            <button 
                               onClick={() => setSelectedDate(null)}
-                              className="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                              className="mt-2 text-sm text-brand-green hover:underline"
                           >
                               Show all events
                           </button>

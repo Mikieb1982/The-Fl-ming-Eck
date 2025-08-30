@@ -70,14 +70,14 @@ export default function Calendar({ selectedDate, onDateSelect, eventDates }: Cal
               <button
                 onClick={() => handleDateClick(day)}
                 className={`relative w-8 h-8 rounded-full text-sm flex items-center justify-center transition-colors
-                  ${isSelected ? 'bg-blue-600 text-white font-bold' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}
-                  ${!isSelected && hasEvent ? 'text-blue-700 dark:text-blue-400 font-semibold' : ''}
+                  ${isSelected ? 'bg-brand-green text-white font-bold' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}
+                  ${!isSelected && hasEvent ? 'text-brand-green dark:text-green-400 font-semibold' : ''}
                   ${!isSelected ? 'text-slate-800 dark:text-slate-200' : ''}
                 `}
               >
                 {day}
                 {hasEvent && !isSelected && (
-                  <span className="absolute bottom-1 w-1 h-1 bg-blue-500 rounded-full" />
+                  <span className="absolute bottom-1 w-1 h-1 bg-accent-green rounded-full" />
                 )}
               </button>
             </div>

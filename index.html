@@ -4,22 +4,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Fläming Eck Magazine</title>
-    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=typography,forms"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         darkMode: 'class',
         theme: {
           extend: {
             colors: {
-              'warm-white': '#fcfaf8',
+              'off-white': '#f5f5ef',
+              'light-grey': '#e5e5e0',
+              'charcoal': '#2b2b2b',
+              'brand-green': '#24523a',
+              'sandstone-ochre': '#c2802a',
+              'warm-terracotta': '#a65a3d',
             },
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
               serif: ['Playfair Display', 'serif'],
+              mono: ['Roboto Mono', 'monospace'],
             },
           }
         }
@@ -37,7 +43,7 @@
 }
 </script>
 </head>
-  <body class="bg-warm-white dark:bg-slate-900 transition-colors duration-300">
+  <body class="bg-off-white dark:bg-slate-900 transition-colors duration-300">
     <div id="root"></div>
     <script type="text/babel" data-type="module" src="/index.tsx"></script>
   </body>
