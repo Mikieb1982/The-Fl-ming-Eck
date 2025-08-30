@@ -8,7 +8,7 @@ const article: Article = {
   date: "2025-08-22",
   category: "Guides",
   excerpt: "Short guide to trails, transport, and safety.",
-  hero: [],
+  hero: ["https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?q=80&w=1950"],
   pullQuote: "Water, map, tick checks. Simple prep helps you enjoy the quiet.",
   body: [
     { type: 'paragraph', content: "The Nature Park covers rolling ground moraine with beech stands, open fields, and erratic boulders. Waymarked routes start near Bahnhof Bad Belzig and Wiesenburg." },

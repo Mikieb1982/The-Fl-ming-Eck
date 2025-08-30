@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Article, Post, Reply } from "./types";
 import { sortByDateDesc, fuzzySearch, extractTextFromArticleBody } from "./utils/helpers";
 import * as api from './services/apiService';
+import { BRAND } from './constants';
 import Masthead from "./components/Masthead";
 import ArticleView from "./components/ArticleView";
 import Navigation from "./components/Navigation";
@@ -19,6 +20,9 @@ import PrivacyPolicy from "./components/PrivacyPolicy";
 import CommunityView from "./components/CommunityView";
 import BackToTopButton from "./components/BackToTopButton";
 import DirectoryView from "./components/DirectoryView";
+import PersonalizeView from "./components/PersonalizeView";
+
+const USER_INTERESTS_KEY = 'flaming-eck-user-interests';
 
 export default function App() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -29,17 +33,36 @@ export default function App() {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isCommunityOpen, setIsCommunityOpen] = useState(false);
   const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
+  const [isPersonalizeOpen, setIsPersonalizeOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState('All');
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [legalPage, setLegalPage] = useState<"impressum" | "privacy" | null>(null);
   const [isBackToTopVisible, setIsBackToTopVisible] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [userInterests, setUserInterests] = useState<string[]>([]);
 
   useEffect(() => {
     setArticles(api.getArticles());
     setPosts(api.getPosts());
+    try {
+        const storedInterests = localStorage.getItem(USER_INTERESTS_KEY);
+        if (storedInterests) {
+            setUserInterests(JSON.parse(storedInterests));
+        }
+    } catch (error) {
+        console.error("Failed to load user interests:", error);
+    }
     setIsLoading(false);
   }, []);
+  
+  const handleSaveInterests = (interests: string[]) => {
+      setUserInterests(interests);
+      try {
+          localStorage.setItem(USER_INTERESTS_KEY, JSON.stringify(interests));
+      } catch (error) {
+          console.error("Failed to save user interests:", error);
+      }
+  };
 
   const sortedArticles = useMemo(() => sortByDateDesc(articles), [articles]);
   
@@ -214,7 +237,9 @@ export default function App() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        if(legalPage) {
+        if (isPersonalizeOpen) {
+            setIsPersonalizeOpen(false);
+        } else if(legalPage) {
           setLegalPage(null);
         } else if (isDirectoryOpen) {
           setIsDirectoryOpen(false);
@@ -231,7 +256,7 @@ export default function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [nextArticle, prevArticle, handleCloseArticle, activeIndex, legalPage, isCommunityOpen, isDirectoryOpen]);
+  }, [nextArticle, prevArticle, handleCloseArticle, activeIndex, legalPage, isCommunityOpen, isDirectoryOpen, isPersonalizeOpen]);
   
   useEffect(() => {
     const toggleVisibility = () => {
@@ -252,15 +277,47 @@ export default function App() {
   }, []);
 
   const currentArticle = activeIndex !== null ? sortedArticles[activeIndex] : null;
+  
+  useEffect(() => {
+    const baseCanonicalUrl = window.location.origin + window.location.pathname;
+    const defaultTitle = 'The Fläming Eck Magazine';
+    const defaultDescription = "An interactive digital magazine for Bad Belzig and the Hoher Fläming, featuring AI-powered summaries for articles.";
+
+    let canonicalLink = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!canonicalLink) {
+        canonicalLink = document.createElement('link');
+        canonicalLink.rel = 'canonical';
+        document.head.appendChild(canonicalLink);
+    }
+    
+    let metaDescription = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    if (!metaDescription) {
+        metaDescription = document.createElement('meta');
+        metaDescription.name = 'description';
+        document.head.appendChild(metaDescription);
+    }
+
+    if (currentArticle) {
+        document.title = `${currentArticle.title} | ${BRAND.title}`;
+        metaDescription.setAttribute('content', currentArticle.excerpt);
+        canonicalLink.setAttribute('href', `${baseCanonicalUrl}?article=${currentArticle.id}`);
+    } else {
+        document.title = defaultTitle;
+        metaDescription.setAttribute('content', defaultDescription);
+        canonicalLink.setAttribute('href', baseCanonicalUrl);
+    }
+  }, [currentArticle]);
+
   const trimmedQuery = searchQuery.trim();
 
   return (
     <div className="bg-off-white dark:bg-slate-900 font-sans text-charcoal dark:text-slate-300">
       {/* Sticky Header Wrapper */}
-      <div className="sticky top-0 z-30 w-full bg-off-white/95 dark:bg-slate-900/95 backdrop-blur-sm transition-colors duration-300 shadow-sm">
+      <div className="sticky top-0 z-30 w-full bg-off-white/95 dark:bg-slate-900/95 backdrop-blur-sm transition-colors duration-300 border-b border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <Masthead 
             onGoHome={handleGoHome}
+            onOpenPersonalize={() => setIsPersonalizeOpen(true)}
             isScrolled={isScrolled}
           />
         </div>
@@ -284,7 +341,15 @@ export default function App() {
           onClose={() => setIsCalendarOpen(false)} 
           onSelectArticle={handleSelectArticleFromEvent}
         />
-
+        
+        <PersonalizeView 
+            isOpen={isPersonalizeOpen}
+            onClose={() => setIsPersonalizeOpen(false)}
+            onSave={handleSaveInterests}
+            allCategories={uniqueCategories}
+            currentInterests={userInterests}
+        />
+        
         <div className="mt-6">
           <main>
             {isLoading ? (
@@ -353,6 +418,7 @@ export default function App() {
                                   activeTag={activeTag}
                                   onClearTag={handleClearTag}
                                   onSelectTag={handleSelectTag}
+                                  userInterests={userInterests}
                               />
                           )
                       ) : (

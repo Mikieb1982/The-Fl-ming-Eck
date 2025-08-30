@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BRAND } from '../constants';
@@ -7,9 +8,11 @@ import WeatherWidget from './WeatherWidget';
 import { useUser } from '../context/UserContext';
 import LoginIcon from './icons/LoginIcon';
 import LogoutIcon from './icons/LogoutIcon';
+import CogIcon from './icons/CogIcon';
 
 interface MastheadProps {
   onGoHome: () => void;
+  onOpenPersonalize: () => void;
   isScrolled?: boolean;
 }
 
@@ -70,7 +73,7 @@ const UserProfile = () => {
 };
 
 
-export default function Masthead({ onGoHome, isScrolled = false }: MastheadProps) {
+export default function Masthead({ onGoHome, onOpenPersonalize, isScrolled = false }: MastheadProps) {
     const { user, signIn, isLoading } = useUser();
 
     const AuthControl = () => {
@@ -103,7 +106,7 @@ export default function Masthead({ onGoHome, isScrolled = false }: MastheadProps
   );
 
   return (
-    <header className="py-4 relative">
+    <header className="py-4 relative border-b border-slate-200 dark:border-slate-800">
       {/* Mobile Theme Toggle in corner */}
       <div className="absolute top-4 right-4 md:hidden">
         <ThemeToggle />
@@ -119,6 +122,13 @@ export default function Masthead({ onGoHome, isScrolled = false }: MastheadProps
         </div>
         <div className="flex-1 flex justify-end items-center gap-4">
           <AuthControl />
+           <button
+            onClick={onOpenPersonalize}
+            className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            aria-label="Personalize feed"
+          >
+            <CogIcon className="w-5 h-5" />
+          </button>
           <ThemeToggle />
         </div>
       </div>
@@ -130,7 +140,16 @@ export default function Masthead({ onGoHome, isScrolled = false }: MastheadProps
         </div>
         <div className="flex items-center justify-between w-full px-4">
             <WeatherWidget />
-            <AuthControl />
+            <div className="flex items-center gap-2">
+                 <AuthControl />
+                 <button
+                    onClick={onOpenPersonalize}
+                    className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    aria-label="Personalize feed"
+                >
+                    <CogIcon className="w-5 h-5" />
+                </button>
+            </div>
         </div>
       </div>
     </header>

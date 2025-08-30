@@ -1,4 +1,5 @@
 
+
 import React, { useMemo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Article } from '../types';
@@ -135,11 +136,11 @@ function HeroArticleCard({ article, onClick }: { article: Article, onClick: () =
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
         <div className="absolute bottom-0 left-0 p-6 md:p-8 text-white w-full">
-            <p className="font-mono text-sm uppercase tracking-wider font-semibold text-sandstone-ochre">{article.category} · {readTime} min read</p>
-            <h2 className="text-3xl lg:text-5xl font-serif font-bold mt-2 tracking-tight">
+            <p className="font-mono text-sm uppercase tracking-wider font-semibold text-sandstone-ochre drop-shadow-md">{article.category} · {readTime} min read</p>
+            <h2 className="text-3xl lg:text-5xl font-serif font-bold mt-2 tracking-tight drop-shadow-lg">
                 {article.title}
             </h2>
-            <p className="text-slate-200 mt-4 text-base lg:text-lg max-w-3xl line-clamp-2 hidden md:block">{article.excerpt}</p>
+            <p className="text-slate-200 mt-4 text-base lg:text-lg max-w-3xl line-clamp-2 hidden md:block drop-shadow-md">{article.excerpt}</p>
         </div>
     </div>
   );
@@ -153,9 +154,10 @@ interface ArticleGridProps {
   activeTag: string | null;
   onClearTag: () => void;
   onSelectTag: (tag: string) => void;
+  userInterests?: string[];
 }
 
-export default function ArticleGrid({ articles, onSelectArticle, activeCategory, onSelectCategory, activeTag, onClearTag, onSelectTag }: ArticleGridProps) {
+export default function ArticleGrid({ articles, onSelectArticle, activeCategory, onSelectCategory, activeTag, onClearTag, onSelectTag, userInterests = [] }: ArticleGridProps) {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
@@ -166,17 +168,28 @@ export default function ArticleGrid({ articles, onSelectArticle, activeCategory,
     visible: { y: 0, opacity: 1 },
   };
 
+  const { forYouArticles, otherArticles } = useMemo(() => {
+    if (userInterests.length === 0) {
+      return { forYouArticles: [], otherArticles: articles };
+    }
+    const interestsSet = new Set(userInterests);
+    const forYou = articles.filter(a => interestsSet.has(a.category));
+    const other = articles.filter(a => !interestsSet.has(a.category));
+    return { forYouArticles: forYou, otherArticles: other };
+  }, [articles, userInterests]);
+
+  const articlesToDisplay = (activeCategory !== 'All' || activeTag) ? articles : otherArticles;
+
   const articlesByCategory: Record<string, Article[]> | null = useMemo(() => {
-    if (activeCategory !== 'All' || activeTag) return null;
-    // Update slice index to account for hero + 2 secondary articles
-    const remainingArticles = articles.slice(3); 
+    if (activeCategory !== 'All' || activeTag || userInterests.length > 0) return null;
+    const remainingArticles = articlesToDisplay.slice(3);
     return remainingArticles.reduce((acc, article) => {
       const { category } = article;
       if (!acc[category]) acc[category] = [];
       acc[category].push(article);
       return acc;
     }, {} as Record<string, Article[]>);
-  }, [articles, activeCategory, activeTag]);
+  }, [articlesToDisplay, activeCategory, activeTag, userInterests]);
 
   const viewContent = (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -222,8 +235,8 @@ export default function ArticleGrid({ articles, onSelectArticle, activeCategory,
     return <p>No articles to display.</p>;
   }
 
-  const heroArticle = articles[0];
-  const secondaryArticles = articles.slice(1, 3);
+  const heroArticle = articlesToDisplay[0];
+  const secondaryArticles = articlesToDisplay.slice(1, 3);
 
   return (
     <motion.div 
@@ -233,10 +246,30 @@ export default function ArticleGrid({ articles, onSelectArticle, activeCategory,
         exit="hidden"
         className="space-y-16"
     >
+      {forYouArticles.length > 0 && activeCategory === 'All' && !activeTag && (
+        <motion.div variants={itemVariants}>
+            <h2 className="text-xl font-serif font-bold text-charcoal dark:text-slate-200 border-b-2 border-sandstone-ochre pb-2 mb-6 uppercase tracking-widest">
+                For You
+            </h2>
+            <div className="flex gap-8 pb-4 -mx-4 px-4 overflow-x-auto">
+                {forYouArticles.map(article => (
+                    <div key={article.id} className="w-80 shrink-0">
+                         <ArticleCard 
+                             article={article} 
+                             onClick={() => onSelectArticle(article.id)} 
+                         />
+                    </div>
+                 ))}
+            </div>
+        </motion.div>
+      )}
+
       {/* Hero Article */}
-      <motion.div variants={itemVariants}>
-        <HeroArticleCard article={heroArticle} onClick={() => onSelectArticle(heroArticle.id)} />
-      </motion.div>
+      {heroArticle && (
+        <motion.div variants={itemVariants}>
+          <HeroArticleCard article={heroArticle} onClick={() => onSelectArticle(heroArticle.id)} />
+        </motion.div>
+      )}
       
       {/* Secondary Articles */}
       {secondaryArticles.length > 0 && (

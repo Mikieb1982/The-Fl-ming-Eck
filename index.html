@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Fläming Eck Magazine</title>
+    <meta name="description" content="An interactive digital magazine for Bad Belzig and the Hoher Fläming, featuring AI-powered summaries for articles." />
+    <link rel="canonical" href="" />
     <script src="https://cdn.tailwindcss.com?plugins=typography,forms"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,8 +19,10 @@
             colors: {
               'off-white': '#f5f5ef',
               'light-grey': '#e5e5e0',
+              'subtle-grey': '#d8d8d2',
               'charcoal': '#2b2b2b',
               'brand-green': '#24523a',
+              'accent-green': '#3a7d5a',
               'sandstone-ochre': '#c2802a',
               'warm-terracotta': '#a65a3d',
             },
@@ -27,6 +31,21 @@
               serif: ['Playfair Display', 'serif'],
               mono: ['Roboto Mono', 'monospace'],
             },
+            typography: ({ theme }) => ({
+              DEFAULT: {
+                css: {
+                  '--tw-prose-links': theme('colors.brand-green'),
+                  '--tw-prose-invert-links': theme('colors.green[400]'),
+                  a: {
+                    textDecoration: 'none',
+                    fontWeight: '500',
+                    '&:hover': {
+                      textDecoration: 'underline',
+                    },
+                  },
+                },
+              },
+            }),
           }
         }
       }

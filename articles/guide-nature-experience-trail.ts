@@ -8,7 +8,7 @@ const article: Article = {
   date: "2025-08-24",
   category: "Guides",
   excerpt: "A few minutes from Bad Belzig’s market square, a level path threads the wet meadows below Burg Eisenhardt. This is the Naturerlebnispfad Belziger Burgwiesen: a compact, hands-on nature trail designed for all ages and most abilities.",
-  hero: [], // Let the AI generate a placeholder
+  hero: ["https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=2070"],
   pullQuote: "Twelve playful stations that turn a simple stroll into a low-stress field lesson.",
   body: [
     { type: 'paragraph', content: "A few minutes from Bad Belzig’s market square, a level path threads the wet meadows below Burg Eisenhardt. This is the Naturerlebnispfad Belziger Burgwiesen: a compact, hands-on nature trail designed for all ages and most abilities. Expect dragonfly-bright ditches, spring-fed pools, and twelve playful stations that turn a simple stroll into a low-stress field lesson. The route sits inside the Hoher Fläming Nature Park and was planned with barrier-free access in mind." },

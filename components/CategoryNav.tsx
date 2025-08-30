@@ -1,3 +1,5 @@
+
+
 import React from 'react';
 import CalendarDaysIcon from './icons/CalendarDaysIcon';
 import SearchIcon from './icons/SearchIcon';
@@ -20,7 +22,7 @@ export default function CategoryNav({ categories, activeCategory, onSelectCatego
   const SearchBar = () => (
     <div className="relative w-full max-w-xs sm:max-w-sm">
       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-        <SearchIcon className="h-5 w-5 text-green-200" />
+        <SearchIcon className="h-5 w-5 text-slate-400 dark:text-slate-500" />
       </div>
       <input
         type="search"
@@ -28,7 +30,7 @@ export default function CategoryNav({ categories, activeCategory, onSelectCatego
         id="search"
         value={searchQuery}
         onChange={(e) => onSearchChange(e.target.value)}
-        className="block w-full rounded-full border-0 bg-white/10 py-2.5 pl-11 pr-4 text-white ring-1 ring-inset ring-transparent placeholder:text-green-200 focus:ring-2 focus:ring-inset focus:ring-white sm:text-sm transition-colors"
+        className="block w-full rounded-full border-0 bg-slate-100 dark:bg-slate-800 py-2.5 pl-11 pr-4 text-charcoal dark:text-slate-200 ring-1 ring-inset ring-slate-200 dark:ring-slate-700 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-brand-green sm:text-sm transition-colors"
         placeholder="Search articles..."
         aria-label="Search articles"
       />
@@ -36,7 +38,7 @@ export default function CategoryNav({ categories, activeCategory, onSelectCatego
   );
 
   return (
-    <nav className="bg-brand-green border-t border-white/20">
+    <nav className="bg-off-white/95 dark:bg-slate-900/95 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
         <div className="flex flex-col items-center py-3 gap-3">
           {/* First line: Categories */}
@@ -46,10 +48,10 @@ export default function CategoryNav({ categories, activeCategory, onSelectCatego
                 <li key={category}>
                   <button
                     onClick={() => onSelectCategory(category)}
-                    className={`text-sm sm:text-base font-bold uppercase tracking-wider transition-colors duration-200 pb-1
+                    className={`text-sm sm:text-base font-semibold uppercase tracking-wider transition-colors duration-200 pb-1 border-b-2
                     ${activeCategory === category 
-                        ? 'text-white border-b-2 border-sandstone-ochre' 
-                        : 'text-green-200 hover:text-white border-b-2 border-transparent'
+                        ? 'text-brand-green dark:text-green-300 border-brand-green dark:border-green-300' 
+                        : 'text-slate-600 dark:text-slate-400 hover:text-charcoal dark:hover:text-white border-transparent'
                     }`}
                   >
                     {category}
@@ -60,10 +62,10 @@ export default function CategoryNav({ categories, activeCategory, onSelectCatego
           </div>
           
           {/* Second line: What's On button and Search Bar */}
-          <div className="w-full flex justify-center items-center gap-4 flex-wrap">
+          <div className="w-full flex justify-center items-center gap-2 sm:gap-4 flex-wrap">
             <button
               onClick={onOpenCalendar}
-              className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-white/10 text-white hover:bg-white/20 transition-colors"
+              className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-charcoal dark:text-slate-200 hover:bg-light-grey dark:hover:bg-slate-700 transition-colors"
               aria-label="Open events calendar"
             >
               <CalendarDaysIcon className="w-4 h-4" />
@@ -71,7 +73,7 @@ export default function CategoryNav({ categories, activeCategory, onSelectCatego
             </button>
             <button
               onClick={onOpenCommunity}
-              className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-white/10 text-white hover:bg-white/20 transition-colors"
+              className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-charcoal dark:text-slate-200 hover:bg-light-grey dark:hover:bg-slate-700 transition-colors"
               aria-label="Open community forum"
             >
               <UsersIcon className="w-4 h-4" />
@@ -79,7 +81,7 @@ export default function CategoryNav({ categories, activeCategory, onSelectCatego
             </button>
             <button
               onClick={onOpenDirectory}
-              className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-white/10 text-white hover:bg-white/20 transition-colors"
+              className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-charcoal dark:text-slate-200 hover:bg-light-grey dark:hover:bg-slate-700 transition-colors"
               aria-label="Open local directory"
             >
               <BuildingOfficeIcon className="w-4 h-4" />

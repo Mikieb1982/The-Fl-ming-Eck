@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, Fragment, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Article, ArticleBodyBlock } from '../types';
@@ -13,6 +14,7 @@ import ArticleCard from './ArticleCard';
 import Tag from './Tag';
 import AudioPlayer from './AudioPlayer';
 import VideoEmbed from './VideoEmbed';
+import Poll from './Poll';
 
 interface ArticleViewProps {
   article: Article | undefined;
@@ -162,6 +164,8 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
             return <VideoEmbed key={index} youtubeId={block.youtubeId} caption={block.caption} />;
         case 'audio':
             return <AudioPlayer key={index} src={block.src} caption={block.caption} />;
+        case 'poll':
+            return <Poll key={index} articleId={article.id} question={block.question} initialOptions={block.options} />;
         case 'paragraph':
         default:
             const isFirstParagraph = index === firstParagraphBlockIndex;
@@ -210,9 +214,9 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
             />
           )}
           <div className="relative z-20 flex flex-col justify-end h-full p-6 md:p-8">
-            <p className="font-mono text-sm uppercase tracking-wider font-semibold text-sandstone-ochre">{article.category}</p>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold mt-2 tracking-tight leading-tight">{article.title}</h1>
-            <div className="text-sm mt-4 text-slate-200 flex items-center gap-x-4 gap-y-1 flex-wrap">
+            <p className="font-mono text-sm uppercase tracking-wider font-semibold text-sandstone-ochre drop-shadow-md">{article.category}</p>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold mt-2 tracking-tight leading-tight drop-shadow-lg">{article.title}</h1>
+            <div className="text-sm mt-4 text-slate-200 flex items-center gap-x-4 gap-y-1 flex-wrap drop-shadow-md">
               <span>By {article.author}</span>
               <span className="w-1.5 h-1.5 rounded-full bg-slate-400 hidden sm:block" />
               <span>{fmtDate(article.date)}</span>
@@ -244,9 +248,9 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
              <article className={`prose ${fontSizes[fontSizeIndex]} max-w-prose mx-auto dark:prose-invert prose-headings:text-charcoal dark:prose-headings:text-slate-100 prose-p:text-charcoal dark:prose-p:text-slate-300`}>
               {article.pullQuote && (
                 <div className="not-prose my-6">
-                    <div className="relative p-6 bg-light-grey dark:bg-slate-800/50 rounded-lg">
+                    <div className="relative p-6 bg-brand-green/5 dark:bg-brand-green/10 rounded-lg">
                         <span className="absolute top-0 left-4 h-full w-1 bg-sandstone-ochre"></span>
-                        <blockquote className="pl-4 italic text-charcoal dark:text-slate-300 text-xl md:text-2xl font-serif">“{article.pullQuote}”</blockquote>
+                        <blockquote className="pl-4 italic text-charcoal dark:text-slate-200 text-xl md:text-2xl font-serif">“{article.pullQuote}”</blockquote>
                     </div>
                 </div>
               )}
@@ -266,7 +270,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
             )}
 
              {/* TL;DR Section */}
-            <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700 max-w-prose mx-auto">
+            <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700 max-w-prose mx-auto">
               <div className="flex items-center gap-4">
                   <h3 className="text-lg font-serif font-bold text-charcoal dark:text-slate-200">TL;DR</h3>
                   <button 

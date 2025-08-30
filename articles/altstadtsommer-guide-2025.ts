@@ -1,4 +1,5 @@
 
+
 import { Article } from '../types';
 
 const article: Article = {
@@ -22,6 +23,16 @@ const article: Article = {
     { type: 'paragraph', content: "• Friday, August 29: The festival kicks off in the evening, with a series of local radio DJs setting a relaxed mood that builds into the night. The music on the main stage starts at 7:00 PM with DJ Tug, followed by DJ Taxidriver at 8:00 PM, and DAVE K at 10:00 PM, with Wuffi aka Mindthegap closing out the night until 1:00 AM." },
     { type: 'paragraph', content: "• Saturday, August 30: The mayor officially opens the festival at 2:00 PM on Saturday. The day is a delightful mix of local talent, including the Belzig Pops Orchestra at 2:30 PM and the 'Chaosmäuse' cheerleaders at 3:45 PM. By evening, the atmosphere ramps up with the 'Antenne Party Tour,' leading to the main headliners: the Eurodance legends Fun Factory at 10:00 PM and the energetic duo Anstandslos & Durchgeknallt at 10:45 PM. The night continues until 2:00 AM with the party tour." },
     { type: 'paragraph', content: "• Sunday, August 31: The final day begins with a communal open-air church service on the main stage at 11:00 AM. This is followed by more performances, including the Musikverein Ziesar at 1:00 PM and German artist Sonia Liebing at 5:00 PM. The festival winds down in the evening with a laid-back blues performance by Carlos Groove Kitchen from 7:00 PM to 9:00 PM. There will also be a tombola raffle at 5:50 PM." },
+    {
+      type: 'poll',
+      question: "What are you most excited for at the Altstadtsommer?",
+      options: [
+        { text: "The live music and headliners", votes: 128 },
+        { text: "Discovering the food in the courtyards", votes: 95 },
+        { text: "The community atmosphere and parade", votes: 72 },
+        { text: "Just enjoying a summer festival", votes: 54 },
+      ]
+    },
     { type: 'subheading', content: "The Courtyards: A World of Discovery" },
     { type: 'paragraph', content: "The main stage is just the beginning. Be sure to explore the various courtyards for different experiences." },
     { type: 'paragraph', content: "• Alter Brauhof ('Old Brewery'): This venue is a culinary highlight, serving up grill specialties and baked goods from a traditional 'Gulaschkanone' ('Goulash Cannon'). It also features live music, with blues from Axel Merseburger and Peter Schmidt on Sunday afternoon and rock and pop from the Curtain Call Band on Saturday evening." },

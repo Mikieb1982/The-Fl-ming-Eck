@@ -12,7 +12,8 @@ export type ArticleBodyBlock =
   | { type: 'paragraph'; content: string }
   | { type: 'subheading'; content: string }
   | { type: 'audio'; src: string; caption?: string }
-  | { type: 'video'; youtubeId: string; caption?: string };
+  | { type: 'video'; youtubeId: string; caption?: string }
+  | { type: 'poll'; question: string; options: { text: string; votes: number }[] };
 
 export interface Article {
   id: string;
