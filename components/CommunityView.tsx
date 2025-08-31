@@ -4,12 +4,13 @@
 
 
 
+
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Article, Post, Reply } from '../types';
 import PostForm from './PostForm';
 import { moderateContent, generateTopicSuggestion } from '../services/apiService';
-import { fuzzySearch } from '../utils/helpers';
+import { fuzzySearch, timeAgo } from '../utils/helpers';
 import SparklesIcon from './icons/SparklesIcon';
 import PinIcon from './icons/PinIcon';
 // FIX: Removed import for SearchIcon as the file was deleted.
@@ -71,17 +72,6 @@ interface CommunityViewProps {
   onClearTag: () => void;
   onClose: () => void;
 }
-
-const timeAgo = (date: string) => {
-    const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
-    if (seconds < 60) return `just now`;
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    const days = Math.floor(hours / 24);
-    return `${days}d ago`;
-};
 
 const categoryColorMap: { [key: string]: string } = {
   'Announcements': 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300',

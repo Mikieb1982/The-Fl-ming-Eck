@@ -1,8 +1,4 @@
 
-
-
-
-
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -24,6 +20,8 @@ import DirectoryView from "./components/DirectoryView";
 import HomePage from "./components/HomePage";
 import Header from "./components/Header";
 import BookmarksView from "./components/BookmarksView";
+import WeatherWidget from "./components/WeatherWidget";
+import ProfileView from "./components/ProfileView";
 
 const USER_INTERESTS_KEY = 'flaming-eck-user-interests';
 
@@ -37,6 +35,7 @@ export default function App() {
   const [isCommunityOpen, setIsCommunityOpen] = useState(false);
   const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
   const [isBookmarksOpen, setIsBookmarksOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState('All');
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [legalPage, setLegalPage] = useState<"impressum" | "privacy" | null>(null);
@@ -61,6 +60,7 @@ export default function App() {
     setIsCommunityOpen(false);
     setIsDirectoryOpen(false);
     setIsBookmarksOpen(false);
+    setIsProfileOpen(false);
     setActiveTag(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
@@ -76,6 +76,7 @@ export default function App() {
     setActiveIndex(null);
     setIsDirectoryOpen(false);
     setIsBookmarksOpen(false);
+    setIsProfileOpen(false);
     // Don't close community view, let it filter internally
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
@@ -85,6 +86,7 @@ export default function App() {
     setIsCommunityOpen(false);
     setIsDirectoryOpen(false);
     setIsBookmarksOpen(false);
+    setIsProfileOpen(false);
     setActiveTag(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
@@ -189,6 +191,8 @@ export default function App() {
       if (e.key === "Escape") {
         if(legalPage) {
           setLegalPage(null);
+        } else if (isProfileOpen) {
+          setIsProfileOpen(false);
         } else if (isBookmarksOpen) {
           setIsBookmarksOpen(false);
         } else if (isDirectoryOpen) {
@@ -206,7 +210,7 @@ export default function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [nextArticle, prevArticle, handleCloseArticle, activeIndex, legalPage, isCommunityOpen, isDirectoryOpen, isBookmarksOpen]);
+  }, [nextArticle, prevArticle, handleCloseArticle, activeIndex, legalPage, isCommunityOpen, isDirectoryOpen, isBookmarksOpen, isProfileOpen]);
   
   useEffect(() => {
     const toggleVisibility = () => {
@@ -257,7 +261,7 @@ export default function App() {
     }
   }, [currentArticle]);
 
-  const isHomePage = !searchQuery.trim() && activeCategory === 'All' && !activeTag && !currentArticle && !isCommunityOpen && !isDirectoryOpen && !isBookmarksOpen;
+  const isHomePage = !searchQuery.trim() && activeCategory === 'All' && !activeTag && !currentArticle && !isCommunityOpen && !isDirectoryOpen && !isBookmarksOpen && !isProfileOpen;
 
   const openCommunity = () => {
     setIsCommunityOpen(true);
@@ -265,6 +269,7 @@ export default function App() {
     setSearchQuery('');
     setIsDirectoryOpen(false);
     setIsBookmarksOpen(false);
+    setIsProfileOpen(false);
     setActiveTag(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -275,6 +280,7 @@ export default function App() {
       setSearchQuery('');
       setIsCommunityOpen(false);
       setIsBookmarksOpen(false);
+      setIsProfileOpen(false);
       setActiveTag(null);
       window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -285,6 +291,18 @@ export default function App() {
       setSearchQuery('');
       setIsCommunityOpen(false);
       setIsDirectoryOpen(false);
+      setIsProfileOpen(false);
+      setActiveTag(null);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
+  const openProfile = () => {
+      setIsProfileOpen(true);
+      setActiveIndex(null);
+      setSearchQuery('');
+      setIsCommunityOpen(false);
+      setIsDirectoryOpen(false);
+      setIsBookmarksOpen(false);
       setActiveTag(null);
       window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -295,6 +313,7 @@ export default function App() {
       setIsCommunityOpen(false);
       setIsDirectoryOpen(false);
       setIsBookmarksOpen(false);
+      setIsProfileOpen(false);
       setActiveIndex(null);
       setActiveTag(null);
     }
@@ -308,6 +327,7 @@ export default function App() {
         onToggleCommunity={openCommunity}
         onToggleDirectory={openDirectory}
         onToggleBookmarks={openBookmarks}
+        onToggleProfile={openProfile}
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
       />
@@ -318,6 +338,12 @@ export default function App() {
           onSelectArticle={handleSelectArticleFromEvent}
         />
         
+        {isHomePage && (
+          <div className="mb-6">
+            <WeatherWidget />
+          </div>
+        )}
+
         <main>
             {isLoading ? (
               <div className="flex justify-center items-center py-20">
@@ -369,6 +395,15 @@ export default function App() {
                             onSelectArticle={handleSelectArticleById}
                             onClose={() => setIsBookmarksOpen(false)}
                         />
+                    </motion.div>
+                  ) : isProfileOpen ? (
+                    <motion.div key="profileView">
+                      <ProfileView 
+                        posts={posts}
+                        articles={sortedArticles}
+                        onSelectArticle={handleSelectArticleById}
+                        onClose={() => setIsProfileOpen(false)}
+                      />
                     </motion.div>
                   ) : isHomePage ? (
                      <motion.div key="homePage">

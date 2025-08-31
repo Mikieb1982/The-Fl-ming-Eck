@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-export default function CloudIcon({ className }: { className?: string }) {
+export default function UserIcon({ className }: { className?: string }) {
   return (
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
@@ -15,7 +15,8 @@ export default function CloudIcon({ className }: { className?: string }) {
       strokeLinejoin="round" 
       className={className}
     >
-      <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
     </svg>
   );
 }

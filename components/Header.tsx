@@ -11,6 +11,7 @@ import CloseIcon from './icons/CloseIcon';
 import Logo from './icons/Logo';
 import SearchIcon from './icons/SearchIcon';
 import BookmarkIcon from './icons/BookmarkIcon';
+import UserIcon from './icons/UserIcon';
 
 interface HeaderProps {
     onGoHome: () => void;
@@ -18,20 +19,34 @@ interface HeaderProps {
     onToggleCommunity: () => void;
     onToggleDirectory: () => void;
     onToggleBookmarks: () => void;
+    onToggleProfile: () => void;
     searchQuery: string;
     onSearchChange: (query: string) => void;
 }
 
-export default function Header({ onGoHome, onToggleCalendar, onToggleCommunity, onToggleDirectory, onToggleBookmarks, searchQuery, onSearchChange }: HeaderProps) {
+export default function Header({ onGoHome, onToggleCalendar, onToggleCommunity, onToggleDirectory, onToggleBookmarks, onToggleProfile, searchQuery, onSearchChange }: HeaderProps) {
     const { user, signOut, isLoading } = useUser();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const searchInputRef = useRef<HTMLInputElement>(null);
+    const userMenuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (isSearchOpen && searchInputRef.current) {
             searchInputRef.current.focus();
         }
     }, [isSearchOpen]);
+    
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+                setIsUserMenuOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [userMenuRef]);
+
 
     const navItems = [
         { label: 'What\'s On', icon: <CalendarDaysIcon className="w-6 h-6" />, action: onToggleCalendar },
@@ -100,14 +115,42 @@ export default function Header({ onGoHome, onToggleCalendar, onToggleCommunity, 
                             
                             <ThemeToggle />
 
-                            <div className="relative">
+                            <div className="relative" ref={userMenuRef}>
                                 {user ? (
-                                    <div className="flex items-center gap-2">
-                                        <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full" />
-                                        <button onClick={signOut} className={navButtonClasses} title="Sign Out">
-                                            <LogoutIcon className="w-5 h-5" />
+                                    <>
+                                        <button onClick={() => setIsUserMenuOpen(prev => !prev)} className="rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sandstone-ochre">
+                                            <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full" />
                                         </button>
-                                    </div>
+                                        
+                                        <AnimatePresence>
+                                            {isUserMenuOpen && (
+                                                <motion.div 
+                                                    className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-zinc-900 ring-1 ring-black dark:ring-slate-700 ring-opacity-5 focus:outline-none z-10 top-full"
+                                                    initial={{ opacity: 0, scale: 0.95 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 0.95 }}
+                                                    transition={{ duration: 0.1 }}
+                                                >
+                                                    <div className="py-1">
+                                                        <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                                                            <p className="text-sm font-semibold text-charcoal dark:text-slate-200 truncate">{user.name}</p>
+                                                            <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
+                                                        </div>
+                                                        <div className="p-1">
+                                                            <button onClick={() => { onToggleProfile(); setIsUserMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+                                                                <UserIcon className="w-5 h-5" />
+                                                                <span>My Profile</span>
+                                                            </button>
+                                                            <button onClick={signOut} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+                                                                <LogoutIcon className="w-5 h-5" />
+                                                                <span>Sign Out</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </>
                                 ) : (
                                     !isLoading && (
                                         <div id="g_id_signin" 
