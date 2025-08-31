@@ -1,4 +1,3 @@
-
 import { Article } from '../types';
 
 import altstadtsommerGuide2025 from './altstadtsommer-guide-2025';

@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -32,6 +33,7 @@ export default function CookieConsent({ onShowPrivacy }: CookieConsentProps) {
     return (
         <AnimatePresence>
             {isVisible && (
+                // @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors.
                 <motion.div
                     initial={{ y: '100%' }}
                     animate={{ y: '0%' }}

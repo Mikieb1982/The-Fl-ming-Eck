@@ -1,4 +1,5 @@
 
+
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -6,12 +7,9 @@ import { Article, Post, Reply } from "./types";
 import { sortByDateDesc, fuzzySearch, extractTextFromArticleBody } from "./utils/helpers";
 import * as api from './services/apiService';
 import { BRAND } from './constants';
-import Masthead from "./components/Masthead";
 import ArticleView from "./components/ArticleView";
 import Navigation from "./components/Navigation";
-import ArticleGrid from "./components/ArticleGrid";
 import EventsCalendar from "./components/EventsCalendar";
-import CategoryNav from "./components/CategoryNav";
 import SearchResults from "./components/SearchResults";
 import CookieConsent from "./components/CookieConsent";
 import LegalView from "./components/LegalView";
@@ -20,7 +18,8 @@ import PrivacyPolicy from "./components/PrivacyPolicy";
 import CommunityView from "./components/CommunityView";
 import BackToTopButton from "./components/BackToTopButton";
 import DirectoryView from "./components/DirectoryView";
-import PersonalizeView from "./components/PersonalizeView";
+import HomePage from "./components/HomePage";
+import Header from "./components/Header";
 
 const USER_INTERESTS_KEY = 'flaming-eck-user-interests';
 
@@ -33,50 +32,21 @@ export default function App() {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isCommunityOpen, setIsCommunityOpen] = useState(false);
   const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
-  const [isPersonalizeOpen, setIsPersonalizeOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState('All');
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [legalPage, setLegalPage] = useState<"impressum" | "privacy" | null>(null);
   const [isBackToTopVisible, setIsBackToTopVisible] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [userInterests, setUserInterests] = useState<string[]>([]);
 
   useEffect(() => {
     setArticles(api.getArticles());
     setPosts(api.getPosts());
-    try {
-        const storedInterests = localStorage.getItem(USER_INTERESTS_KEY);
-        if (storedInterests) {
-            setUserInterests(JSON.parse(storedInterests));
-        }
-    } catch (error) {
-        console.error("Failed to load user interests:", error);
-    }
     setIsLoading(false);
   }, []);
-  
-  const handleSaveInterests = (interests: string[]) => {
-      setUserInterests(interests);
-      try {
-          localStorage.setItem(USER_INTERESTS_KEY, JSON.stringify(interests));
-      } catch (error) {
-          console.error("Failed to save user interests:", error);
-      }
-  };
 
   const sortedArticles = useMemo(() => sortByDateDesc(articles), [articles]);
-  
-  const uniqueCategories = useMemo(() => {
-    return ['All', ...Array.from(new Set(articles.map(a => a.category)))];
-  }, [articles]);
 
   const handleClearTag = useCallback(() => {
     setActiveTag(null);
-  }, []);
-  
-  const handleSelectCategory = useCallback((category: string) => {
-    setActiveCategory(category);
-    setActiveTag(null); // Clear tag when category changes
   }, []);
 
   const handleGoHome = useCallback(() => {
@@ -86,6 +56,7 @@ export default function App() {
     setIsCommunityOpen(false);
     setIsDirectoryOpen(false);
     setActiveTag(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   const handleCloseArticle = useCallback(() => {
@@ -124,24 +95,6 @@ export default function App() {
         handleSelectArticleById(id);
     }, 300);
   }, [handleSelectArticleById]);
-
-  const handleOpenCommunity = () => {
-    setActiveIndex(null);
-    setSearchQuery('');
-    setActiveTag(null);
-    setIsCommunityOpen(true);
-    setIsDirectoryOpen(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleOpenDirectory = () => {
-    setActiveIndex(null);
-    setSearchQuery('');
-    setActiveTag(null);
-    setIsCommunityOpen(false);
-    setIsDirectoryOpen(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   const handleAddPost = (post: Omit<Post, 'id' | 'timestamp' | 'replies'>) => {
     const newPost: Post = {
@@ -182,17 +135,6 @@ export default function App() {
       handleSelectArticleById(articleId);
     }
   }, [handleSelectArticleById, articles]);
-
-  const handleSearchChange = useCallback((query: string) => {
-    setSearchQuery(query);
-    setActiveCategory('All'); // Reset category when searching
-    setActiveTag(null); // Reset tag when searching
-    setIsCommunityOpen(false); // Close community when searching
-    setIsDirectoryOpen(false);
-    if (activeIndex !== null) {
-        handleCloseArticle();
-    }
-  }, [activeIndex, handleCloseArticle]);
 
   const displayedArticles = useMemo(() => {
     const query = searchQuery.trim();
@@ -237,9 +179,7 @@ export default function App() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        if (isPersonalizeOpen) {
-            setIsPersonalizeOpen(false);
-        } else if(legalPage) {
+        if(legalPage) {
           setLegalPage(null);
         } else if (isDirectoryOpen) {
           setIsDirectoryOpen(false);
@@ -256,12 +196,11 @@ export default function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [nextArticle, prevArticle, handleCloseArticle, activeIndex, legalPage, isCommunityOpen, isDirectoryOpen, isPersonalizeOpen]);
+  }, [nextArticle, prevArticle, handleCloseArticle, activeIndex, legalPage, isCommunityOpen, isDirectoryOpen]);
   
   useEffect(() => {
     const toggleVisibility = () => {
       setIsBackToTopVisible(window.scrollY > 500);
-      setIsScrolled(window.scrollY > 50);
     };
 
     window.addEventListener('scroll', toggleVisibility);
@@ -308,53 +247,57 @@ export default function App() {
     }
   }, [currentArticle]);
 
-  const trimmedQuery = searchQuery.trim();
+  const isHomePage = !searchQuery.trim() && activeCategory === 'All' && !activeTag && !currentArticle && !isCommunityOpen && !isDirectoryOpen;
+
+  const openCommunity = () => {
+    setIsCommunityOpen(true);
+    setActiveIndex(null);
+    setSearchQuery('');
+    setIsDirectoryOpen(false);
+    setActiveTag(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const openDirectory = () => {
+      setIsDirectoryOpen(true);
+      setActiveIndex(null);
+      setSearchQuery('');
+      setIsCommunityOpen(false);
+      setActiveTag(null);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
+  const handleSearchChange = useCallback((query: string) => {
+    setSearchQuery(query);
+    if (query.trim()) {
+      setIsCommunityOpen(false);
+      setIsDirectoryOpen(false);
+      setActiveIndex(null);
+      setActiveTag(null);
+    }
+  }, []);
 
   return (
-    <div className="bg-off-white dark:bg-slate-900 font-sans text-charcoal dark:text-slate-300">
-      {/* Sticky Header Wrapper */}
-      <div className="sticky top-0 z-30 w-full bg-off-white/95 dark:bg-slate-900/95 backdrop-blur-sm transition-colors duration-300 border-b border-slate-200 dark:border-slate-700">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8">
-          <Masthead 
-            onGoHome={handleGoHome}
-            onOpenPersonalize={() => setIsPersonalizeOpen(true)}
-            isScrolled={isScrolled}
-          />
-        </div>
-        {!currentArticle && !isCommunityOpen && !isDirectoryOpen && (
-            <CategoryNav 
-                categories={uniqueCategories}
-                activeCategory={activeCategory}
-                onSelectCategory={handleSelectCategory}
-                onOpenCalendar={() => setIsCalendarOpen(true)}
-                onOpenCommunity={handleOpenCommunity}
-                onOpenDirectory={handleOpenDirectory}
-                searchQuery={searchQuery}
-                onSearchChange={handleSearchChange}
-            />
-        )}
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 lg:px-8">
+    <div>
+      <Header 
+        onGoHome={handleGoHome}
+        onToggleCalendar={() => setIsCalendarOpen(prev => !prev)}
+        onToggleCommunity={openCommunity}
+        onToggleDirectory={openDirectory}
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+      />
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 pb-4 pt-4 md:pt-8">
         <EventsCalendar 
           isOpen={isCalendarOpen} 
           onClose={() => setIsCalendarOpen(false)} 
           onSelectArticle={handleSelectArticleFromEvent}
         />
         
-        <PersonalizeView 
-            isOpen={isPersonalizeOpen}
-            onClose={() => setIsPersonalizeOpen(false)}
-            onSave={handleSaveInterests}
-            allCategories={uniqueCategories}
-            currentInterests={userInterests}
-        />
-        
-        <div className="mt-6">
-          <main>
+        <main>
             {isLoading ? (
               <div className="flex justify-center items-center py-20">
-                <p className="text-slate-500 dark:text-slate-400">Loading The Fläming Eck...</p>
+                <p className="text-slate-400">Loading The Fläming Eck...</p>
               </div>
             ) : (
               <div className="relative">
@@ -395,34 +338,25 @@ export default function App() {
                         onClose={() => setIsDirectoryOpen(false)}
                       />
                     </motion.div>
+                  ) : isHomePage ? (
+                     <motion.div key="homePage">
+                        <HomePage
+                            articles={sortedArticles}
+                            onSelectArticle={handleSelectArticleById}
+                        />
+                     </motion.div>
                   ) : (
-                    <motion.div key="articleGrid">
-                      {trimmedQuery && (
-                        <h2 className="text-2xl font-serif font-bold text-charcoal dark:text-slate-200 mb-6">
-                          Search Results for "{trimmedQuery}"
+                    <motion.div key="filteredView">
+                       <h2 className="text-2xl font-serif font-bold text-slate-800 dark:text-slate-200 mb-6">
+                          Results for "{searchQuery}"
                         </h2>
-                      )}
-
                       {displayedArticles.length > 0 ? (
-                          trimmedQuery ? (
-                              <SearchResults
-                                  articles={displayedArticles}
-                                  onSelectArticle={handleSelectArticleById}
-                              />
-                          ) : (
-                              <ArticleGrid
-                                  articles={displayedArticles}
-                                  onSelectArticle={handleSelectArticleById}
-                                  activeCategory={activeCategory}
-                                  onSelectCategory={handleSelectCategory}
-                                  activeTag={activeTag}
-                                  onClearTag={handleClearTag}
-                                  onSelectTag={handleSelectTag}
-                                  userInterests={userInterests}
-                              />
-                          )
+                        <SearchResults
+                            articles={displayedArticles}
+                            onSelectArticle={handleSelectArticleById}
+                        />
                       ) : (
-                        <p className="text-slate-600 dark:text-slate-400">
+                        <p className="text-slate-500 dark:text-slate-400">
                           No articles found matching your criteria.
                         </p>
                       )}
@@ -432,12 +366,11 @@ export default function App() {
               </div>
             )}
           </main>
-        </div>
-
-        <footer className="text-center text-slate-500 dark:text-slate-400 text-sm py-8 mt-12 border-t border-slate-200 dark:border-slate-700">
+        {/* FIX: Removed a misplaced closing </div> tag that broke the JSX structure and caused multiple root elements. */}
+        <footer className="text-center text-slate-500 dark:text-slate-400 text-sm py-8 mt-12 border-t border-slate-200 dark:border-slate-700 max-w-7xl mx-auto px-4 lg:px-8">
           <div className="flex justify-center gap-x-6 gap-y-2 flex-wrap mb-4">
-            <button onClick={() => setLegalPage('impressum')} className="hover:text-sandstone-ochre dark:hover:text-sandstone-ochre transition-colors">Impressum / Legal Notice</button>
-            <button onClick={() => setLegalPage('privacy')} className="hover:text-sandstone-ochre dark:hover:text-sandstone-ochre transition-colors">Datenschutzerklärung / Privacy Policy</button>
+            <button onClick={() => setLegalPage('impressum')} className="hover:text-sandstone-ochre transition-colors">Impressum / Legal Notice</button>
+            <button onClick={() => setLegalPage('privacy')} className="hover:text-sandstone-ochre transition-colors">Datenschutzerklärung / Privacy Policy</button>
           </div>
           © 2025 The Fläming Eck. Edited in English. Facts reviewed prior to publication.
         </footer>

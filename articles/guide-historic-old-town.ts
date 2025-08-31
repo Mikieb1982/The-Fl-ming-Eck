@@ -8,7 +8,7 @@ const article: Article = {
   date: "2025-08-27",
   category: "City Guide",
   excerpt: "Timber-framed lanes, a market square, and landmarks around Burg Eisenhardt.",
-  hero: ["https://images.unsplash.com/photo-1541635532818-644d93f7da83?q=80&w=2070"],
+  hero: ["https://i.imgur.com/KOJXQvl.jpeg"],
   pullQuote: "An old town shaped by trade routes, brickwork, and careful restoration.",
   body: [
     { type: 'paragraph', content: "Bad Belzig’s historic core formed as a market settlement north of Burg Eisenhardt in the early 13th century and gained town rights in the 14th century. Today the compact center shows irregular medieval street lines that frame the market square." },

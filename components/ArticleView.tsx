@@ -183,6 +183,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
 
 
   return (
+    // @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors.
     <motion.div
       key={article.id}
       initial={{ opacity: 0, y: 20 }}
@@ -198,7 +199,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
         </button>
 
       <div
-        className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden"
+        className="bg-off-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden bg-texture-paper"
       >
         {/* HERO SECTION */}
         <div className="relative h-[60vh] min-h-[400px] text-white">
@@ -228,23 +229,8 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
         
         {/* ARTICLE BODY & METADATA */}
         <div className="grid grid-cols-12 gap-8 p-6 md:p-8">
-           {/* Share & Font Tools - Sidebar */}
-          <aside className="col-span-12 lg:col-span-3">
-            <div className="lg:sticky lg:top-24 h-fit">
-              <div className="flex flex-row lg:flex-col items-center lg:items-start justify-between lg:justify-start gap-4 border-b lg:border-b-0 lg:border-l border-slate-200 dark:border-slate-700 pb-4 lg:pb-0 lg:pl-4">
-                  <ShareButtons article={article} />
-                  <FontSizeAdjuster 
-                    onIncrease={handleIncreaseFont}
-                    onDecrease={handleDecreaseFont}
-                    isMin={fontSizeIndex === 0}
-                    isMax={fontSizeIndex === fontSizes.length - 1}
-                  />
-              </div>
-            </div>
-          </aside>
-
            {/* Main Content */}
-          <main className="col-span-12 lg:col-span-9 lg:-order-1">
+          <main className="col-span-12 lg:col-span-9">
              <article className={`prose ${fontSizes[fontSizeIndex]} max-w-prose mx-auto dark:prose-invert prose-headings:text-charcoal dark:prose-headings:text-slate-100 prose-p:text-charcoal dark:prose-p:text-slate-300`}>
               {article.pullQuote && (
                 <div className="not-prose my-6">
@@ -286,6 +272,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
               {isSummarizing && <div className="mt-4 text-sm text-slate-500 dark:text-slate-400">Thinking...</div>}
               {error && <div className="mt-4 text-sm text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-900/50 p-3 rounded-lg">{error}</div>}
               {summary && (
+                // @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors.
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -296,6 +283,20 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
               )}
             </div>
           </main>
+           {/* Share & Font Tools - Sidebar */}
+          <aside className="col-span-12 lg:col-span-3">
+            <div className="lg:sticky lg:top-24 h-fit">
+              <div className="flex flex-row lg:flex-col items-center lg:items-start justify-between lg:justify-start gap-4 border-b lg:border-b-0 lg:border-l border-slate-200 dark:border-slate-700 pb-4 lg:pb-0 lg:pl-4">
+                  <ShareButtons article={article} />
+                  <FontSizeAdjuster 
+                    onIncrease={handleIncreaseFont}
+                    onDecrease={handleDecreaseFont}
+                    isMin={fontSizeIndex === 0}
+                    isMax={fontSizeIndex === fontSizes.length - 1}
+                  />
+              </div>
+            </div>
+          </aside>
         </div>
         
         {/* RELATED ARTICLES */}

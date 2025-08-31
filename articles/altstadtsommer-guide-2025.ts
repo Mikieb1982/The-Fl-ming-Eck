@@ -10,10 +10,7 @@ const article: Article = {
   category: "City Guide",
   excerpt: "So what exactly is an 'Altstadtsommer'? A quick lesson in German: Altstadt means 'Old Town,' and Sommer is, of course, 'Summer.' A multi-day event that transforms Bad Belzig's historic heart into a lively, musical, and delicious celebration.",
   hero: [
-    "https://images.unsplash.com/photo-1561494225-5a3a2a690135?q=80&w=1974",
-    "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=2069",
-    "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=2070",
-    "https://images.unsplash.com/photo-1613325492150-a1a739534923?q=80&w=1974"
+    "https://i.imgur.com/wlEnc4L.jpeg"
   ],
   pullQuote: "The real magic is discovering the different 'Höfe' (courtyards) throughout the Altstadt. Each courtyard offers its own unique vibe.",
   body: [

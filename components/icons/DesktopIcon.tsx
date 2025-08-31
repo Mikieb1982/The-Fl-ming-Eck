@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function SearchIcon({ className }: { className?: string }) {
+export default function DesktopIcon({ className }: { className?: string }) {
   return (
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
@@ -14,8 +14,9 @@ export default function SearchIcon({ className }: { className?: string }) {
       strokeLinejoin="round" 
       className={className}
     >
-      <circle cx="11" cy="11" r="8"></circle>
-      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        <rect width="20" height="14" x="2" y="3" rx="2" />
+        <line x1="8" x2="16" y1="21" y2="21" />
+        <line x1="12" x2="12" y1="17" y2="21" />
     </svg>
   );
 }

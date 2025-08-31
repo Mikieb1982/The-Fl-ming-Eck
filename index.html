@@ -10,7 +10,19 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700&family=Playfair+Display:wght@700;800;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+      .bg-texture-paper {
+        background-image: url('https://www.transparenttextures.com/patterns/light-paper-fibers.png');
+      }
+      .bg-texture-fieldstone {
+        background-image: url('https://www.transparenttextures.com/patterns/rocky-wall.png');
+      }
+      .bg-texture-wood {
+        background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+      }
+    </style>
     <script>
       tailwind.config = {
         darkMode: 'class',
@@ -30,6 +42,7 @@
               sans: ['Inter', 'sans-serif'],
               serif: ['Playfair Display', 'serif'],
               mono: ['Roboto Mono', 'monospace'],
+              montserrat: ['Montserrat', 'sans-serif'],
             },
             typography: ({ theme }) => ({
               DEFAULT: {
@@ -62,7 +75,7 @@
 }
 </script>
 </head>
-  <body class="bg-off-white dark:bg-slate-900 transition-colors duration-300">
+  <body class="bg-off-white text-charcoal dark:bg-charcoal dark:text-slate-300 font-sans">
     <div id="root"></div>
     <script type="text/babel" data-type="module" src="/index.tsx"></script>
   </body>

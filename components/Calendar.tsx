@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import ChevronLeftIcon from './icons/ChevronLeftIcon';
 import ChevronRightIcon from './icons/ChevronRightIcon';
 
@@ -7,13 +7,14 @@ interface CalendarProps {
   selectedDate: Date | null;
   onDateSelect: (date: Date | null) => void;
   eventDates: Date[];
+  currentMonth: Date;
+  onMonthChange: (date: Date) => void;
+  todayDate: Date;
 }
 
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function Calendar({ selectedDate, onDateSelect, eventDates }: CalendarProps) {
-  const [currentMonth, setCurrentMonth] = useState(new Date('2025-08-01'));
-
+export default function Calendar({ selectedDate, onDateSelect, eventDates, currentMonth, onMonthChange, todayDate }: CalendarProps) {
   const eventTimestamps = new Set(eventDates.map(d => d.getTime()));
 
   const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
@@ -35,7 +36,7 @@ export default function Calendar({ selectedDate, onDateSelect, eventDates }: Cal
   };
 
   const changeMonth = (offset: number) => {
-    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + offset, 1));
+    onMonthChange(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + offset, 1));
   };
   
   return (
@@ -64,15 +65,23 @@ export default function Calendar({ selectedDate, onDateSelect, eventDates }: Cal
           date.setHours(0, 0, 0, 0);
           const isSelected = selectedDate?.getTime() === date.getTime();
           const hasEvent = eventTimestamps.has(date.getTime());
+          const isToday = todayDate?.getTime() === date.getTime();
 
           return (
             <div key={day} className="flex justify-center items-center">
               <button
                 onClick={() => handleDateClick(day)}
                 className={`relative w-8 h-8 rounded-full text-sm flex items-center justify-center transition-colors
-                  ${isSelected ? 'bg-brand-green text-white font-bold' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}
-                  ${!isSelected && hasEvent ? 'text-brand-green dark:text-green-400 font-semibold' : ''}
-                  ${!isSelected ? 'text-slate-800 dark:text-slate-200' : ''}
+                  ${isSelected
+                    ? 'bg-brand-green text-white font-bold'
+                    : `hover:bg-slate-100 dark:hover:bg-slate-800 ${
+                        isToday
+                            ? 'ring-2 ring-sandstone-ochre text-sandstone-ochre dark:text-yellow-500 font-bold'
+                            : hasEvent
+                            ? 'text-brand-green dark:text-green-400 font-semibold'
+                            : 'text-slate-800 dark:text-slate-200'
+                      }`
+                  }
                 `}
               >
                 {day}

@@ -8,7 +8,7 @@ const article: Article = {
   date: "2025-08-26",
   category: "Guides",
   excerpt: "Unwind and recharge at Bad Belzig's famous SteinTherme, a modern spa that combines the healing power of thermal saltwater with a world-class sauna experience.",
-  hero: ["https://images.unsplash.com/photo-1610484831362-c07a3ad7c489?q=80&w=2070"],
+  hero: ["https://i.imgur.com/NbOUbrr.jpeg"],
   pullQuote: "The feeling of floating in the warm, buoyant saltwater under the open sky is pure bliss.",
   body: [
     { type: 'paragraph', content: "For those seeking relaxation and rejuvenation, the SteinTherme in Bad Belzig is a must-visit destination. This modern thermal spa is renowned for its unique 'BadeWelt' (Bathing World) and 'SaunaWelt' (Sauna World), offering a comprehensive wellness experience that draws visitors from across the region." },

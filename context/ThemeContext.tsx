@@ -1,41 +1,75 @@
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 
 type Theme = 'light' | 'dark';
+type ThemeSetting = Theme | 'system';
 
 interface ThemeContextType {
-  theme: Theme;
-  toggleTheme: () => void;
+  theme: Theme; // Effective theme
+  themeSetting: ThemeSetting;
+  setThemeSetting: (setting: ThemeSetting) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+const THEME_SETTING_KEY = 'flaming-eck-theme-setting';
+
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>(() => {
+  const [themeSetting, setThemeSettingState] = useState<ThemeSetting>(() => {
     if (typeof window !== 'undefined') {
-      const storedTheme = localStorage.getItem('theme');
-      if (storedTheme === 'light' || storedTheme === 'dark') {
-        return storedTheme;
+      const storedSetting = localStorage.getItem(THEME_SETTING_KEY);
+      if (storedSetting === 'light' || storedSetting === 'dark' || storedSetting === 'system') {
+        return storedSetting as ThemeSetting;
       }
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
-    return 'light';
+    return 'system'; // Default to system preference
   });
 
+  // This state holds the resolved theme ('light' or 'dark')
+  const [theme, setTheme] = useState<Theme>('light'); 
+
+  // Effect to determine the effective theme from the setting
   useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+      if (themeSetting === 'system') {
+        setTheme(e.matches ? 'dark' : 'light');
+      }
+    };
+
+    if (themeSetting === 'system') {
+      setTheme(mediaQuery.matches ? 'dark' : 'light');
+      mediaQuery.addEventListener('change', handleSystemThemeChange);
     } else {
-      document.documentElement.classList.remove('dark');
+      setTheme(themeSetting);
     }
-    localStorage.setItem('theme', theme);
+    
+    return () => {
+      mediaQuery.removeEventListener('change', handleSystemThemeChange);
+    };
+  }, [themeSetting]);
+
+  // Effect to apply the theme to the document
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
   }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
+  const setThemeSetting = (setting: ThemeSetting) => {
+    try {
+      localStorage.setItem(THEME_SETTING_KEY, setting);
+    } catch (error) {
+      console.error("Could not save theme setting to localStorage:", error);
+    }
+    setThemeSettingState(setting);
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, themeSetting, setThemeSetting }}>
       {children}
     </ThemeContext.Provider>
   );

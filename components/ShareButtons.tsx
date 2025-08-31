@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Article } from '../types';
@@ -63,35 +62,34 @@ export default function ShareButtons({ article }: ShareButtonsProps) {
             href={platform.url}
             target="_blank"
             rel="noopener noreferrer"
+            className={`p-2 rounded-full text-slate-600 dark:text-slate-300 ${platform.color} transition-colors`}
             aria-label={`Share on ${platform.name}`}
-            className={`p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors ${platform.color}`}
           >
             {platform.icon}
           </a>
         ))}
-        <div className="w-px h-5 bg-slate-200 dark:bg-slate-700 mx-1"></div>
-        <div className="relative">
-            <button
-              onClick={handleCopy}
-              aria-label="Copy link to clipboard"
-              className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+        <button
+          onClick={handleCopy}
+          className="p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+          aria-label="Copy link"
+        >
+          <AnimatePresence mode="wait">
+            {/* @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors. */}
+            <motion.div
+              key={isCopied ? 'check' : 'copy'}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.15 }}
             >
-              {isCopied ? <CheckIcon className="w-5 h-5 text-green-500" /> : <CopyIcon className="w-5 h-5" />}
-            </button>
-            <AnimatePresence>
-            {isCopied && (
-                <motion.div
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 5 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute -top-10 left-1/2 -translate-x-1/2 text-xs bg-slate-800 text-white px-2 py-1 rounded-md shadow-lg pointer-events-none"
-                >
-                    Copied!
-                </motion.div>
-            )}
-            </AnimatePresence>
-        </div>
+              {isCopied ? (
+                <CheckIcon className="w-5 h-5 text-green-500" />
+              ) : (
+                <CopyIcon className="w-5 h-5" />
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </button>
       </div>
     </div>
   );
