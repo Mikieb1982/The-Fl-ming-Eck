@@ -12,6 +12,7 @@ interface EventsCalendarProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectArticle: (id: string) => void;
+  isPage?: boolean;
 }
 
 // Helper component for filter buttons
@@ -20,8 +21,8 @@ const FilterButton = ({ label, isActive, onClick }: { label: string; isActive: b
     onClick={onClick}
     className={`px-3 py-1.5 text-sm font-semibold rounded-full transition-colors duration-200 ${
       isActive
-        ? 'bg-brand-green text-white shadow'
-        : 'bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+        ? 'bg-brand-blue text-white shadow'
+        : 'bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-zinc-700'
     }`}
   >
     {label}
@@ -62,7 +63,7 @@ const doesRecurringEventMatchDate = (eventString: string, date: Date): boolean =
 };
 
 
-export default function EventsCalendar({ isOpen, onClose, onSelectArticle }: EventsCalendarProps) {
+export default function EventsCalendar({ isOpen, onClose, onSelectArticle, isPage = false }: EventsCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [dayFilter, setDayFilter] = useState('All'); // 'All', 'Weekdays', 'Weekend'
   const [categoryFilter, setCategoryFilter] = useState('All'); // 'All', 'Music', etc.
@@ -81,6 +82,11 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle }: Eve
       setSelectedDate(null);
     }
   }, [isOpen, appToday]);
+  
+  // For page view, always show filters on mount
+  useEffect(() => {
+      if(isPage) setIsFilterVisible(true);
+  }, [isPage]);
 
   const { body } = eventsArticle;
 
@@ -203,11 +209,138 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle }: Eve
   
   const dayFilters = ['All', 'Weekdays', 'Weekend'];
 
+  const renderFilters = () => (
+    <>
+      <button
+        onClick={() => setIsFilterVisible(!isFilterVisible)}
+        className="flex justify-between items-center w-full text-left rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+        aria-expanded={isFilterVisible}
+        aria-controls="filter-panel"
+      >
+        <span className="font-semibold text-charcoal dark:text-slate-200">Filter by Date & Category</span>
+        <motion.div animate={{ rotate: isFilterVisible ? 180 : 0 }} transition={{ duration: 0.2 }}>
+          <ChevronDownIcon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+        </motion.div>
+      </button>
+      <AnimatePresence initial={false}>
+        {isFilterVisible && (
+          <motion.div
+            id="filter-panel"
+            key="content"
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
+            variants={{
+              open: { opacity: 1, height: 'auto', marginTop: '1rem' },
+              collapsed: { opacity: 0, height: 0, marginTop: '0rem' },
+            }}
+            transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
+            className="overflow-hidden"
+          >
+            <div className="space-y-4">
+              <Calendar 
+                  selectedDate={selectedDate}
+                  onDateSelect={setSelectedDate}
+                  eventDates={eventDates}
+                  currentMonth={currentMonth}
+                  onMonthChange={setCurrentMonth}
+                  todayDate={appToday}
+              />
+              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                <label className="w-20 shrink-0 font-semibold text-sm text-slate-600 dark:text-slate-400 mb-2 sm:mb-0">Day</label>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {dayFilters.map(filter => (
+                    <FilterButton key={filter} label={filter} isActive={dayFilter === filter} onClick={() => setDayFilter(filter)} />
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+                <label className="w-20 shrink-0 font-semibold text-sm text-slate-600 dark:text-slate-400 mb-2 sm:mb-0">Category</label>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {categories.map(filter => (
+                    <FilterButton key={filter} label={filter} isActive={categoryFilter === filter} onClick={() => setCategoryFilter(filter)} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+
+  const renderEventList = () => (
+    <>
+      { !selectedDate && <p className="text-sm text-charcoal dark:text-slate-300">{intro}</p>}
+      {filteredSections.length > 0 ? (
+        filteredSections.map(section => (
+          <div key={section.header} className="pt-2 first:pt-0">
+            <h4 className="text-lg font-serif font-bold text-charcoal dark:text-slate-200 mb-2">
+              {section.header.replace(/\*\*/g, '')}
+            </h4>
+            <div className="space-y-2">
+              {section.events.map((item, index) => (
+                 <EventCard 
+                    key={`${section.header}-${index}`} 
+                    eventString={item} 
+                    onSelectArticle={onSelectArticle}
+                 />
+              ))}
+            </div>
+          </div>
+        ))
+      ) : (
+          <div className="text-center py-10">
+              <p className="text-slate-600 dark:text-slate-400">
+                  {selectedDate ? "No events found for this day." : "No events match your criteria."}
+              </p>
+              { selectedDate && (
+                   <button 
+                      onClick={() => setSelectedDate(null)}
+                      className="mt-2 text-sm text-brand-green hover:underline"
+                  >
+                      Show all events
+                  </button>
+              )}
+          </div>
+      )}
+    </>
+  );
+
+  if (isPage) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+      >
+        <div className="flex justify-between items-center mb-6 border-b-2 border-slate-200 dark:border-slate-700 pb-2">
+          <h2 className="text-3xl font-serif font-bold text-charcoal dark:text-green-300">What's On</h2>
+          <button 
+              onClick={onClose}
+              className="shrink-0 ml-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 rounded-lg hover:bg-light-grey dark:hover:bg-zinc-700 transition-colors"
+          >
+              &larr; Back to Magazine
+          </button>
+        </div>
+        
+        <div className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg mb-6">
+          {renderFilters()}
+        </div>
+
+        <div className="space-y-4">
+          {renderEventList()}
+        </div>
+      </motion.div>
+    );
+  }
+
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors. */}
           <motion.div
             key="backdrop"
             variants={backdropVariants}
@@ -218,7 +351,6 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle }: Eve
             className="fixed inset-0 bg-black/60 z-40"
             transition={{ duration: 0.3 }}
           />
-          {/* @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors. */}
           <motion.div
             key="sidebar"
             variants={sidebarVariants}
@@ -243,103 +375,12 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle }: Eve
               </button>
             </div>
 
-            {/* Collapsible Filters */}
             <div className="p-4 border-b border-slate-200 dark:border-slate-700 shrink-0">
-              <button
-                onClick={() => setIsFilterVisible(!isFilterVisible)}
-                className="flex justify-between items-center w-full text-left rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                aria-expanded={isFilterVisible}
-                aria-controls="filter-panel"
-              >
-                <span className="font-semibold text-charcoal dark:text-slate-200">Filter by Date & Category</span>
-                {/* @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors. */}
-                <motion.div animate={{ rotate: isFilterVisible ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                  <ChevronDownIcon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-                </motion.div>
-              </button>
-
-              <AnimatePresence initial={false}>
-                {isFilterVisible && (
-                  // @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors. */}
-                  <motion.div
-                    id="filter-panel"
-                    key="content"
-                    initial="collapsed"
-                    animate="open"
-                    exit="collapsed"
-                    variants={{
-                      open: { opacity: 1, height: 'auto', marginTop: '1rem' },
-                      collapsed: { opacity: 0, height: 0, marginTop: '0rem' },
-                    }}
-                    transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
-                    className="overflow-hidden"
-                  >
-                    <div className="space-y-4">
-                      <Calendar 
-                          selectedDate={selectedDate}
-                          onDateSelect={setSelectedDate}
-                          eventDates={eventDates}
-                          currentMonth={currentMonth}
-                          onMonthChange={setCurrentMonth}
-                          todayDate={appToday}
-                      />
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                        <label className="w-20 shrink-0 font-semibold text-sm text-slate-600 dark:text-slate-400 mb-2 sm:mb-0">Day</label>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {dayFilters.map(filter => (
-                            <FilterButton key={filter} label={filter} isActive={dayFilter === filter} onClick={() => setDayFilter(filter)} />
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                        <label className="w-20 shrink-0 font-semibold text-sm text-slate-600 dark:text-slate-400 mb-2 sm:mb-0">Category</label>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {categories.map(filter => (
-                            <FilterButton key={filter} label={filter} isActive={categoryFilter === filter} onClick={() => setCategoryFilter(filter)} />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {renderFilters()}
             </div>
 
             <div className="flex-grow overflow-y-auto p-4 space-y-4">
-              { !selectedDate && <p className="text-sm text-charcoal dark:text-slate-300">{intro}</p>}
-              {filteredSections.length > 0 ? (
-                filteredSections.map(section => (
-                  <div key={section.header} className="pt-2 first:pt-0">
-                    <h4 className="text-lg font-serif font-bold text-charcoal dark:text-slate-200 mb-2">
-                      {section.header.replace(/\*\*/g, '')}
-                    </h4>
-                    <div className="space-y-2">
-                      {section.events.map((item, index) => (
-                         <EventCard 
-                            key={`${section.header}-${index}`} 
-                            eventString={item} 
-                            onSelectArticle={onSelectArticle}
-                         />
-                      ))}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                  <div className="text-center py-10">
-                      <p className="text-slate-600 dark:text-slate-400">
-                          {selectedDate ? "No events found for this day." : "No events match your criteria."}
-                      </p>
-                      { selectedDate && (
-                           <button 
-                              onClick={() => setSelectedDate(null)}
-                              className="mt-2 text-sm text-brand-green hover:underline"
-                          >
-                              Show all events
-                          </button>
-                      )}
-                  </div>
-              )}
+              {renderEventList()}
             </div>
           </motion.div>
         </>

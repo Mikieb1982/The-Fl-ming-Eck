@@ -45,7 +45,7 @@ export default function Calendar({ selectedDate, onDateSelect, eventDates, curre
         <button onClick={() => changeMonth(-1)} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" aria-label="Previous month">
           <ChevronLeftIcon className="w-5 h-5" />
         </button>
-        <h4 className="font-semibold text-center text-slate-800 dark:text-slate-200">
+        <h4 className="font-serif font-bold text-lg text-center text-charcoal dark:text-slate-100">
           {currentMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' })}
         </h4>
         <button onClick={() => changeMonth(1)} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" aria-label="Next month">
@@ -53,11 +53,11 @@ export default function Calendar({ selectedDate, onDateSelect, eventDates, curre
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-y-1 text-center text-xs text-slate-500 dark:text-slate-400">
-        {dayNames.map(day => <div key={day}>{day}</div>)}
+      <div className="grid grid-cols-7 gap-y-1 text-center text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700 pb-2">
+        {dayNames.map(day => <div key={day}>{day.substring(0, 2)}</div>)}
       </div>
 
-      <div className="grid grid-cols-7 gap-y-1 mt-1">
+      <div className="grid grid-cols-7 gap-y-1 mt-2">
         {Array.from({ length: startDay }).map((_, i) => <div key={`empty-${i}`} />)}
         
         {days.map(day => {
@@ -71,22 +71,22 @@ export default function Calendar({ selectedDate, onDateSelect, eventDates, curre
             <div key={day} className="flex justify-center items-center">
               <button
                 onClick={() => handleDateClick(day)}
-                className={`relative w-8 h-8 rounded-full text-sm flex items-center justify-center transition-colors
+                className={`relative w-9 h-9 rounded-full text-sm flex items-center justify-center transition-all duration-200 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-zinc-800 focus:ring-brand-blue
                   ${isSelected
-                    ? 'bg-brand-green text-white font-bold'
-                    : `hover:bg-slate-100 dark:hover:bg-slate-800 ${
+                    ? 'bg-brand-green text-white font-bold shadow-lg scale-110'
+                    : `hover:bg-slate-100 dark:hover:bg-zinc-800 ${
                         isToday
-                            ? 'ring-2 ring-sandstone-ochre text-sandstone-ochre dark:text-yellow-500 font-bold'
-                            : hasEvent
-                            ? 'text-brand-green dark:text-green-400 font-semibold'
-                            : 'text-slate-800 dark:text-slate-200'
+                          ? 'bg-sandstone-ochre/20 ring-1 ring-sandstone-ochre text-sandstone-ochre-dark dark:text-yellow-400 font-bold'
+                          : hasEvent
+                          ? 'text-brand-green dark:text-green-300 font-semibold'
+                          : 'text-charcoal dark:text-slate-300'
                       }`
                   }
                 `}
               >
                 {day}
                 {hasEvent && !isSelected && (
-                  <span className="absolute bottom-1 w-1 h-1 bg-accent-green rounded-full" />
+                  <span className="absolute bottom-1.5 w-1.5 h-1.5 bg-accent-green rounded-full" />
                 )}
               </button>
             </div>

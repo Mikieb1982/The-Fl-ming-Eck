@@ -1,5 +1,9 @@
 
 
+
+
+
+
 import React from 'react';
 import ClockIcon from './icons/ClockIcon';
 import LocationIcon from './icons/LocationIcon';
@@ -60,22 +64,22 @@ export default function EventCard({ eventString, onSelectArticle }: EventCardPro
   }
   
   const categoryColorMap: { [key: string]: { bg: string, text: string } } = {
-    'Community': { bg: 'bg-warm-terracotta/20', text: 'text-warm-terracotta' },
-    'History': { bg: 'bg-warm-terracotta/20', text: 'text-warm-terracotta' },
-    'Culture': { bg: 'bg-warm-terracotta/20', text: 'text-warm-terracotta' },
+    'Community': { bg: 'bg-orange-100 dark:bg-orange-900/50', text: 'text-orange-800 dark:text-orange-300' },
+    'History': { bg: 'bg-orange-100 dark:bg-orange-900/50', text: 'text-orange-800 dark:text-orange-300' },
+    'Culture': { bg: 'bg-orange-100 dark:bg-orange-900/50', text: 'text-orange-800 dark:text-orange-300' },
     
-    'Festival': { bg: 'bg-sandstone-ochre/20', text: 'text-sandstone-ochre' },
-    'Food': { bg: 'bg-sandstone-ochre/20', text: 'text-sandstone-ochre' },
-    'Market': { bg: 'bg-sandstone-ochre/20', text: 'text-sandstone-ochre' },
+    'Festival': { bg: 'bg-amber-100 dark:bg-amber-900/50', text: 'text-amber-800 dark:text-amber-300' },
+    'Food': { bg: 'bg-amber-100 dark:bg-amber-900/50', text: 'text-amber-800 dark:text-amber-300' },
+    'Market': { bg: 'bg-amber-100 dark:bg-amber-900/50', text: 'text-amber-800 dark:text-amber-300' },
 
-    'Tour': { bg: 'bg-brand-green/10', text: 'text-brand-green' },
-    'Film': { bg: 'bg-brand-green/10', text: 'text-brand-green' },
-    'Museum': { bg: 'bg-brand-green/10', text: 'text-brand-green' },
-    'Art': { bg: 'bg-brand-green/10', text: 'text-brand-green' },
-    'Family': { bg: 'bg-brand-green/10', text: 'text-brand-green' },
-    'Music': { bg: 'bg-brand-green/10', text: 'text-brand-green' },
-    'Sport': { bg: 'bg-brand-green/10', text: 'text-brand-green' },
-    'Wellness': { bg: 'bg-brand-green/10', text: 'text-brand-green' },
+    'Tour': { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300' },
+    'Film': { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300' },
+    'Museum': { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300' },
+    'Art': { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300' },
+    'Family': { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300' },
+    'Music': { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300' },
+    'Sport': { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300' },
+    'Wellness': { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300' },
     
     'default': { bg: 'bg-slate-100 dark:bg-slate-700', text: 'text-slate-800 dark:text-slate-200' }
   };
@@ -83,10 +87,10 @@ export default function EventCard({ eventString, onSelectArticle }: EventCardPro
 
 
   return (
-    <div className="flex gap-4 items-start p-3 rounded-xl bg-light-grey dark:bg-zinc-900 border border-transparent transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:border-sandstone-ochre dark:hover:border-sandstone-ochre">
+    <div className="flex gap-4 items-start p-3 rounded-xl bg-white dark:bg-zinc-800 border border-transparent transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:border-sandstone-ochre dark:hover:border-sandstone-ochre">
       
       {/* Date Block */}
-      <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-white dark:bg-slate-700 flex flex-col items-center justify-center text-center font-bold shadow-sm">
+      <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-brand-blue/20 dark:bg-brand-blue/30 flex flex-col items-center justify-center text-center font-bold shadow-sm">
         {dateParts.type === 'specific' ? (
           <>
             <span className="text-2xl text-brand-green dark:text-green-400 -mb-1">{dateParts.day}</span>

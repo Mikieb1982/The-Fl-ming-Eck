@@ -18,11 +18,12 @@ export default function Logo({ className }: { className?: string }) {
       {/* Main Title */}
       <text
         x="45"
-        y="32"
-        fontFamily="Montserrat, sans-serif"
-        fontWeight="700"
-        fontSize="32"
+        y="36"
+        fontFamily="Playfair Display, serif"
+        fontWeight="900"
+        fontSize="38"
         fill="currentColor"
+        letterSpacing="-0.5"
       >
         The Fläming Eck
       </text>
@@ -30,10 +31,10 @@ export default function Logo({ className }: { className?: string }) {
       {/* Tagline Motto */}
       <text
         x="45"
-        y="48"
+        y="52"
         fontFamily="Inter, sans-serif"
         fontWeight="500"
-        fontSize="11"
+        fontSize="10"
         fill="currentColor"
         opacity="0.7"
       >

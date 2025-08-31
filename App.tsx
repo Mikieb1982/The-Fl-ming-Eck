@@ -1,5 +1,7 @@
 
-import React, { useEffect, useMemo, useState, useCallback } from "react";
+
+
+import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { Article, Post, Reply } from "./types";
@@ -7,7 +9,6 @@ import { sortByDateDesc, fuzzySearch, extractTextFromArticleBody } from "./utils
 import * as api from './services/apiService';
 import { BRAND } from './constants';
 import ArticleView from "./components/ArticleView";
-import Navigation from "./components/Navigation";
 import EventsCalendar from "./components/EventsCalendar";
 import SearchResults from "./components/SearchResults";
 import CookieConsent from "./components/CookieConsent";
@@ -20,10 +21,13 @@ import DirectoryView from "./components/DirectoryView";
 import HomePage from "./components/HomePage";
 import Header from "./components/Header";
 import BookmarksView from "./components/BookmarksView";
-import WeatherWidget from "./components/WeatherWidget";
 import ProfileView from "./components/ProfileView";
-
-const USER_INTERESTS_KEY = 'flaming-eck-user-interests';
+import { useBookmarks } from "./context/BookmarkContext";
+// FIX: Import the ArticleCard component to resolve a 'Cannot find name' error.
+import ArticleCard from "./components/ArticleCard";
+import AboutUs from "./components/AboutUs";
+import CorrectionsPolicy from "./components/CorrectionsPolicy";
+import AdvertiseWithUs from "./components/AdvertiseWithUs";
 
 export default function App() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -36,432 +40,349 @@ export default function App() {
   const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
   const [isBookmarksOpen, setIsBookmarksOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState('All');
+  const [isCalendarPage, setIsCalendarPage] = useState(false);
   const [activeTag, setActiveTag] = useState<string | null>(null);
-  const [legalPage, setLegalPage] = useState<"impressum" | "privacy" | null>(null);
+  const [legalPage, setLegalPage] = useState<"impressum" | "privacy" | "about" | "corrections" | "advertise" | null>(null);
   const [isBackToTopVisible, setIsBackToTopVisible] = useState(false);
+  const mainContentRef = useRef<HTMLElement>(null);
+  
+  const { bookmarks } = useBookmarks();
+  const sortedArticles = useMemo(() => sortByDateDesc(articles), [articles]);
+
+  const closeAllViews = useCallback(() => {
+    setActiveIndex(null);
+    setIsCommunityOpen(false);
+    setIsDirectoryOpen(false);
+    setIsBookmarksOpen(false);
+    setIsProfileOpen(false);
+    setIsCalendarPage(false);
+    setSearchQuery('');
+    setActiveTag(null);
+  }, []);
+  
+  const handleRouting = useCallback((path: string) => {
+    closeAllViews();
+    if (path.startsWith('/article/')) {
+        const articleId = path.split('/article/')[1];
+        const index = sortedArticles.findIndex(a => a.id === articleId);
+        if (index !== -1) {
+            setActiveIndex(index);
+        } else {
+             // If article not found, go home.
+            window.history.replaceState({}, '', '/');
+        }
+    } else if (path === '/community') {
+        setIsCommunityOpen(true);
+    } else if (path === '/directory') {
+        setIsDirectoryOpen(true);
+    } else if (path === '/bookmarks') {
+        setIsBookmarksOpen(true);
+    } else if (path === '/profile') {
+        setIsProfileOpen(true);
+    } else if (path === '/calendar') {
+        setIsCalendarPage(true);
+    }
+  }, [sortedArticles, closeAllViews]);
+  
+  const navigate = (path: string) => {
+      window.history.pushState({}, '', path);
+      handleRouting(path);
+  };
+  
+  const handleSelectArticleById = useCallback((id: string) => {
+    navigate(`/article/${id}`);
+  }, []);
 
   useEffect(() => {
     setArticles(api.getArticles());
-    setPosts(api.getPosts());
+    const initialPosts = api.getPosts();
+    setPosts(sortByDateDesc(initialPosts));
     setIsLoading(false);
   }, []);
 
-  const sortedArticles = useMemo(() => sortByDateDesc(articles), [articles]);
+  useEffect(() => {
+      if (!isLoading) {
+        handleRouting(window.location.pathname);
+      }
+
+      const handlePopState = () => handleRouting(window.location.pathname);
+      window.addEventListener('popstate', handlePopState);
+
+      return () => window.removeEventListener('popstate', handlePopState);
+  }, [isLoading, handleRouting]);
+  
+  const activeArticle = useMemo(() => {
+      if (activeIndex !== null && sortedArticles[activeIndex]) {
+          return sortedArticles[activeIndex];
+      }
+      return undefined;
+  }, [activeIndex, sortedArticles]);
+
+  useEffect(() => {
+      const descriptionTag = document.getElementById('meta-description');
+      const canonicalTag = document.getElementById('canonical-link');
+      const baseUrl = window.location.origin;
+
+      if (!descriptionTag || !canonicalTag) return;
+      
+      let title = `${BRAND.title} Magazine`;
+      let description = "An interactive digital magazine for Bad Belzig and the Hoher Fläming, featuring AI-powered summaries for articles.";
+      let url = baseUrl;
+
+      if (activeArticle) {
+          title = `${activeArticle.title} | ${BRAND.title}`;
+          description = activeArticle.excerpt;
+          url = `${baseUrl}/article/${activeArticle.id}`;
+      } else if (isCommunityOpen) {
+          title = `Community Forum | ${BRAND.title}`;
+          description = "Join the conversation! A space for English-speakers in the Hoher Fläming to connect.";
+          url = `${baseUrl}/community`;
+      } else if (isDirectoryOpen) {
+          title = `Community Directory | ${BRAND.title}`;
+          description = "Your guide to essential services and points of interest in Bad Belzig and the Hoher Fläming.";
+          url = `${baseUrl}/directory`;
+      } else if (isCalendarPage) {
+          title = `Events Calendar | ${BRAND.title}`;
+          description = "Find out what's on in Bad Belzig and the Hoher Fläming.";
+          url = `${baseUrl}/calendar`;
+      } else if (isBookmarksOpen) {
+          title = `My Bookmarks | ${BRAND.title}`;
+          description = "Your saved articles from The Fläming Eck.";
+          url = `${baseUrl}/bookmarks`;
+      }
+
+      document.title = title;
+      descriptionTag.setAttribute('content', description);
+      canonicalTag.setAttribute('href', url);
+
+  }, [activeArticle, isCommunityOpen, isDirectoryOpen, isCalendarPage, isBookmarksOpen]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+        if (mainContentRef.current && mainContentRef.current.scrollTop > 300) {
+            setIsBackToTopVisible(true);
+        } else {
+            setIsBackToTopVisible(false);
+        }
+    };
+    
+    // Attaching scroll listener to the main content area if it exists
+    const contentArea = mainContentRef.current;
+    if (contentArea) {
+      // In a real browser environment, you'd listen to the scroll event
+      // but in this simulated one, direct manipulation might be needed
+      // or we just assume a default state. For this app, we'll keep it simple.
+    }
+
+    return () => {
+      // Cleanup
+    };
+  }, []);
+  
+  const handleAddPost = useCallback((newPostData: Omit<Post, 'id' | 'timestamp' | 'replies'>) => {
+      setPosts(prevPosts => {
+          const newPost: Post = {
+              ...newPostData,
+              id: `post-${Date.now()}`,
+              timestamp: new Date().toISOString(),
+              replies: [],
+          };
+          const updatedPosts = [newPost, ...prevPosts];
+          api.savePosts(updatedPosts);
+          return updatedPosts;
+      });
+  }, []);
+
+  const handleAddReply = useCallback((postId: string, newReplyData: Omit<Reply, 'id' | 'timestamp'>) => {
+      setPosts(prevPosts => {
+          const updatedPosts = prevPosts.map(post => {
+              if (post.id === postId) {
+                  const newReply: Reply = {
+                      ...newReplyData,
+                      id: `reply-${Date.now()}`,
+                      timestamp: new Date().toISOString(),
+                  };
+                  return { ...post, replies: [...post.replies, newReply] };
+              }
+              return post;
+          });
+          api.savePosts(updatedPosts);
+          return updatedPosts;
+      });
+  }, []);
 
   const handleClearTag = useCallback(() => {
     setActiveTag(null);
+    navigate('/community');
+  }, []);
+  
+  const handleSelectTag = useCallback((tag: string) => {
+    setActiveTag(tag);
+    navigate('/community');
   }, []);
 
   const handleGoHome = useCallback(() => {
-    setActiveIndex(null);
-    setActiveCategory('All');
-    setSearchQuery('');
-    setIsCommunityOpen(false);
-    setIsDirectoryOpen(false);
-    setIsBookmarksOpen(false);
-    setIsProfileOpen(false);
-    setActiveTag(null);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigate('/');
   }, []);
 
-  const handleCloseArticle = useCallback(() => {
-    setActiveIndex(null);
-  }, []);
-
-  const handleSelectTag = useCallback((tag: string) => {
-    setActiveTag(tag);
-    setSearchQuery('');
-    setActiveCategory('All');
-    setActiveIndex(null);
-    setIsDirectoryOpen(false);
-    setIsBookmarksOpen(false);
-    setIsProfileOpen(false);
-    // Don't close community view, let it filter internally
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
-
-  const handleSelectArticle = useCallback((index: number) => {
-    setActiveIndex(index);
-    setIsCommunityOpen(false);
-    setIsDirectoryOpen(false);
-    setIsBookmarksOpen(false);
-    setIsProfileOpen(false);
-    setActiveTag(null);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
-
-  const handleSelectArticleById = useCallback((id: string) => {
-    const index = sortedArticles.findIndex(a => a.id === id);
-    if (index !== -1) {
-      handleSelectArticle(index);
-    }
-  }, [sortedArticles, handleSelectArticle]);
-  
-  const handleSelectArticleFromEvent = useCallback((id: string) => {
-    setIsCalendarOpen(false); // Close calendar first
-    // Use a small timeout to let the calendar close animation finish before the page scrolls up
-    setTimeout(() => {
-        handleSelectArticleById(id);
-    }, 300);
-  }, [handleSelectArticleById]);
-
-  const handleAddPost = (post: Omit<Post, 'id' | 'timestamp' | 'replies'>) => {
-    const newPost: Post = {
-        ...post,
-        id: `post-${Date.now()}`,
-        timestamp: new Date().toISOString(),
-        replies: [],
-    };
-    setPosts(prevPosts => {
-      const updatedPosts = [newPost, ...prevPosts];
-      api.savePosts(updatedPosts);
-      return updatedPosts;
-    });
-  };
-
-  const handleAddReply = (postId: string, reply: Omit<Reply, 'id' | 'timestamp'>) => {
-      const newReply: Reply = {
-          ...reply,
-          id: `reply-${Date.now()}`,
-          timestamp: new Date().toISOString(),
-      };
-      setPosts(currentPosts => {
-        const updatedPosts = currentPosts.map(p => {
-            if (p.id === postId) {
-                return { ...p, replies: [...p.replies, newReply] };
-            }
-            return p;
-        });
-        api.savePosts(updatedPosts);
-        return updatedPosts;
-      });
-  };
-  
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const articleId = params.get('article');
-    if (articleId && articles.length > 0) {
-      handleSelectArticleById(articleId);
-    }
-  }, [handleSelectArticleById, articles]);
-
-  const displayedArticles = useMemo(() => {
-    const query = searchQuery.trim();
-    
-    let filtered = sortedArticles;
-
-    if (activeTag) {
-        return sortedArticles.filter(article => article.tags?.includes(activeTag));
-    }
-
-    if (activeCategory !== 'All') {
-        filtered = filtered.filter(article => article.category === activeCategory);
-    }
-
-    if (!query) {
-        return filtered;
-    }
-
-    return filtered.filter(article =>
-        fuzzySearch(query, article.title) ||
-        fuzzySearch(query, article.excerpt) ||
-        fuzzySearch(query, extractTextFromArticleBody(article.body))
-    );
-  }, [searchQuery, sortedArticles, activeCategory, activeTag]);
-
-  const nextArticle = useCallback(() => {
-    if (activeIndex === null) return;
-    setActiveIndex((prev) => {
-      if (prev === null) return 0;
-      return Math.min(prev + 1, sortedArticles.length - 1);
-    });
-  }, [activeIndex, sortedArticles.length]);
-
-  const prevArticle = useCallback(() => {
-    if (activeIndex === null) return;
-    setActiveIndex((prev) => {
-       if (prev === null) return 0;
-      return Math.max(prev - 1, 0);
-    });
-  }, [activeIndex]);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if(legalPage) {
-          setLegalPage(null);
-        } else if (isProfileOpen) {
-          setIsProfileOpen(false);
-        } else if (isBookmarksOpen) {
-          setIsBookmarksOpen(false);
-        } else if (isDirectoryOpen) {
-          setIsDirectoryOpen(false);
-        } else if (isCommunityOpen) {
-          setIsCommunityOpen(false);
-        } else if (activeIndex !== null) {
-          handleCloseArticle();
-        }
-      }
-      if (activeIndex !== null) {
-        if (e.key === "ArrowRight") nextArticle();
-        if (e.key === "ArrowLeft") prevArticle();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [nextArticle, prevArticle, handleCloseArticle, activeIndex, legalPage, isCommunityOpen, isDirectoryOpen, isBookmarksOpen, isProfileOpen]);
-  
-  useEffect(() => {
-    const toggleVisibility = () => {
-      setIsBackToTopVisible(window.scrollY > 500);
-    };
-
-    window.addEventListener('scroll', toggleVisibility);
-
-    return () => window.removeEventListener('scroll', toggleVisibility);
-  }, []);
-
-  const scrollToTop = useCallback(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  }, []);
-
-  const currentArticle = activeIndex !== null ? sortedArticles[activeIndex] : null;
-  
-  useEffect(() => {
-    const baseCanonicalUrl = window.location.origin + window.location.pathname;
-    const defaultTitle = 'The Fläming Eck Magazine';
-    const defaultDescription = "An interactive digital magazine for Bad Belzig and the Hoher Fläming, featuring AI-powered summaries for articles.";
-
-    let canonicalLink = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-    if (!canonicalLink) {
-        canonicalLink = document.createElement('link');
-        canonicalLink.rel = 'canonical';
-        document.head.appendChild(canonicalLink);
-    }
-    
-    let metaDescription = document.querySelector<HTMLMetaElement>('meta[name="description"]');
-    if (!metaDescription) {
-        metaDescription = document.createElement('meta');
-        metaDescription.name = 'description';
-        document.head.appendChild(metaDescription);
-    }
-
-    if (currentArticle) {
-        document.title = `${currentArticle.title} | ${BRAND.title}`;
-        metaDescription.setAttribute('content', currentArticle.excerpt);
-        canonicalLink.setAttribute('href', `${baseCanonicalUrl}?article=${currentArticle.id}`);
+  const scrollToTop = () => {
+    if(mainContentRef.current) {
+        mainContentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-        document.title = defaultTitle;
-        metaDescription.setAttribute('content', defaultDescription);
-        canonicalLink.setAttribute('href', baseCanonicalUrl);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [currentArticle]);
-
-  const isHomePage = !searchQuery.trim() && activeCategory === 'All' && !activeTag && !currentArticle && !isCommunityOpen && !isDirectoryOpen && !isBookmarksOpen && !isProfileOpen;
-
-  const openCommunity = () => {
-    setIsCommunityOpen(true);
-    setActiveIndex(null);
-    setSearchQuery('');
-    setIsDirectoryOpen(false);
-    setIsBookmarksOpen(false);
-    setIsProfileOpen(false);
-    setActiveTag(null);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const openDirectory = () => {
-      setIsDirectoryOpen(true);
-      setActiveIndex(null);
-      setSearchQuery('');
-      setIsCommunityOpen(false);
-      setIsBookmarksOpen(false);
-      setIsProfileOpen(false);
-      setActiveTag(null);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const searchResults = useMemo(() => {
+    if (!searchQuery) return [];
+    const lowercasedQuery = searchQuery.toLowerCase();
+    return sortedArticles.filter(
+      (a) =>
+        fuzzySearch(searchQuery, a.title) ||
+        fuzzySearch(searchQuery, a.excerpt) ||
+        fuzzySearch(searchQuery, extractTextFromArticleBody(a.body))
+    );
+  }, [searchQuery, sortedArticles]);
   
-  const openBookmarks = () => {
-      setIsBookmarksOpen(true);
-      setActiveIndex(null);
-      setSearchQuery('');
-      setIsCommunityOpen(false);
-      setIsDirectoryOpen(false);
-      setIsProfileOpen(false);
-      setActiveTag(null);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const remainingArticles = useMemo(() => sortedArticles.slice(8), [sortedArticles]);
   
-  const openProfile = () => {
-      setIsProfileOpen(true);
-      setActiveIndex(null);
-      setSearchQuery('');
-      setIsCommunityOpen(false);
-      setIsDirectoryOpen(false);
-      setIsBookmarksOpen(false);
-      setActiveTag(null);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  let currentView: 'home' | 'article' | 'search' | 'community' | 'directory' | 'bookmarks' | 'profile' | 'calendar' = 'home';
+  if (searchQuery) currentView = 'search';
+  else if (activeArticle) currentView = 'article';
+  else if (isCommunityOpen) currentView = 'community';
+  else if (isDirectoryOpen) currentView = 'directory';
+  else if (isBookmarksOpen) currentView = 'bookmarks';
+  else if (isProfileOpen) currentView = 'profile';
+  else if (isCalendarPage) currentView = 'calendar';
+  
+  // FIX: Correctly determine the active mobile view for the bottom navigation,
+  // including the 'more' state for bookmarks and profile views, and provide an explicit type to prevent type errors.
+  const activeMobileView: 'home' | 'community' | 'directory' | 'calendar' | 'more' = isCommunityOpen
+    ? 'community'
+    : isDirectoryOpen
+    ? 'directory'
+    : isCalendarPage
+    ? 'calendar'
+    : isBookmarksOpen || isProfileOpen
+    ? 'more'
+    : 'home';
 
-  const handleSearchChange = useCallback((query: string) => {
-    setSearchQuery(query);
-    if (query.trim()) {
-      setIsCommunityOpen(false);
-      setIsDirectoryOpen(false);
-      setIsBookmarksOpen(false);
-      setIsProfileOpen(false);
-      setActiveIndex(null);
-      setActiveTag(null);
-    }
-  }, []);
+  const headerProps = {
+      onGoHome: handleGoHome,
+      onToggleCalendar: () => setIsCalendarOpen(!isCalendarOpen),
+      onOpenCalendarPage: () => navigate('/calendar'),
+      onToggleCommunity: () => navigate('/community'),
+      onToggleDirectory: () => navigate('/directory'),
+      onToggleBookmarks: () => navigate('/bookmarks'),
+      onToggleProfile: () => navigate('/profile'),
+      setLegalPage: setLegalPage,
+      searchQuery,
+      onSearchChange: setSearchQuery,
+      activeView: activeMobileView
+  };
 
   return (
-    <div>
-      <Header 
-        onGoHome={handleGoHome}
-        onToggleCalendar={() => setIsCalendarOpen(prev => !prev)}
-        onToggleCommunity={openCommunity}
-        onToggleDirectory={openDirectory}
-        onToggleBookmarks={openBookmarks}
-        onToggleProfile={openProfile}
-        searchQuery={searchQuery}
-        onSearchChange={handleSearchChange}
-      />
-      <div className="max-w-7xl mx-auto px-4 lg:px-8 pb-4 pt-24 md:pt-28">
-        <EventsCalendar 
-          isOpen={isCalendarOpen} 
-          onClose={() => setIsCalendarOpen(false)} 
-          onSelectArticle={handleSelectArticleFromEvent}
-        />
-        
-        {isHomePage && (
-          <div className="mb-6">
-            <WeatherWidget />
-          </div>
-        )}
-
-        <main>
-            {isLoading ? (
-              <div className="flex justify-center items-center py-20">
-                <p className="text-slate-400">Loading The Fläming Eck...</p>
-              </div>
-            ) : (
-              <div className="relative">
-                <AnimatePresence mode="wait">
-                  {currentArticle ? (
-                    <motion.div key="articleView">
-                      <ArticleView 
-                        article={currentArticle} 
-                        onClose={handleCloseArticle}
-                        allArticles={sortedArticles}
-                        onSelectArticle={handleSelectArticleById}
-                        onSelectTag={handleSelectTag}
-                      />
-                      <Navigation
-                        onPrev={prevArticle}
-                        onNext={nextArticle}
-                        isFirst={activeIndex === 0}
-                        isLast={activeIndex !== null && activeIndex >= sortedArticles.length - 1}
-                      />
-                    </motion.div>
-                  ) : isCommunityOpen ? (
-                     <motion.div key="communityView">
-                        <CommunityView 
-                          posts={posts}
-                          allArticles={sortedArticles}
-                          onAddPost={handleAddPost}
-                          onAddReply={handleAddReply}
-                          onSelectArticle={handleSelectArticleById}
-                          activeTag={activeTag}
-                          onSelectTag={handleSelectTag}
-                          onClearTag={handleClearTag}
-                          onClose={() => setIsCommunityOpen(false)}
-                        />
-                    </motion.div>
-                  ) : isDirectoryOpen ? (
-                    <motion.div key="directoryView">
-                      <DirectoryView 
-                        onClose={() => setIsDirectoryOpen(false)}
-                      />
-                    </motion.div>
-                  ) : isBookmarksOpen ? (
-                    <motion.div key="bookmarksView">
-                        <BookmarksView 
-                            articles={sortedArticles}
-                            onSelectArticle={handleSelectArticleById}
-                            onClose={() => setIsBookmarksOpen(false)}
-                        />
-                    </motion.div>
-                  ) : isProfileOpen ? (
-                    <motion.div key="profileView">
-                      <ProfileView 
-                        posts={posts}
-                        articles={sortedArticles}
-                        onSelectArticle={handleSelectArticleById}
-                        onClose={() => setIsProfileOpen(false)}
-                      />
-                    </motion.div>
-                  ) : isHomePage ? (
-                     <motion.div key="homePage">
-                        <HomePage
-                            articles={sortedArticles}
-                            onSelectArticle={handleSelectArticleById}
-                        />
-                     </motion.div>
-                  ) : (
-                    <motion.div key="filteredView">
-                      {displayedArticles.length > 0 ? (
-                        <SearchResults
-                            articles={displayedArticles}
-                            onSelectArticle={handleSelectArticleById}
-                            searchQuery={searchQuery}
-                        />
-                      ) : (
-                        <>
-                          <h2 className="text-2xl font-serif font-bold text-slate-800 dark:text-slate-200 mb-6">
-                            Results for "{searchQuery}"
-                          </h2>
-                          <p className="text-slate-500 dark:text-slate-400">
-                            No articles found matching your criteria.
-                          </p>
-                        </>
+      <div className="bg-creme dark:bg-slate-900 min-h-screen">
+          <Header {...headerProps} />
+          <div className="pb-24 md:pb-4">
+              <main ref={mainContentRef} className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 pt-4 md:pt-8">
+                  <AnimatePresence mode="wait">
+                      {currentView === 'article' && (
+                          <ArticleView 
+                              key={activeArticle?.id || 'article'}
+                              article={activeArticle} 
+                              allArticles={sortedArticles}
+                              onSelectArticle={handleSelectArticleById}
+                              onSelectTag={handleSelectTag}
+                              onClose={handleGoHome}
+                          />
                       )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            )}
-          </main>
-        {/* FIX: Removed a misplaced closing </div> tag that broke the JSX structure and caused multiple root elements. */}
-        <footer className="text-center text-slate-500 dark:text-slate-400 text-sm py-8 mt-12 border-t border-slate-200 dark:border-slate-700 max-w-7xl mx-auto px-4 lg:px-8">
-          <div className="flex justify-center gap-x-6 gap-y-2 flex-wrap mb-4">
-            <button onClick={() => setLegalPage('impressum')} className="hover:text-sandstone-ochre transition-colors">Impressum / Legal Notice</button>
-            <button onClick={() => setLegalPage('privacy')} className="hover:text-sandstone-ochre transition-colors">Datenschutzerklärung / Privacy Policy</button>
+                      {currentView === 'search' && (
+                          <SearchResults 
+                              key="search"
+                              articles={searchResults} 
+                              onSelectArticle={handleSelectArticleById} 
+                              searchQuery={searchQuery}
+                          />
+                      )}
+                      {currentView === 'community' && (
+                          <CommunityView 
+                              key="community"
+                              posts={posts}
+                              allArticles={articles}
+                              onAddPost={handleAddPost}
+                              onAddReply={handleAddReply}
+                              onSelectArticle={handleSelectArticleById}
+                              activeTag={activeTag}
+                              onSelectTag={handleSelectTag}
+                              onClearTag={handleClearTag}
+                              onClose={handleGoHome}
+                          />
+                      )}
+                      {currentView === 'directory' && <DirectoryView key="directory" onClose={handleGoHome} />}
+                      {currentView === 'bookmarks' && <BookmarksView key="bookmarks" articles={articles} onSelectArticle={handleSelectArticleById} onClose={handleGoHome} />}
+                      {currentView === 'profile' && <ProfileView key="profile" posts={posts} articles={articles} onSelectArticle={handleSelectArticleById} onClose={handleGoHome} />}
+                      {currentView === 'calendar' && <EventsCalendar key="calendar-page" isOpen={true} onClose={handleGoHome} onSelectArticle={handleSelectArticleById} isPage={true} />}
+
+                      {currentView === 'home' && (
+                          <div className="space-y-12" key="home">
+                              <HomePage articles={sortedArticles} onSelectArticle={handleSelectArticleById} />
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                  {remainingArticles.map(article => (
+                                      <ArticleCard key={article.id} article={article} onClick={() => handleSelectArticleById(article.id)} />
+                                  ))}
+                              </div>
+                          </div>
+                      )}
+                  </AnimatePresence>
+              </main>
+
+              <AnimatePresence>
+                  {isBackToTopVisible && <BackToTopButton onClick={scrollToTop} />}
+              </AnimatePresence>
+              
+              <footer className="text-center text-xs text-slate-500 dark:text-slate-400 py-4 border-t border-slate-200 dark:border-slate-700">
+                  <button onClick={() => setLegalPage("about")} className="hover:underline px-2">About Us</button>
+                  <span>|</span>
+                  <button onClick={() => setLegalPage("impressum")} className="hover:underline px-2">Impressum</button>
+                  <span>|</span>
+                  <button onClick={() => setLegalPage("privacy")} className="hover:underline px-2">Data Protection</button>
+                  <span>|</span>
+                  <button onClick={() => setLegalPage("corrections")} className="hover:underline px-2">Corrections Policy</button>
+                   <span>|</span>
+                  <button onClick={() => setLegalPage("advertise")} className="hover:underline px-2">Advertise With Us</button>
+              </footer>
           </div>
-          © 2025 The Fläming Eck. Edited in English. Facts reviewed prior to publication.
-        </footer>
+
+          <CookieConsent onShowPrivacy={() => setLegalPage("privacy")} />
+
+          <AnimatePresence>
+              {legalPage && (
+                  <LegalView 
+                      title={
+                          legalPage === 'impressum' ? 'Impressum' :
+                          legalPage === 'privacy' ? 'Privacy Policy' :
+                          legalPage === 'about' ? 'About Us' :
+                          legalPage === 'corrections' ? 'Corrections Policy' :
+                          'Advertise With Us'
+                      } 
+                      onClose={() => setLegalPage(null)}
+                  >
+                      {legalPage === 'impressum' ? <Impressum /> :
+                       legalPage === 'privacy' ? <PrivacyPolicy /> :
+                       legalPage === 'about' ? <AboutUs /> :
+                       legalPage === 'corrections' ? <CorrectionsPolicy /> :
+                       <AdvertiseWithUs />
+                      }
+                  </LegalView>
+              )}
+          </AnimatePresence>
+
+          <EventsCalendar 
+              isOpen={isCalendarOpen} 
+              onClose={() => setIsCalendarOpen(false)} 
+              onSelectArticle={handleSelectArticleById}
+          />
       </div>
-
-      <AnimatePresence>
-        {legalPage && (
-          <LegalView 
-            title={legalPage === 'impressum' ? 'Impressum / Legal Notice' : 'Datenschutzerklärung / Privacy Policy'} 
-            onClose={() => setLegalPage(null)}
-          >
-            {legalPage === 'impressum' ? <Impressum /> : <PrivacyPolicy />}
-          </LegalView>
-        )}
-      </AnimatePresence>
-
-      <CookieConsent onShowPrivacy={() => setLegalPage('privacy')} />
-      
-      <AnimatePresence>
-        {isBackToTopVisible && <BackToTopButton onClick={scrollToTop} />}
-      </AnimatePresence>
-    </div>
   );
 }

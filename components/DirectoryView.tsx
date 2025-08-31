@@ -1,19 +1,12 @@
 
-
-
-
-
-
 import React, { useState, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { directoryData } from '../articles/directoryData';
-import { DirectoryData, CivicEntry, Hospital, MedicalCenter, Practice, Pharmacy, BankEntry, RetailEntry, Restaurant, Accommodation, Attraction, RailTransport, BusTransport, TaxiService, RideSharing } from '../types';
+import { CivicEntry, Hospital, MedicalCenter, Practice, Pharmacy, BankEntry, RetailEntry, Restaurant, Accommodation, Attraction, RailTransport, BusTransport, TaxiService, RideSharing } from '../types';
 
 import ChevronDownIcon from './icons/ChevronDownIcon';
-import ChevronRightIcon from './icons/ChevronRightIcon';
 import AlertTriangleIcon from './icons/AlertTriangleIcon';
 import HospitalIcon from './icons/HospitalIcon';
-import StethoscopeIcon from './icons/StethoscopeIcon';
 import TrainIcon from './icons/TrainIcon';
 import BusIcon from './icons/BusIcon';
 import PhoneIcon from './icons/PhoneIcon';
@@ -21,6 +14,8 @@ import LinkIcon from './icons/LinkIcon';
 import MapPinIcon from './icons/MapPinIcon';
 import BuildingOfficeIcon from './icons/BuildingOfficeIcon';
 import UsersIcon from './icons/UsersIcon';
+import ClockIcon from './icons/ClockIcon';
+import InfoIcon from './icons/InfoIcon';
 
 
 interface DirectoryViewProps {
@@ -33,15 +28,14 @@ const AccordionSection = ({ title, icon, children, isOpen, onToggle }: { title: 
             <button
                 type="button"
                 onClick={onToggle}
-                className="flex items-center justify-between w-full p-5 font-medium text-left text-charcoal dark:text-slate-200 bg-light-grey dark:bg-zinc-800 bg-texture-fieldstone transition-colors"
+                className={`flex items-center justify-between w-full p-5 font-medium text-left text-charcoal dark:text-slate-200 transition-colors ${isOpen ? 'bg-brand-blue/20 dark:bg-brand-blue/30' : 'bg-light-grey dark:bg-zinc-800 bg-texture-fieldstone hover:bg-sandstone-ochre/20 dark:hover:bg-sandstone-ochre/30'}`}
                 aria-expanded={isOpen}
             >
                 <div className="flex items-center gap-4">
                     <span className="text-brand-green dark:text-green-400">{icon}</span>
                     <span className="text-lg font-serif">{title}</span>
                 </div>
-                {/* FIX: Suppress TypeScript error. The framer-motion props are not recognized in this environment. */}
-                {/* @ts-ignore */}
+                {/* @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors. */}
                 <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
                     <ChevronDownIcon className="w-5 h-5 shrink-0" />
                 </motion.div>
@@ -49,8 +43,7 @@ const AccordionSection = ({ title, icon, children, isOpen, onToggle }: { title: 
         </h2>
         <AnimatePresence initial={false}>
             {isOpen && (
-                // FIX: Suppress TypeScript error. The framer-motion props are not recognized in this environment.
-                // @ts-ignore
+                // @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors.
                 <motion.div
                     key="content"
                     initial="collapsed"
@@ -80,7 +73,7 @@ const InfoItem = ({ icon, children }: { icon: ReactNode, children: ReactNode }) 
 );
 
 const SectionCard = ({ title, children }: { title: string, children: ReactNode }) => (
-    <div className="mb-6">
+    <div className="mb-6 last:mb-0">
         <h4 className="text-md font-semibold font-serif text-charcoal dark:text-slate-200 border-b border-slate-200 dark:border-slate-700 pb-2 mb-3">{title}</h4>
         <div className="space-y-4">{children}</div>
     </div>
@@ -91,141 +84,291 @@ const CivicCard = ({ item }: { item: CivicEntry }) => (
         <p className="font-semibold text-charcoal dark:text-slate-200">{item.name}</p>
         <InfoItem icon={<MapPinIcon />}>{item.address}</InfoItem>
         {item.phone && <InfoItem icon={<PhoneIcon />}><a href={`tel:${item.phone}`} className="hover:underline">{item.phone}</a></InfoItem>}
-        {item.hours && <InfoItem icon={<ChevronRightIcon className="w-5 h-5" />}>{item.hours}</InfoItem>}
+        {item.hours && <InfoItem icon={<ClockIcon />}><p>{item.hours}</p></InfoItem>}
+    </div>
+);
+
+const HospitalCard = ({ item }: { item: Hospital }) => (
+    <div className="space-y-2">
+        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name}</p>
+        <InfoItem icon={<MapPinIcon />}>{item.address}</InfoItem>
+        <InfoItem icon={<PhoneIcon />}><a href={`tel:${item.phone}`} className="hover:underline">{item.phone}</a></InfoItem>
+        <InfoItem icon={<AlertTriangleIcon />}><a href={`tel:${item.emergency_phone}`} className="hover:underline font-semibold text-warm-terracotta">{item.emergency_phone} (Emergency)</a></InfoItem>
+        <InfoItem icon={<LinkIcon />}><a href={item.website} target="_blank" rel="noopener noreferrer" className="hover:underline text-brand-blue dark:text-accent-blue">{item.website}</a></InfoItem>
+    </div>
+);
+
+const MedicalCenterCard = ({ item }: { item: MedicalCenter }) => (
+    <div className="space-y-2">
+        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name}</p>
+        <InfoItem icon={<MapPinIcon />}>{item.address}</InfoItem>
+        <InfoItem icon={<PhoneIcon />}><a href={`tel:${item.phone}`} className="hover:underline">{item.phone}</a></InfoItem>
+        <div className="pt-2">
+            {item.specializations.map(spec => (
+                <p key={spec.specialization} className="text-sm text-slate-500 dark:text-slate-400 pl-8 -indent-8"><span className="font-semibold text-charcoal dark:text-slate-300">{spec.specialization}:</span> {spec.doctors.join(', ')}</p>
+            ))}
+        </div>
+    </div>
+);
+
+const PracticeCard = ({ item }: { item: Practice }) => (
+    <div className="space-y-2">
+        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name} <span className="text-sm font-normal text-slate-500 dark:text-slate-400">({item.specialization})</span></p>
+        <InfoItem icon={<MapPinIcon />}>{item.address}</InfoItem>
+        {item.phone && <InfoItem icon={<PhoneIcon />}><a href={`tel:${item.phone}`} className="hover:underline">{item.phone}</a></InfoItem>}
+        {item.doctors && <InfoItem icon={<UsersIcon />}><p>{item.doctors.join(', ')}</p></InfoItem>}
+    </div>
+);
+
+const PharmacyCard = ({ item }: { item: Pharmacy }) => (
+    <div className="space-y-2">
+        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name}</p>
+        <InfoItem icon={<MapPinIcon />}>{item.address}</InfoItem>
+        <InfoItem icon={<PhoneIcon />}><a href={`tel:${item.phone}`} className="hover:underline">{item.phone}</a></InfoItem>
+    </div>
+);
+
+const RetailCard = ({ item }: { item: RetailEntry }) => (
+    <div className="space-y-2">
+        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name}</p>
+        <InfoItem icon={<MapPinIcon />}>{item.address}</InfoItem>
+    </div>
+);
+
+const BankCard = ({ item }: { item: BankEntry }) => (
+    <div className="space-y-2">
+        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name}</p>
+        <InfoItem icon={<MapPinIcon />}>{item.address}</InfoItem>
+        <InfoItem icon={<InfoIcon />}><p>{item.services.join(', ')}</p></InfoItem>
+    </div>
+);
+
+const AccommodationCard = ({ item }: { item: Accommodation }) => (
+    <div className="space-y-2">
+        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name} <span className="text-sm font-normal text-slate-500 dark:text-slate-400">({item.type})</span></p>
+        <InfoItem icon={<MapPinIcon />}>{item.address}</InfoItem>
+        <InfoItem icon={<PhoneIcon />}><a href={`tel:${item.phone}`} className="hover:underline">{item.phone}</a></InfoItem>
+        <InfoItem icon={<LinkIcon />}><a href={item.website} target="_blank" rel="noopener noreferrer" className="hover:underline text-brand-blue dark:text-accent-blue">{item.website}</a></InfoItem>
+    </div>
+);
+
+const RestaurantCard = ({ item }: { item: Restaurant }) => (
+    <div className="space-y-2">
+        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name} <span className="text-sm font-normal text-slate-500 dark:text-slate-400">({item.cuisine})</span></p>
+        {item.address && <InfoItem icon={<MapPinIcon />}>{item.address}</InfoItem>}
+    </div>
+);
+
+const AttractionCard = ({ item }: { item: Attraction }) => (
+    <div className="space-y-2">
+        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name} <span className="text-sm font-normal text-slate-500 dark:text-slate-400">({item.type})</span></p>
+        {item.hours && <InfoItem icon={<ClockIcon />}><p>{item.hours}</p></InfoItem>}
+        {item.facilities && Object.entries(item.facilities).map(([key, value]) => (
+             <p key={key} className="text-sm text-slate-500 dark:text-slate-400 pl-8 -indent-8"><span className="font-semibold text-charcoal dark:text-slate-300">{key}:</span> {value}</p>
+        ))}
+    </div>
+);
+
+const RailCard = ({ item }: { item: RailTransport }) => (
+    <div className="space-y-2">
+        <p className="font-semibold text-charcoal dark:text-slate-200">{item.station}</p>
+        <InfoItem icon={<MapPinIcon />}>{item.address}</InfoItem>
+        <InfoItem icon={<InfoIcon />}><p><strong>Service:</strong> {item.key_service}</p></InfoItem>
+        <InfoItem icon={<InfoIcon />}><p><strong>Destinations:</strong> {item.destinations}</p></InfoItem>
+        <InfoItem icon={<ClockIcon />}><p><strong>Frequency:</strong> {item.frequency}</p></InfoItem>
+    </div>
+);
+
+const BusCard = ({ item }: { item: BusTransport }) => (
+    <div className="space-y-2">
+        <p className="font-semibold text-charcoal dark:text-slate-200">{item.operator}</p>
+        <div className="pl-4 border-l-2 border-slate-200 dark:border-slate-700 ml-2 mt-2 space-y-2">
+            <p className="font-semibold text-charcoal dark:text-slate-200">{item.tourist_line.name}</p>
+            <InfoItem icon={<InfoIcon />}><p><strong>Route:</strong> {item.tourist_line.route}</p></InfoItem>
+            <InfoItem icon={<ClockIcon />}><p><strong>Frequency:</strong> {item.tourist_line.frequency}</p></InfoItem>
+            <InfoItem icon={<InfoIcon />}><p>{item.tourist_line.details}</p></InfoItem>
+        </div>
+        <InfoItem icon={<InfoIcon />}><p><strong>Regional lines:</strong> {item.regional_lines}</p></InfoItem>
+    </div>
+);
+
+const TaxiCard = ({ item }: { item: TaxiService }) => (
+    <div className="space-y-4">
+        <p className="text-sm text-slate-500 dark:text-slate-400 italic">{item.note}</p>
+        {item.companies.map(company => (
+            <div key={company.name} className="space-y-2">
+                <p className="font-semibold text-charcoal dark:text-slate-200">{company.name}</p>
+                <InfoItem icon={<PhoneIcon />}><a href={`tel:${company.phone}`} className="hover:underline">{company.phone}</a></InfoItem>
+                <InfoItem icon={<InfoIcon />}><p>{company.services.join(', ')}</p></InfoItem>
+            </div>
+        ))}
+         <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Sample Fares</p>
+            <p className="text-sm text-slate-600 dark:text-slate-300">Base: {item.fares.base_fare}, Per km: {item.fares.per_km_rate}, Waiting (hourly): {item.fares.waiting_time_hourly}</p>
+        </div>
+    </div>
+);
+
+const RideSharingCard = ({ item }: { item: RideSharing }) => (
+    <div className="space-y-2">
+        <p className="font-semibold text-charcoal dark:text-slate-200">{item.provider} ({item.service})</p>
+        <InfoItem icon={<InfoIcon />}><p>{item.details}</p></InfoItem>
     </div>
 );
 
 
 export default function DirectoryView({ onClose }: DirectoryViewProps) {
-    const [openSection, setOpenSection] = useState<string | null>('Civic & Emergency');
+    const [openSection, setOpenSection] = useState<string | null>('civic');
     const { directory } = directoryData;
 
-    const toggleSection = (title: string) => {
-        setOpenSection(openSection === title ? null : title);
+    const toggleSection = (section: string) => {
+        setOpenSection(openSection === section ? null : section);
     };
-    
-    const sections = [
-        { 
-            title: 'Civic & Emergency', 
-            icon: <AlertTriangleIcon className="w-6 h-6"/>, 
-            content: (
-                <div className="space-y-6">
-                    <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800">
-                        <h4 className="font-bold text-amber-800 dark:text-amber-200">Emergency Numbers</h4>
-                        <div className="mt-2 flex gap-6">
-                            <p><strong className="font-mono">Police:</strong> {directory.civic_infrastructure_emergency_services.emergency_numbers.police}</p>
-                            <p><strong className="font-mono">Fire & Rescue:</strong> {directory.civic_infrastructure_emergency_services.emergency_numbers.fire_rescue}</p>
-                        </div>
-                    </div>
-                    <SectionCard title="Municipal Administration"><CivicCard item={directory.civic_infrastructure_emergency_services.municipal_administration} /></SectionCard>
-                    <SectionCard title="Tourist Information"><CivicCard item={directory.civic_infrastructure_emergency_services.tourist_information} /></SectionCard>
-                    <SectionCard title="Police Station"><CivicCard item={directory.civic_infrastructure_emergency_services.police} /></SectionCard>
-                </div>
-            )
-        },
-        { 
-            title: 'Healthcare & Wellness', 
-            icon: <HospitalIcon className="w-6 h-6"/>, 
-            content: (
-                 <div className="space-y-6">
-                    <SectionCard title="Hospital">
-                        <div className="space-y-2">
-                             <p className="font-semibold text-charcoal dark:text-slate-200">{directory.healthcare_wellness.hospital.name}</p>
-                             <InfoItem icon={<MapPinIcon />}>{directory.healthcare_wellness.hospital.address}</InfoItem>
-                             <InfoItem icon={<PhoneIcon />}><a href={`tel:${directory.healthcare_wellness.hospital.phone}`} className="hover:underline">{directory.healthcare_wellness.hospital.phone}</a></InfoItem>
-                             <InfoItem icon={<LinkIcon />}><a href={directory.healthcare_wellness.hospital.website} target="_blank" rel="noopener noreferrer" className="hover:underline">Website</a></InfoItem>
-                        </div>
-                    </SectionCard>
-                     <SectionCard title="Medical Center (MVZ)">
-                        <div className="space-y-2">
-                             <p className="font-semibold text-charcoal dark:text-slate-200">{directory.healthcare_wellness.medical_center.name}</p>
-                             <InfoItem icon={<MapPinIcon />}>{directory.healthcare_wellness.medical_center.address}</InfoItem>
-                            <div className="pl-8 pt-2 space-y-2">
-                                {directory.healthcare_wellness.medical_center.specializations.map(s => (
-                                    <p key={s.specialization} className="text-sm"><strong>{s.specialization}:</strong> {s.doctors.join(', ')}</p>
-                                ))}
+
+    return (
+        // @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors.
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+        >
+            <div className="flex justify-between items-center mb-6 border-b-2 border-slate-200 dark:border-slate-700 pb-2">
+                <h2 className="text-3xl font-serif font-bold text-charcoal dark:text-green-300">Community Directory</h2>
+                <button
+                    onClick={onClose}
+                    className="shrink-0 ml-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 rounded-lg hover:bg-light-grey dark:hover:bg-zinc-700 transition-colors"
+                >
+                    &larr; Back to Magazine
+                </button>
+            </div>
+            <p className="mb-6 text-slate-600 dark:text-slate-400">
+                A curated list of essential services and points of interest for residents and visitors in {directoryData.region}.
+            </p>
+
+            <div className="rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+                <AccordionSection
+                    title="Civic & Emergency"
+                    icon={<BuildingOfficeIcon className="w-6 h-6" />}
+                    isOpen={openSection === 'civic'}
+                    onToggle={() => toggleSection('civic')}
+                >
+                    <SectionCard title="Emergency Numbers">
+                        <div className="flex items-center gap-4 p-4 bg-red-50 dark:bg-red-900/40 rounded-lg border border-red-200 dark:border-red-800">
+                            <AlertTriangleIcon className="w-8 h-8 text-red-600 dark:text-red-400 shrink-0" />
+                            <div>
+                                <p>Police: <a href="tel:110" className="font-bold text-lg hover:underline">110</a></p>
+                                <p>Fire & Rescue: <a href="tel:112" className="font-bold text-lg hover:underline">112</a></p>
                             </div>
                         </div>
+                    </SectionCard>
+                    <SectionCard title="Municipal Services">
+                        <CivicCard item={directory.civic_infrastructure_emergency_services.municipal_administration} />
+                        <CivicCard item={directory.civic_infrastructure_emergency_services.tourist_information} />
+                        <CivicCard item={directory.civic_infrastructure_emergency_services.police} />
+                    </SectionCard>
+                </AccordionSection>
+
+                <AccordionSection
+                    title="Healthcare & Wellness"
+                    icon={<HospitalIcon className="w-6 h-6" />}
+                    isOpen={openSection === 'healthcare'}
+                    onToggle={() => toggleSection('healthcare')}
+                >
+                    <SectionCard title="Hospital">
+                        <HospitalCard item={directory.healthcare_wellness.hospital} />
+                    </SectionCard>
+                    <SectionCard title="Medical Center (MVZ)">
+                        <MedicalCenterCard item={directory.healthcare_wellness.medical_center} />
                     </SectionCard>
                     <SectionCard title="Independent Practices">
-                         {directory.healthcare_wellness.independent_practices.map(p => (
-                             <div key={p.name} className="pb-2">
-                                 <p className="font-semibold text-charcoal dark:text-slate-200">{p.name}</p>
-                                 <InfoItem icon={<StethoscopeIcon />}>{p.specialization}</InfoItem>
-                                 <InfoItem icon={<MapPinIcon />}>{p.address}</InfoItem>
-                                 {p.phone && <InfoItem icon={<PhoneIcon />}><a href={`tel:${p.phone.replace(/\s/g, '')}`}>{p.phone}</a></InfoItem>}
-                             </div>
-                         ))}
+                        {directory.healthcare_wellness.independent_practices.map(item => <PracticeCard key={item.name} item={item} />)}
                     </SectionCard>
-                 </div>
-            )
-        },
-        { 
-            title: 'Transportation', 
-            icon: <TrainIcon className="w-6 h-6"/>, 
-            content: (
-                <div className="space-y-6">
-                    <SectionCard title="Rail">
-                         <InfoItem icon={<TrainIcon />}><strong>{directory.transportation_mobility.public_transport.rail.key_service}</strong> to {directory.transportation_mobility.public_transport.rail.destinations}</InfoItem>
-                         <InfoItem icon={<MapPinIcon />}>{directory.transportation_mobility.public_transport.rail.station}, {directory.transportation_mobility.public_transport.rail.address}</InfoItem>
-                         <InfoItem icon={<ChevronRightIcon className="w-5 h-5" />}>Frequency: {directory.transportation_mobility.public_transport.rail.frequency}</InfoItem>
+                    <SectionCard title="Pharmacies">
+                        {directory.healthcare_wellness.pharmacies.map(item => <PharmacyCard key={item.name} item={item} />)}
                     </SectionCard>
-                    <SectionCard title="Bus">
-                        <p className="text-sm">Operator: {directory.transportation_mobility.public_transport.bus.operator}</p>
-                        <div className="mt-2 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
-                             <p className="font-semibold">{directory.transportation_mobility.public_transport.bus.tourist_line.name}</p>
-                             <p className="text-sm">{directory.transportation_mobility.public_transport.bus.tourist_line.route}</p>
-                             <p className="text-xs mt-1 text-slate-500">{directory.transportation_mobility.public_transport.bus.tourist_line.details}</p>
+                </AccordionSection>
+                
+                <AccordionSection
+                    title="Commerce & Services"
+                    icon={<UsersIcon className="w-6 h-6" />}
+                    isOpen={openSection === 'commerce'}
+                    onToggle={() => toggleSection('commerce')}
+                >
+                    <SectionCard title="Supermarkets">
+                        {directory.commerce_services.retail_shopping.supermarkets.map(item => <RetailCard key={item.name} item={item} />)}
+                    </SectionCard>
+                    <SectionCard title="Other Retail">
+                        {directory.commerce_services.retail_shopping.drugstores.map(item => <RetailCard key={item.name} item={item} />)}
+                        {directory.commerce_services.retail_shopping.bakeries.map(item => <RetailCard key={item.name} item={item} />)}
+                        {directory.commerce_services.retail_shopping.butchers.map(item => <RetailCard key={item.name} item={item} />)}
+                        {directory.commerce_services.retail_shopping.bookstores.map(item => <RetailCard key={item.name} item={item} />)}
+                        {directory.commerce_services.retail_shopping.florists.map(item => <RetailCard key={item.name} item={item} />)}
+                    </SectionCard>
+                    <SectionCard title="Financial & Postal">
+                        {directory.commerce_services.financial_postal_services.banks.map(item => <BankCard key={item.name} item={item} />)}
+                        <div className="space-y-2">
+                            <p className="font-semibold text-charcoal dark:text-slate-200">{directory.commerce_services.financial_postal_services.postal_services.provider}</p>
+                            <InfoItem icon={<InfoIcon />}>{directory.commerce_services.financial_postal_services.postal_services.model}</InfoItem>
+                            {directory.commerce_services.financial_postal_services.postal_services.locations.map(loc => <InfoItem key={loc.name} icon={<MapPinIcon />}>{loc.name} at {loc.address}</InfoItem>)}
                         </div>
                     </SectionCard>
-                    <SectionCard title="Taxi & Ride Sharing">
-                         {directory.transportation_mobility.private_transport.taxi_services.companies.map(c => (
-                            <div key={c.name} className="pb-2">
-                                <p className="font-semibold text-charcoal dark:text-slate-200">{c.name}</p>
-                                <InfoItem icon={<PhoneIcon />}><a href={`tel:${c.phone.replace(/\s/g, '')}`}>{c.phone}</a></InfoItem>
-                            </div>
-                         ))}
-                         <p className="text-xs text-slate-500">{directory.transportation_mobility.private_transport.taxi_services.note}</p>
-                         <div className="pt-2">
-                            <p className="text-sm"><strong>Ride Sharing:</strong> {directory.transportation_mobility.private_transport.ride_sharing.provider} {directory.transportation_mobility.private_transport.ride_sharing.service} is available.</p>
-                         </div>
-                    </SectionCard>
-                </div>
-            ) 
-        },
-    ];
-
-  return (
-    // FIX: Suppress TypeScript error. The framer-motion props are not recognized in this environment.
-    // @ts-ignore
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.5, ease: "easeInOut" }}
-    >
-      <div className="flex justify-between items-center mb-6 border-b-2 border-slate-200 dark:border-slate-700 pb-2">
-        <h2 className="text-3xl font-serif font-bold text-charcoal dark:text-green-300">Local Directory</h2>
-        <button 
-            onClick={onClose}
-            className="shrink-0 ml-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 rounded-lg hover:bg-light-grey dark:hover:bg-zinc-700 transition-colors"
-        >
-            &larr; Back to Magazine
-        </button>
-      </div>
-        <div className="bg-off-white dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-            {sections.map(section => (
-                <AccordionSection 
-                    key={section.title}
-                    title={section.title}
-                    icon={section.icon}
-                    isOpen={openSection === section.title}
-                    onToggle={() => toggleSection(section.title)}
-                >
-                    {section.content}
                 </AccordionSection>
-            ))}
-        </div>
-    </motion.div>
-  );
+                
+                <AccordionSection
+                    title="Tourism & Hospitality"
+                    icon={<MapPinIcon className="w-6 h-6" />}
+                    isOpen={openSection === 'tourism'}
+                    onToggle={() => toggleSection('tourism')}
+                >
+                    <SectionCard title="Accommodation">
+                        {directory.tourism_hospitality.accommodation.map(item => <AccommodationCard key={item.name} item={item} />)}
+                    </SectionCard>
+                    <SectionCard title="Restaurants (German/Regional)">
+                        {directory.tourism_hospitality.gastronomy.restaurants.german_regional.map(item => <RestaurantCard key={item.name} item={item} />)}
+                    </SectionCard>
+                    <SectionCard title="Restaurants (International)">
+                        {directory.tourism_hospitality.gastronomy.restaurants.international.map(item => <RestaurantCard key={item.name} item={item} />)}
+                    </SectionCard>
+                    <SectionCard title="Cafés, Bistros & Ice Cream">
+                        {directory.tourism_hospitality.gastronomy.cafes_bistros_ice_cream.map(item => <RestaurantCard key={item.name} item={item} />)}
+                    </SectionCard>
+                    <SectionCard title="Bars & Pubs">
+                        {directory.tourism_hospitality.gastronomy.bars_pubs.map(item => <RestaurantCard key={item.name} item={item} />)}
+                    </SectionCard>
+                </AccordionSection>
+
+                <AccordionSection
+                    title="Culture, Education & Recreation"
+                    icon={<BuildingOfficeIcon className="w-6 h-6" />}
+                    isOpen={openSection === 'culture'}
+                    onToggle={() => toggleSection('culture')}
+                >
+                    <SectionCard title="Key Attractions">
+                        {directory.culture_education_recreation.key_attractions.map(item => <AttractionCard key={item.name} item={item} />)}
+                    </SectionCard>
+                </AccordionSection>
+                
+                <AccordionSection
+                    title="Transportation & Mobility"
+                    icon={<TrainIcon className="w-6 h-6" />}
+                    isOpen={openSection === 'transportation'}
+                    onToggle={() => toggleSection('transportation')}
+                >
+                    <SectionCard title="Rail">
+                        <RailCard item={directory.transportation_mobility.public_transport.rail} />
+                    </SectionCard>
+                    <SectionCard title="Bus">
+                        <BusCard item={directory.transportation_mobility.public_transport.bus} />
+                    </SectionCard>
+                    <SectionCard title="Taxi">
+                        <TaxiCard item={directory.transportation_mobility.private_transport.taxi_services} />
+                    </SectionCard>
+                    <SectionCard title="Ride Sharing">
+                        <RideSharingCard item={directory.transportation_mobility.private_transport.ride_sharing} />
+                    </SectionCard>
+                </AccordionSection>
+            </div>
+        </motion.div>
+    );
 }

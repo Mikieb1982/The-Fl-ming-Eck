@@ -2,10 +2,13 @@
 
 
 
+
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Article } from '../types';
 import { fmtDate } from '../utils/helpers';
+import { categoryStyleMap } from '../constants';
 
 interface SearchResultsProps {
   articles: Article[];
@@ -19,6 +22,7 @@ const itemVariants = {
 };
 
 const SearchResultItem = ({ article, onSelectArticle }: { article: Article, onSelectArticle: (id: string) => void }) => {
+  const categoryStyles = categoryStyleMap[article.category] || categoryStyleMap['default'];
   return (
     // @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'variants' to be flagged as errors.
     <motion.div
@@ -27,10 +31,13 @@ const SearchResultItem = ({ article, onSelectArticle }: { article: Article, onSe
       className="group cursor-pointer"
     >
         <div className="p-4 rounded-lg group-hover:bg-slate-50 dark:group-hover:bg-zinc-900/50 transition-colors">
-            <p className="text-sm font-semibold text-brand-green dark:text-green-400">
-                {article.category} · <time dateTime={article.date}>{fmtDate(article.date)}</time>
-            </p>
-            <h3 className="mt-1 text-xl font-serif font-bold text-charcoal dark:text-slate-200 group-hover:text-sandstone-ochre dark:group-hover:text-yellow-500 transition-colors">
+            <div className="flex items-center gap-2">
+                <span className={`inline-block px-2 py-1 text-xs font-bold uppercase rounded-full ${categoryStyles.bg} ${categoryStyles.text} self-start`}>
+                    {article.category}
+                </span>
+                <time dateTime={article.date} className="text-sm text-slate-500 dark:text-slate-400">{fmtDate(article.date)}</time>
+            </div>
+            <h3 className="mt-2 text-xl font-serif font-bold text-charcoal dark:text-slate-200 group-hover:text-sandstone-ochre dark:group-hover:text-yellow-500 transition-colors">
                 {article.title}
             </h3>
             <p className="mt-2 text-slate-600 dark:text-slate-400 line-clamp-2">

@@ -61,7 +61,7 @@ export default function Poll({ articleId, question, initialOptions }: PollProps)
   };
 
   return (
-    <div className="not-prose my-8 p-6 bg-light-grey dark:bg-zinc-900/50 rounded-lg border border-slate-200 dark:border-slate-700">
+    <div className="not-prose my-8 p-6 bg-sandstone-ochre/10 dark:bg-sandstone-ochre/20 rounded-lg border border-slate-200 dark:border-slate-700">
       <h4 className="font-serif font-bold text-xl text-charcoal dark:text-slate-200">{question}</h4>
       <div className="mt-4 space-y-3">
         <AnimatePresence mode="wait">
@@ -80,7 +80,7 @@ export default function Poll({ articleId, question, initialOptions }: PollProps)
                 <button
                   key={index}
                   onClick={() => handleVote(index)}
-                  className="w-full text-left p-3 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-medium text-charcoal dark:text-slate-300"
+                  className="w-full text-left p-3 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-brand-blue dark:hover:border-accent-blue transition-colors font-medium text-charcoal dark:text-slate-300"
                 >
                   {option.text}
                 </button>

@@ -2,9 +2,6 @@
 
 
 
-
-
-
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Article, Post, Reply } from '../types';
@@ -100,7 +97,7 @@ function PostCard({ post, onReply, allArticles, onSelectArticle, onSelectTag }: 
     const categoryClasses = post.category ? (categoryColorMap[post.category] || categoryColorMap['General']) : categoryColorMap['General'];
     
     return (
-        <div className={`p-4 sm:p-6 rounded-2xl shadow-sm border ${post.pinned ? 'bg-light-grey dark:bg-zinc-900/50 border-sandstone-ochre' : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-slate-700'}`}>
+        <div className={`p-4 sm:p-6 rounded-2xl shadow-sm border ${post.pinned ? 'bg-amber-50 dark:bg-amber-900/40 border-sandstone-ochre' : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-slate-700'}`}>
             <div className="flex items-start gap-4">
                 <UserAvatar name={post.author} />
                 <div className="flex-grow">
@@ -167,7 +164,7 @@ function PostCard({ post, onReply, allArticles, onSelectArticle, onSelectTag }: 
                                 animate={{ opacity: 1, y: 0 }}
                             >
                                 <UserAvatar name={reply.author} />
-                                <div className="flex-grow p-3 rounded-md bg-slate-50 dark:bg-slate-700/50">
+                                <div className="flex-grow p-3 rounded-md bg-brand-green/10 dark:bg-brand-green/20">
                                     <p className="text-sm text-slate-500 dark:text-slate-400">
                                         <span className="font-semibold text-charcoal dark:text-slate-300">{reply.author}</span> · {timeAgo(reply.timestamp)}
                                     </p>
@@ -320,7 +317,7 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                                         <button 
                                             key={cat}
                                             onClick={() => setActiveCategory(cat)}
-                                            className={`px-3 py-1 text-xs font-semibold rounded-full ${activeCategory === cat ? 'bg-brand-green text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'}`}
+                                            className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors ${activeCategory === cat ? 'bg-brand-blue text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'}`}
                                         >
                                             {cat}
                                         </button>
@@ -330,8 +327,8 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                         )}
                          <div className="flex items-center gap-2">
                             <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">Sort by:</span>
-                            <button onClick={() => setSortBy('newest')} className={`px-3 py-1 text-sm rounded-full ${sortBy === 'newest' ? 'bg-brand-green text-white' : 'bg-slate-200 dark:bg-slate-700'}`}>Newest</button>
-                            <button onClick={() => setSortBy('replies')} className={`px-3 py-1 text-sm rounded-full ${sortBy === 'replies' ? 'bg-brand-green text-white' : 'bg-slate-200 dark:bg-slate-700'}`}>Most Replies</button>
+                            <button onClick={() => setSortBy('newest')} className={`px-3 py-1 text-sm font-medium rounded-full transition-colors ${sortBy === 'newest' ? 'bg-brand-blue text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'}`}>Newest</button>
+                            <button onClick={() => setSortBy('replies')} className={`px-3 py-1 text-sm font-medium rounded-full transition-colors ${sortBy === 'replies' ? 'bg-brand-blue text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'}`}>Most Replies</button>
                         </div>
                     </div>
 
@@ -349,7 +346,7 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
 
                 {/* Sidebar */}
                 <aside className="md:col-span-1 space-y-6">
-                    <div className="p-4 rounded-lg bg-off-white dark:bg-zinc-900 shadow-sm border border-slate-200 dark:border-slate-700 bg-texture-wood">
+                    <div className="p-4 rounded-lg bg-sandstone-ochre/5 dark:bg-sandstone-ochre/10 shadow-sm border border-slate-200 dark:border-slate-700 bg-texture-wood">
                         <button
                             onClick={() => setShowNewPostForm(true)}
                             className="w-full px-4 py-3 text-sm font-semibold text-white bg-sandstone-ochre rounded-lg shadow-md hover:bg-warm-terracotta disabled:bg-slate-400 transition-colors"
@@ -358,7 +355,7 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                         </button>
                     </div>
 
-                    <div className="p-4 rounded-lg bg-off-white dark:bg-zinc-900/50 border border-slate-200 dark:border-slate-700/50 bg-texture-wood">
+                    <div className="p-4 rounded-lg bg-sandstone-ochre/5 dark:bg-sandstone-ochre/10 border border-slate-200 dark:border-slate-700/50 bg-texture-wood">
                         <h4 className="font-semibold text-charcoal dark:text-slate-300">Need an idea?</h4>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                             Get an AI-powered conversation starter.
@@ -397,8 +394,8 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                     className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
                     onClick={() => setShowNewPostForm(false)}
                 >
-                    // FIX: Suppress TypeScript error. The framer-motion props are not recognized in this environment.
-                    // @ts-ignore
+                    {/* FIX: Suppress TypeScript error. The framer-motion props are not recognized in this environment. */}
+                    {/* @ts-ignore */}
                     <motion.div
                         initial={{ scale: 0.95, y: 20 }}
                         animate={{ scale: 1, y: 0 }}

@@ -39,7 +39,7 @@ export default function CookieConsent({ onShowPrivacy }: CookieConsentProps) {
                     animate={{ y: '0%' }}
                     exit={{ y: '100%' }}
                     transition={{ type: 'spring', stiffness: 200, damping: 30 }}
-                    className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-[0_-4px_10px_rgba(0,0,0,0.1)] border-t border-slate-200 dark:border-slate-700"
+                    className="fixed bottom-0 left-0 right-0 z-[70] p-4 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-[0_-4px_10px_rgba(0,0,0,0.1)] border-t border-slate-200 dark:border-slate-700"
                     role="dialog"
                     aria-live="polite"
                     aria-label="Cookie Consent"

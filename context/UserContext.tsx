@@ -87,6 +87,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
                     { theme: 'outline', size: 'large', type: 'icon', shape: 'circle', text: 'signin_with' }
                 );
             }
+            const signInButtonMobile = document.getElementById('g_id_signin_mobile');
+             if (signInButtonMobile && !storedUser) {
+                 window.google.accounts.id.renderButton(
+                    signInButtonMobile,
+                    { theme: 'outline', size: 'large', type: 'icon', shape: 'circle', text: 'signin_with' }
+                );
+            }
         } catch (error) {
             console.error("Google Sign-In initialization failed:", error);
         } finally {
