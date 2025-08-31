@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useMemo, Fragment, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Article, ArticleBodyBlock } from '../types';
@@ -15,6 +16,7 @@ import Tag from './Tag';
 import AudioPlayer from './AudioPlayer';
 import VideoEmbed from './VideoEmbed';
 import Poll from './Poll';
+import BookmarkButton from './BookmarkButton';
 
 interface ArticleViewProps {
   article: Article | undefined;
@@ -286,7 +288,8 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
            {/* Share & Font Tools - Sidebar */}
           <aside className="col-span-12 lg:col-span-3">
             <div className="lg:sticky lg:top-24 h-fit">
-              <div className="flex flex-row lg:flex-col items-center lg:items-start justify-between lg:justify-start gap-4 border-b lg:border-b-0 lg:border-l border-slate-200 dark:border-slate-700 pb-4 lg:pb-0 lg:pl-4">
+              <div className="flex flex-col items-start gap-y-4 border-b lg:border-b-0 lg:border-l border-slate-200 dark:border-slate-700 pb-4 lg:pb-0 lg:pl-4">
+                  <BookmarkButton articleId={article.id} asText />
                   <ShareButtons article={article} />
                   <FontSizeAdjuster 
                     onIncrease={handleIncreaseFont}

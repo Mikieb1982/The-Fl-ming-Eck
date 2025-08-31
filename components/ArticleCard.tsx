@@ -1,8 +1,11 @@
 
+
+
 import React from 'react';
 import { Article } from '../types';
 import { calculateReadTime } from '../utils/helpers';
 import { useGeneratedPlaceholder } from '../hooks/useGeneratedPlaceholder';
+import BookmarkButton from './BookmarkButton';
 
 const categoryTextColorMap: { [key: string]: string } = {
   'Community': 'text-warm-terracotta dark:text-yellow-600',
@@ -10,6 +13,7 @@ const categoryTextColorMap: { [key: string]: string } = {
   'History': 'text-sandstone-ochre dark:text-yellow-500',
   'City Guide': 'text-brand-green dark:text-green-400',
   'Guides': 'text-teal-600 dark:text-teal-400',
+  'Commentary': 'text-indigo-700 dark:text-indigo-400',
   'default': 'text-slate-600 dark:text-slate-400',
 };
 
@@ -29,8 +33,11 @@ export default function ArticleCard({ article, onClick }: ArticleCardProps) {
   return (
     <div
       onClick={onClick}
-      className="group cursor-pointer flex flex-col h-full rounded-lg overflow-hidden bg-white dark:bg-slate-800 shadow-md hover:shadow-xl dark:shadow-none dark:hover:shadow-2xl dark:hover:shadow-sandstone-ochre/10 transition-all duration-300 ease-in-out group-hover:-translate-y-1 border border-slate-200 dark:border-slate-700"
+      className="group cursor-pointer flex flex-col h-full rounded-lg overflow-hidden bg-white dark:bg-slate-800 shadow-md hover:shadow-xl dark:shadow-none dark:hover:shadow-2xl dark:hover:shadow-sandstone-ochre/10 transition-all duration-300 ease-in-out group-hover:-translate-y-1 border border-slate-200 dark:border-slate-700 relative"
     >
+      <div className="absolute top-2 right-2 z-10 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm rounded-full">
+        <BookmarkButton articleId={article.id} />
+      </div>
       <div className="shrink-0 overflow-hidden">
         {isLoading && <div className="w-full aspect-[16/9] bg-slate-200 dark:bg-slate-700 animate-pulse" />}
         {!isLoading && heroUrl && (

@@ -1,5 +1,6 @@
 
 
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Article } from '../types';
@@ -8,6 +9,7 @@ import { fmtDate } from '../utils/helpers';
 interface SearchResultsProps {
   articles: Article[];
   onSelectArticle: (id: string) => void;
+  searchQuery: string;
 }
 
 const itemVariants = {
@@ -39,27 +41,32 @@ const SearchResultItem = ({ article, onSelectArticle }: { article: Article, onSe
 };
 
 
-export default function SearchResults({ articles, onSelectArticle }: SearchResultsProps) {
+export default function SearchResults({ articles, onSelectArticle, searchQuery }: SearchResultsProps) {
   return (
-    // @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors.
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={{
-        hidden: { opacity: 0 },
-        visible: {
-          opacity: 1,
-          transition: {
-            staggerChildren: 0.07,
+    <>
+      <h2 className="text-2xl font-serif font-bold text-slate-800 dark:text-slate-200 mb-6">
+        Results for "{searchQuery}"
+      </h2>
+      {/* @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors. */}
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.07,
+            },
           },
-        },
-      }}
-    >
-        <div className="divide-y divide-slate-200 dark:divide-slate-700">
-            {articles.map(article => (
-                <SearchResultItem key={article.id} article={article} onSelectArticle={onSelectArticle} />
-            ))}
-        </div>
-    </motion.div>
+        }}
+      >
+          <div className="divide-y divide-slate-200 dark:divide-slate-700">
+              {articles.map(article => (
+                  <SearchResultItem key={article.id} article={article} onSelectArticle={onSelectArticle} />
+              ))}
+          </div>
+      </motion.div>
+    </>
   );
 }

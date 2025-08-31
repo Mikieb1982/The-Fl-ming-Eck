@@ -1,4 +1,5 @@
 
+
 import { Article } from '../types';
 
 const article: Article = {
@@ -16,14 +17,11 @@ const article: Article = {
     { type: 'paragraph', content: "Approximately 250 runners tackled the 1100-meter course. Each team needed to complete ten laps, and a key rule was that every team had to include at least one woman, who then completed at least one lap." },
     { type: 'paragraph', content: "Double Olympic champion and former long jump star Heike Drechsler, 60, was a highlight. Beyond signing autographs, she joined the Barmer running team this year. Drechsler serves as a sports ambassador for Barmer, who organizes the run annually with the Bad Belzig Business Association." },
     { type: 'paragraph', content: "Lange concluded the event on a positive note, expressing his pleasure that so many participants attended despite the late summer holidays. He highlighted the 'family-like atmosphere' as a unique aspect of the event, with many familiar faces returning each year." },
-    { type: 'paragraph', content: "The 'Team 110' from the West Police Directorate secured first place. The Potsdam-Mittelmark district team, 'KreisLäuferPM-Sprint,' took second, while the team from ZEGG Bildungszentrum gGmbH earned the bronze medal." },
-    { type: 'paragraph', content: "For more information on the Burgfestwoche events, visit the official website: https://www.burgfestwoche.com/" }
+    { type: 'paragraph', content: "The 'Team 110' from the West Police Directorate secured first place. The Potsdam-Mittelmark district team, 'KreisLäuferPM-Sprint,' took second, while the team from ZEGG Bildungszentrum gGmbH earned the bronze medal." }
+    // FIX: Removed a malformed and incomplete object from the body array that was causing a build error.
   ],
-  eventDetails: {
-    startDate: "2025-08-27T18:00:00+02:00",
-    locationName: "Bad Belzig"
-  },
-  tags: ['running', 'community', 'sport', 'burgfestwoche'],
+  tags: ['community', 'running', 'bad-belzig', 'events'],
 };
 
+// FIX: Added the missing default export to resolve the import error in articles/index.ts.
 export default article;

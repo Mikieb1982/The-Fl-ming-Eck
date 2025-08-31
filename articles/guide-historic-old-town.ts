@@ -1,4 +1,3 @@
-
 import { Article } from '../types';
 
 const article: Article = {

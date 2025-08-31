@@ -1,5 +1,8 @@
 
 
+
+
+
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -20,6 +23,7 @@ import BackToTopButton from "./components/BackToTopButton";
 import DirectoryView from "./components/DirectoryView";
 import HomePage from "./components/HomePage";
 import Header from "./components/Header";
+import BookmarksView from "./components/BookmarksView";
 
 const USER_INTERESTS_KEY = 'flaming-eck-user-interests';
 
@@ -32,6 +36,7 @@ export default function App() {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isCommunityOpen, setIsCommunityOpen] = useState(false);
   const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
+  const [isBookmarksOpen, setIsBookmarksOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState('All');
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [legalPage, setLegalPage] = useState<"impressum" | "privacy" | null>(null);
@@ -55,6 +60,7 @@ export default function App() {
     setSearchQuery('');
     setIsCommunityOpen(false);
     setIsDirectoryOpen(false);
+    setIsBookmarksOpen(false);
     setActiveTag(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
@@ -69,6 +75,7 @@ export default function App() {
     setActiveCategory('All');
     setActiveIndex(null);
     setIsDirectoryOpen(false);
+    setIsBookmarksOpen(false);
     // Don't close community view, let it filter internally
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
@@ -77,6 +84,7 @@ export default function App() {
     setActiveIndex(index);
     setIsCommunityOpen(false);
     setIsDirectoryOpen(false);
+    setIsBookmarksOpen(false);
     setActiveTag(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
@@ -181,6 +189,8 @@ export default function App() {
       if (e.key === "Escape") {
         if(legalPage) {
           setLegalPage(null);
+        } else if (isBookmarksOpen) {
+          setIsBookmarksOpen(false);
         } else if (isDirectoryOpen) {
           setIsDirectoryOpen(false);
         } else if (isCommunityOpen) {
@@ -196,7 +206,7 @@ export default function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [nextArticle, prevArticle, handleCloseArticle, activeIndex, legalPage, isCommunityOpen, isDirectoryOpen]);
+  }, [nextArticle, prevArticle, handleCloseArticle, activeIndex, legalPage, isCommunityOpen, isDirectoryOpen, isBookmarksOpen]);
   
   useEffect(() => {
     const toggleVisibility = () => {
@@ -247,13 +257,14 @@ export default function App() {
     }
   }, [currentArticle]);
 
-  const isHomePage = !searchQuery.trim() && activeCategory === 'All' && !activeTag && !currentArticle && !isCommunityOpen && !isDirectoryOpen;
+  const isHomePage = !searchQuery.trim() && activeCategory === 'All' && !activeTag && !currentArticle && !isCommunityOpen && !isDirectoryOpen && !isBookmarksOpen;
 
   const openCommunity = () => {
     setIsCommunityOpen(true);
     setActiveIndex(null);
     setSearchQuery('');
     setIsDirectoryOpen(false);
+    setIsBookmarksOpen(false);
     setActiveTag(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -263,15 +274,27 @@ export default function App() {
       setActiveIndex(null);
       setSearchQuery('');
       setIsCommunityOpen(false);
+      setIsBookmarksOpen(false);
       setActiveTag(null);
       window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   
+  const openBookmarks = () => {
+      setIsBookmarksOpen(true);
+      setActiveIndex(null);
+      setSearchQuery('');
+      setIsCommunityOpen(false);
+      setIsDirectoryOpen(false);
+      setActiveTag(null);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleSearchChange = useCallback((query: string) => {
     setSearchQuery(query);
     if (query.trim()) {
       setIsCommunityOpen(false);
       setIsDirectoryOpen(false);
+      setIsBookmarksOpen(false);
       setActiveIndex(null);
       setActiveTag(null);
     }
@@ -284,10 +307,11 @@ export default function App() {
         onToggleCalendar={() => setIsCalendarOpen(prev => !prev)}
         onToggleCommunity={openCommunity}
         onToggleDirectory={openDirectory}
+        onToggleBookmarks={openBookmarks}
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
       />
-      <div className="max-w-7xl mx-auto px-4 lg:px-8 pb-4 pt-4 md:pt-8">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 pb-4 pt-24 md:pt-28">
         <EventsCalendar 
           isOpen={isCalendarOpen} 
           onClose={() => setIsCalendarOpen(false)} 
@@ -338,6 +362,14 @@ export default function App() {
                         onClose={() => setIsDirectoryOpen(false)}
                       />
                     </motion.div>
+                  ) : isBookmarksOpen ? (
+                    <motion.div key="bookmarksView">
+                        <BookmarksView 
+                            articles={sortedArticles}
+                            onSelectArticle={handleSelectArticleById}
+                            onClose={() => setIsBookmarksOpen(false)}
+                        />
+                    </motion.div>
                   ) : isHomePage ? (
                      <motion.div key="homePage">
                         <HomePage
@@ -347,18 +379,21 @@ export default function App() {
                      </motion.div>
                   ) : (
                     <motion.div key="filteredView">
-                       <h2 className="text-2xl font-serif font-bold text-slate-800 dark:text-slate-200 mb-6">
-                          Results for "{searchQuery}"
-                        </h2>
                       {displayedArticles.length > 0 ? (
                         <SearchResults
                             articles={displayedArticles}
                             onSelectArticle={handleSelectArticleById}
+                            searchQuery={searchQuery}
                         />
                       ) : (
-                        <p className="text-slate-500 dark:text-slate-400">
-                          No articles found matching your criteria.
-                        </p>
+                        <>
+                          <h2 className="text-2xl font-serif font-bold text-slate-800 dark:text-slate-200 mb-6">
+                            Results for "{searchQuery}"
+                          </h2>
+                          <p className="text-slate-500 dark:text-slate-400">
+                            No articles found matching your criteria.
+                          </p>
+                        </>
                       )}
                     </motion.div>
                   )}

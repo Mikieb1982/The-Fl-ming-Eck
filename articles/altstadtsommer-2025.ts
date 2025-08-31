@@ -7,7 +7,7 @@ const article: Article = {
   date: "2025-08-28",
   category: "Events",
   excerpt: "Mark your calendars for a traditional festival in Bad Belzig that celebrates community, culture, and summer, running from Friday, 29 August, to Sunday, 31 August.",
-  hero: ["https://i.imgur.com/AwRkXsa.jpeg"],
+  hero: ["https://i.imgur.com/wlEnc4L.jpeg"],
   pullQuote: "The festival takes over the entire inner city, with a variety of stages and venues.",
   body: [
     { type: 'paragraph', content: "Mark your calendars for Altstadtsommer 2025, a traditional festival in Bad Belzig that celebrates community, culture, and summer. The event runs from Friday, 29 August, to Sunday, 31 August, promising a weekend packed with music, food, and family-friendly activities." },

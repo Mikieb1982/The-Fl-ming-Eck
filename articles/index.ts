@@ -1,5 +1,6 @@
 import { Article } from '../types';
 
+import commentaryQuietCorner from './commentary-quiet-corner';
 import altstadtsommerGuide2025 from './altstadtsommer-guide-2025';
 import firmenlauf2025 from './firmenlauf-2025';
 import guideWiesenburgPark from './guide-wiesenburg-park';
@@ -12,6 +13,7 @@ import guideSteinthermeSpa from './guide-steintherme-spa';
 import guideNatureExperienceTrail from './guide-nature-experience-trail';
 
 export const articles: Article[] = [
+  commentaryQuietCorner,
   altstadtsommerGuide2025,
   firmenlauf2025,
   guideSteinthermeSpa,
