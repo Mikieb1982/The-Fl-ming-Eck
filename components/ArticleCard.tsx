@@ -1,6 +1,7 @@
 
 
 
+
 import React from 'react';
 import { Article } from '../types';
 import { calculateReadTime } from '../utils/helpers';
@@ -33,7 +34,7 @@ export default function ArticleCard({ article, onClick }: ArticleCardProps) {
   return (
     <div
       onClick={onClick}
-      className="group cursor-pointer flex flex-col h-full rounded-lg overflow-hidden bg-white dark:bg-slate-800 shadow-md hover:shadow-xl dark:shadow-none dark:hover:shadow-2xl dark:hover:shadow-sandstone-ochre/10 transition-all duration-300 ease-in-out group-hover:-translate-y-1 border border-slate-200 dark:border-slate-700 relative"
+      className="group cursor-pointer flex flex-col h-full rounded-lg overflow-hidden bg-white dark:bg-zinc-900 shadow-md hover:shadow-xl dark:shadow-none dark:hover:shadow-2xl dark:hover:shadow-sandstone-ochre/10 transition-all duration-300 ease-in-out group-hover:-translate-y-1 border border-slate-200 dark:border-slate-700 relative"
     >
       <div className="absolute top-2 right-2 z-10 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm rounded-full">
         <BookmarkButton articleId={article.id} />

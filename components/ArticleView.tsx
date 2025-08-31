@@ -1,6 +1,7 @@
 
 
 
+
 import React, { useState, useMemo, Fragment, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Article, ArticleBodyBlock } from '../types';
@@ -195,13 +196,13 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
     >
         <button 
             onClick={onClose}
-            className="mb-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-slate-300 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-light-grey dark:hover:bg-slate-700 transition-colors"
+            className="mb-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 rounded-lg hover:bg-light-grey dark:hover:bg-zinc-700 transition-colors"
         >
             &larr; Back to Magazine
         </button>
 
       <div
-        className="bg-off-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden bg-texture-paper"
+        className="bg-off-white dark:bg-zinc-900 rounded-2xl shadow-lg overflow-hidden bg-texture-paper"
       >
         {/* HERO SECTION */}
         <div className="relative h-[60vh] min-h-[400px] text-white">
@@ -304,7 +305,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
         
         {/* RELATED ARTICLES */}
         {relatedArticles.length > 0 && (
-          <div className="p-6 md:p-8 border-t border-slate-200 dark:border-slate-700 bg-light-grey dark:bg-slate-800/50">
+          <div className="p-6 md:p-8 border-t border-slate-200 dark:border-slate-700 bg-light-grey dark:bg-charcoal">
             <h3 className="text-2xl font-serif font-bold text-charcoal dark:text-slate-200 mb-6 text-center">More in {article.category}</h3>
             <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {relatedArticles.map(navArticle => (

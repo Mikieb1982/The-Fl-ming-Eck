@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
@@ -57,7 +58,7 @@ export default function ThemeToggle() {
                         animate="visible"
                         exit="hidden"
                         transition={{ duration: 0.2, ease: 'easeOut' }}
-                        className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-slate-800 ring-1 ring-black dark:ring-slate-700 ring-opacity-5 focus:outline-none z-10"
+                        className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-zinc-900 ring-1 ring-black dark:ring-slate-700 ring-opacity-5 focus:outline-none z-10"
                     >
                         <div className="py-1" role="menu" aria-orientation="vertical">
                             {options.map(option => (

@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -60,7 +61,7 @@ export default function Poll({ articleId, question, initialOptions }: PollProps)
   };
 
   return (
-    <div className="not-prose my-8 p-6 bg-light-grey dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+    <div className="not-prose my-8 p-6 bg-light-grey dark:bg-zinc-900/50 rounded-lg border border-slate-200 dark:border-slate-700">
       <h4 className="font-serif font-bold text-xl text-charcoal dark:text-slate-200">{question}</h4>
       <div className="mt-4 space-y-3">
         <AnimatePresence mode="wait">

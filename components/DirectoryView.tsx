@@ -2,6 +2,8 @@
 
 
 
+
+
 import React, { useState, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { directoryData } from '../articles/directoryData';
@@ -31,7 +33,7 @@ const AccordionSection = ({ title, icon, children, isOpen, onToggle }: { title: 
             <button
                 type="button"
                 onClick={onToggle}
-                className="flex items-center justify-between w-full p-5 font-medium text-left text-charcoal dark:text-slate-200 bg-light-grey dark:bg-slate-800 bg-texture-fieldstone transition-colors"
+                className="flex items-center justify-between w-full p-5 font-medium text-left text-charcoal dark:text-slate-200 bg-light-grey dark:bg-zinc-800 bg-texture-fieldstone transition-colors"
                 aria-expanded={isOpen}
             >
                 <div className="flex items-center gap-4">
@@ -61,7 +63,7 @@ const AccordionSection = ({ title, icon, children, isOpen, onToggle }: { title: 
                     transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
                     className="overflow-hidden"
                 >
-                    <div className="p-5 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                    <div className="p-5 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-zinc-900">
                         {children}
                     </div>
                 </motion.div>
@@ -206,7 +208,7 @@ export default function DirectoryView({ onClose }: DirectoryViewProps) {
         <h2 className="text-3xl font-serif font-bold text-charcoal dark:text-green-300">Local Directory</h2>
         <button 
             onClick={onClose}
-            className="shrink-0 ml-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-slate-300 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-light-grey dark:hover:bg-slate-700 transition-colors"
+            className="shrink-0 ml-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 rounded-lg hover:bg-light-grey dark:hover:bg-zinc-700 transition-colors"
         >
             &larr; Back to Magazine
         </button>

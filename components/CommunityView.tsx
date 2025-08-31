@@ -3,6 +3,7 @@
 
 
 
+
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Article, Post, Reply } from '../types';
@@ -109,7 +110,7 @@ function PostCard({ post, onReply, allArticles, onSelectArticle, onSelectTag }: 
     const categoryClasses = post.category ? (categoryColorMap[post.category] || categoryColorMap['General']) : categoryColorMap['General'];
     
     return (
-        <div className={`p-4 sm:p-6 rounded-2xl shadow-sm border ${post.pinned ? 'bg-light-grey dark:bg-slate-800/50 border-sandstone-ochre' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}>
+        <div className={`p-4 sm:p-6 rounded-2xl shadow-sm border ${post.pinned ? 'bg-light-grey dark:bg-zinc-900/50 border-sandstone-ochre' : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-slate-700'}`}>
             <div className="flex items-start gap-4">
                 <UserAvatar name={post.author} />
                 <div className="flex-grow">
@@ -286,7 +287,7 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                 <h2 className="text-3xl font-serif font-bold text-charcoal dark:text-green-300">Community Forum</h2>
                 <button 
                     onClick={onClose}
-                    className="shrink-0 ml-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-slate-300 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-light-grey dark:hover:bg-slate-700 transition-colors"
+                    className="shrink-0 ml-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 rounded-lg hover:bg-light-grey dark:hover:bg-zinc-700 transition-colors"
                 >
                     &larr; Back to Magazine
                 </button>
@@ -295,13 +296,13 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 {/* Main Content */}
                 <div className="md:col-span-3">
-                    <div className="p-4 rounded-lg bg-light-grey dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 flex-grow mb-6">
+                    <div className="p-4 rounded-lg bg-light-grey dark:bg-zinc-900/50 border border-slate-200 dark:border-slate-700/50 flex-grow mb-6">
                          <h3 className="font-semibold text-charcoal dark:text-slate-200">Welcome to the Forum!</h3>
                          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Share tips, ask questions, and connect with others in English. All posts are moderated for safety.</p>
                     </div>
 
                     {/* Filters and Search */}
-                    <div className="mb-6 p-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-4">
+                    <div className="mb-6 p-4 rounded-lg bg-white dark:bg-zinc-900 border border-slate-200 dark:border-slate-700 space-y-4">
                         {activeTag ? (
                              <div className="flex items-center gap-4">
                                 <h3 className="text-sm font-semibold text-charcoal dark:text-slate-200">
@@ -319,7 +320,7 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                                         type="search"
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm px-4 py-2 focus:border-sandstone-ochre focus:ring-sandstone-ochre sm:text-sm bg-white dark:bg-slate-800"
+                                        className="block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm px-4 py-2 focus:border-sandstone-ochre focus:ring-sandstone-ochre sm:text-sm bg-white dark:bg-zinc-900"
                                         placeholder="Search discussions..."
                                     />
                                 </div>
@@ -349,7 +350,7 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                              <PostCard key={post.id} post={post} onReply={(reply) => onAddReply(post.id, reply)} allArticles={allArticles} onSelectArticle={onSelectArticle} onSelectTag={onSelectTag} />
                         ))}
                         {displayedPosts.length === 0 && (
-                            <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-lg">
+                            <div className="text-center py-12 bg-white dark:bg-zinc-900 rounded-lg">
                                 <p className="text-slate-500 dark:text-slate-400">No discussions found. Try adjusting your search or filters.</p>
                             </div>
                         )}
@@ -358,7 +359,7 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
 
                 {/* Sidebar */}
                 <aside className="md:col-span-1 space-y-6">
-                    <div className="p-4 rounded-lg bg-off-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 bg-texture-wood">
+                    <div className="p-4 rounded-lg bg-off-white dark:bg-zinc-900 shadow-sm border border-slate-200 dark:border-slate-700 bg-texture-wood">
                         <button
                             onClick={() => setShowNewPostForm(true)}
                             className="w-full px-4 py-3 text-sm font-semibold text-white bg-sandstone-ochre rounded-lg shadow-md hover:bg-warm-terracotta disabled:bg-slate-400 transition-colors"
@@ -367,7 +368,7 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                         </button>
                     </div>
 
-                    <div className="p-4 rounded-lg bg-off-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 bg-texture-wood">
+                    <div className="p-4 rounded-lg bg-off-white dark:bg-zinc-900/50 border border-slate-200 dark:border-slate-700/50 bg-texture-wood">
                         <h4 className="font-semibold text-charcoal dark:text-slate-300">Need an idea?</h4>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                             Get an AI-powered conversation starter.

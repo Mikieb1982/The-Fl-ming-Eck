@@ -1,6 +1,7 @@
 
 
 
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Article } from '../types';
@@ -25,7 +26,7 @@ const SearchResultItem = ({ article, onSelectArticle }: { article: Article, onSe
       onClick={() => onSelectArticle(article.id)}
       className="group cursor-pointer"
     >
-        <div className="p-4 rounded-lg group-hover:bg-slate-50 dark:group-hover:bg-slate-800/50 transition-colors">
+        <div className="p-4 rounded-lg group-hover:bg-slate-50 dark:group-hover:bg-zinc-900/50 transition-colors">
             <p className="text-sm font-semibold text-brand-green dark:text-green-400">
                 {article.category} · <time dateTime={article.date}>{fmtDate(article.date)}</time>
             </p>

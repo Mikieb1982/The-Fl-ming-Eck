@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import EventCard from './EventCard';
@@ -20,7 +21,7 @@ const FilterButton = ({ label, isActive, onClick }: { label: string; isActive: b
     className={`px-3 py-1.5 text-sm font-semibold rounded-full transition-colors duration-200 ${
       isActive
         ? 'bg-brand-green text-white shadow'
-        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+        : 'bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
     }`}
   >
     {label}

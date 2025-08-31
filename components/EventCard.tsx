@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import ClockIcon from './icons/ClockIcon';
 import LocationIcon from './icons/LocationIcon';
@@ -82,7 +83,7 @@ export default function EventCard({ eventString, onSelectArticle }: EventCardPro
 
 
   return (
-    <div className="flex gap-4 items-start p-3 rounded-xl bg-light-grey dark:bg-slate-800 border border-transparent transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:border-sandstone-ochre dark:hover:border-sandstone-ochre">
+    <div className="flex gap-4 items-start p-3 rounded-xl bg-light-grey dark:bg-zinc-900 border border-transparent transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:border-sandstone-ochre dark:hover:border-sandstone-ochre">
       
       {/* Date Block */}
       <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-white dark:bg-slate-700 flex flex-col items-center justify-center text-center font-bold shadow-sm">
