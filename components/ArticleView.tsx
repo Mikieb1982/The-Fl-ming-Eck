@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useMemo, Fragment, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Article, ArticleBodyBlock } from '../types';
@@ -16,119 +17,8 @@ import VideoEmbed from './VideoEmbed';
 import Poll from './Poll';
 import BookmarkButton from './BookmarkButton';
 import { categoryStyleMap, BRAND } from '../constants';
-import CheckIcon from './icons/CheckIcon';
-
-// --- Start of new Share Components ---
-
-const TwitterIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
-  </svg>
-);
-
-const FacebookIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4z"></path>
-  </svg>
-);
-
-const EmailIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <rect width="20" height="16" x="2" y="4" rx="2"></rect>
-    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-  </svg>
-);
-
-const CopyIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-  </svg>
-);
-
-function ShareButtons({ article }: { article: Article }) {
-  const [isCopied, setIsCopied] = useState(false);
-
-  if (!article) return null;
-
-  const shareUrl = `${window.location.origin}/article/${article.id}`;
-  const encodedUrl = encodeURIComponent(shareUrl);
-  const encodedTitle = encodeURIComponent(article.title);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(shareUrl).then(() => {
-        setIsCopied(true);
-        setTimeout(() => setIsCopied(false), 2000);
-    }).catch(err => {
-        console.error('Failed to copy text: ', err);
-    });
-  };
-
-  const platforms = [
-    {
-      name: 'Twitter',
-      icon: <TwitterIcon className="w-5 h-5" />,
-      url: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
-      color: 'hover:text-[#1DA1F2]',
-    },
-    {
-      name: 'Facebook',
-      icon: <FacebookIcon className="w-5 h-5" />,
-      url: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-      color: 'hover:text-[#4267B2]',
-    },
-    {
-      name: 'Email',
-      icon: <EmailIcon className="w-5 h-5" />,
-      url: `mailto:?subject=${encodedTitle}&body=Check out this article: ${shareUrl}`,
-      color: 'hover:text-slate-600 dark:hover:text-slate-400',
-    },
-  ];
-
-  return (
-    <div className="flex items-center gap-2">
-      <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">Share:</p>
-      <div className="flex items-center gap-1">
-        {platforms.map((platform) => (
-          <a
-            key={platform.name}
-            href={platform.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`p-2 rounded-full text-slate-600 dark:text-slate-300 ${platform.color} transition-colors`}
-            aria-label={`Share on ${platform.name}`}
-          >
-            {platform.icon}
-          </a>
-        ))}
-        <button
-          onClick={handleCopy}
-          className="p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-          aria-label="Copy link"
-        >
-          <AnimatePresence mode="wait">
-            {/* @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors. */}
-            <motion.div
-              key={isCopied ? 'check' : 'copy'}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.15 }}
-            >
-              {isCopied ? (
-                <CheckIcon className="w-5 h-5 text-green-500" />
-              ) : (
-                <CopyIcon className="w-5 h-5" />
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// --- End of new Share Components ---
+import ShareButtons from './ShareButtons';
+import Navigation from './Navigation';
 
 
 interface ArticleViewProps {
@@ -137,6 +27,10 @@ interface ArticleViewProps {
   onSelectArticle: (id: string) => void;
   onSelectTag: (tag: string) => void;
   onClose: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+  currentIndex: number | null;
+  totalArticles: number;
 }
 
 // Helper to render text with clickable links
@@ -160,7 +54,7 @@ const renderWithLinks = (text: string) => {
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-brand-green hover:underline decoration-brand-green"
+            className="text-ocean hover:underline decoration-ocean"
           >
             {url}
           </a>
@@ -174,7 +68,7 @@ const renderWithLinks = (text: string) => {
 
 const fontSizes = ['prose', 'prose-lg', 'prose-xl', 'prose-2xl'];
 
-export default function ArticleView({ article, allArticles, onSelectArticle, onSelectTag, onClose }: ArticleViewProps) {
+export default function ArticleView({ article, allArticles, onSelectArticle, onSelectTag, onClose, onPrev, onNext, currentIndex, totalArticles }: ArticleViewProps) {
   const [summary, setSummary] = useState<string | null>(null);
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -281,7 +175,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
     return (
       <Card>
         <CardContent>
-          <p className="text-sm text-charcoal dark:text-slate-300">Article is not available. Please select another item.</p>
+          <p className="text-sm text-charcoal dark:text-seafoam">Article is not available. Please select another item.</p>
         </CardContent>
       </Card>
     );
@@ -296,8 +190,13 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
 
 
   const renderArticleBody = (block: ArticleBodyBlock, index: number) => {
+    if (!block || typeof block.type !== 'string') {
+        return null;
+    }
     switch (block.type) {
         case 'subheading':
+            // Add a guard to ensure content is a string before rendering.
+            if (typeof block.content !== 'string') return null;
             return (
                 <h3 key={index} className="text-2xl font-serif font-bold mt-8 mb-4 text-charcoal dark:text-slate-100 border-b-2 border-slate-200 dark:border-slate-700 pb-2">
                     {renderWithLinks(block.content)}
@@ -309,18 +208,24 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
             return <AudioPlayer key={index} src={block.src} caption={block.caption} />;
         case 'poll':
             return <Poll key={index} articleId={article.id} question={block.question} initialOptions={block.options} />;
-        case 'paragraph':
-        default:
+        case 'paragraph': {
+            // Explicitly handle 'paragraph' and add a guard for content.
+            if (typeof block.content !== 'string') return null;
+
             const isFirstParagraph = index === firstParagraphBlockIndex;
             const dropCapChar = block.content.charAt(0);
             const remainingText = block.content.slice(1);
 
             return (
                 <p key={index}>
-                    {isFirstParagraph && <span className="float-left text-5xl sm:text-6xl leading-none pr-3 font-serif text-brand-green dark:text-green-400 -mt-2">{dropCapChar}</span>}
+                    {isFirstParagraph && <span className="float-left text-5xl sm:text-6xl leading-none pr-3 font-serif text-ocean dark:text-cyan-400 -mt-2">{dropCapChar}</span>}
                     {isFirstParagraph ? renderWithLinks(remainingText) : renderWithLinks(block.content)}
                 </p>
             );
+        }
+        default:
+            // Safely ignore any unknown or malformed block types.
+            return null;
     }
   }
 
@@ -336,13 +241,13 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
     >
         <button 
             onClick={onClose}
-            className="mb-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 rounded-lg hover:bg-light-grey dark:hover:bg-zinc-700 transition-colors"
+            className="mb-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-seafoam bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-seafoam dark:hover:bg-slate-700 transition-colors"
         >
             &larr; Back to Magazine
         </button>
 
       <div
-        className="bg-white dark:bg-zinc-900 rounded-2xl shadow-lg overflow-hidden bg-texture-paper border border-accent-red/50 dark:border-accent-red/60"
+        className="bg-white dark:bg-zinc-900 rounded-2xl shadow-lg overflow-hidden bg-texture-paper border border-poppy/50 dark:border-poppy/60"
       >
         {/* HERO SECTION */}
         <div className="relative h-[60vh] min-h-[400px] text-white">
@@ -376,11 +281,11 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
         <div className="grid grid-cols-12 gap-8 p-6 md:p-8">
            {/* Main Content */}
           <main className="col-span-12 lg:col-span-9">
-             <article className={`prose ${fontSizes[fontSizeIndex]} max-w-prose mx-auto dark:prose-invert prose-headings:text-charcoal dark:prose-headings:text-slate-100 prose-p:text-charcoal dark:prose-p:text-slate-300`}>
+             <article className={`prose ${fontSizes[fontSizeIndex]} max-w-prose mx-auto dark:prose-invert prose-headings:text-charcoal dark:prose-headings:text-slate-100 prose-p:text-charcoal dark:prose-p:text-seafoam`}>
               {article.pullQuote && (
                 <div className="not-prose my-6">
-                    <div className="relative p-6 bg-accent-green/20 dark:bg-accent-green/30 rounded-lg">
-                        <span className="absolute top-0 left-4 h-full w-1 bg-sandstone-ochre"></span>
+                    <div className="relative p-6 bg-ocean/20 dark:bg-ocean/30 rounded-lg">
+                        <span className="absolute top-0 left-4 h-full w-1 bg-poppy"></span>
                         <blockquote className="pl-4 italic text-charcoal dark:text-slate-200 text-xl md:text-2xl font-serif">“{article.pullQuote}”</blockquote>
                     </div>
                 </div>
@@ -407,7 +312,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
                   <button 
                       onClick={handleGenerateSummary} 
                       disabled={isSummarizing}
-                      className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-green rounded-full shadow-md hover:bg-accent-green disabled:bg-slate-400 disabled:cursor-not-allowed transition-all transform hover:scale-105"
+                      className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-ocean rounded-full shadow-md hover:bg-ocean-dark disabled:bg-slate-400 disabled:cursor-not-allowed transition-all transform hover:scale-105"
                   >
                       <SparklesIcon className="w-4 h-4" />
                       {isSummarizing ? "Generating..." : "Generate with AI"}
@@ -421,9 +326,9 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-4 p-4 bg-sandstone-ochre/30 dark:bg-sandstone-ochre/40 border border-sandstone-ochre/20 dark:border-sandstone-ochre/30 rounded-lg"
+                  className="mt-4 p-4 bg-sunshine/30 dark:bg-sunshine/40 border border-sunshine/20 dark:border-sunshine/30 rounded-lg"
                 >
-                  <p className="text-charcoal dark:text-slate-300 italic">{summary}</p>
+                  <p className="text-charcoal dark:text-seafoam italic">{summary}</p>
                 </motion.div>
               )}
             </div>
@@ -447,7 +352,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
         
         {/* RELATED ARTICLES */}
         {relatedArticles.length > 0 && (
-          <div className="p-6 md:p-8 border-t border-slate-200 dark:border-slate-700 bg-brand-blue/10 dark:bg-brand-blue/20">
+          <div className="p-6 md:p-8 border-t border-slate-200 dark:border-slate-700 bg-ocean/10 dark:bg-ocean/20">
             <h3 className="text-2xl font-serif font-bold text-charcoal dark:text-slate-200 mb-6 text-center">More in {article.category}</h3>
             <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {relatedArticles.map(navArticle => (
@@ -461,6 +366,12 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
           </div>
         )}
       </div>
+      <Navigation
+          onPrev={onPrev}
+          onNext={onNext}
+          isFirst={currentIndex === 0}
+          isLast={currentIndex !== null && currentIndex >= totalArticles - 1}
+      />
     </motion.div>
   );
 }

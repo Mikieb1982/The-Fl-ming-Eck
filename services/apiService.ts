@@ -1,7 +1,9 @@
+
 import { Article, Post } from '../types';
 import { articles as initialArticles } from '../articles';
 import { initialPosts } from '../articles/communityPosts';
 import * as gemini from './geminiService';
+import { isArticleSafe, isPostSafe } from '../utils/helpers';
 
 // --- Data Persistence (localStorage) ---
 
@@ -13,32 +15,44 @@ export function getArticles(): Article[] {
     try {
         const storedArticles = localStorage.getItem(ARTICLES_KEY);
         if (storedArticles) {
-            return JSON.parse(storedArticles);
-        } else {
-            // Seed initial data
-            localStorage.setItem(ARTICLES_KEY, JSON.stringify(initialArticles));
-            return initialArticles;
+            const parsed = JSON.parse(storedArticles);
+            if (Array.isArray(parsed)) {
+                return parsed.filter(isArticleSafe);
+            }
         }
     } catch (error) {
-        console.error("Failed to load articles from localStorage:", error);
-        return initialArticles;
+        console.error("Failed to read articles from localStorage:", error);
     }
+    
+    // If storage was empty or failed, use initial data and try to save it.
+    try {
+        localStorage.setItem(ARTICLES_KEY, JSON.stringify(initialArticles));
+    } catch (error) {
+        console.error("Failed to save initial articles to localStorage:", error);
+    }
+    return initialArticles;
 }
 
 export function getPosts(): Post[] {
     try {
         const storedPosts = localStorage.getItem(POSTS_KEY);
         if (storedPosts) {
-            return JSON.parse(storedPosts);
-        } else {
-            // Seed initial data
-            localStorage.setItem(POSTS_KEY, JSON.stringify(initialPosts));
-            return initialPosts;
+            const parsed = JSON.parse(storedPosts);
+            if (Array.isArray(parsed)) {
+                return parsed.filter(isPostSafe);
+            }
         }
     } catch (error) {
-        console.error("Failed to load posts from localStorage:", error);
-        return initialPosts;
+        console.error("Failed to read posts from localStorage:", error);
     }
+
+    // If storage was empty or failed, use initial data and try to save it.
+    try {
+        localStorage.setItem(POSTS_KEY, JSON.stringify(initialPosts));
+    } catch (error) {
+        console.error("Failed to save initial posts to localStorage:", error);
+    }
+    return initialPosts;
 }
 
 export function savePosts(posts: Post[]): void {

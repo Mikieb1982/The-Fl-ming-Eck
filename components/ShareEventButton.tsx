@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { parseEventString, CalendarEvent } from '../utils/calendar';
@@ -37,25 +38,28 @@ export default function ShareEventButton({ eventString }: ShareEventButtonProps)
 
     if (!event) return null;
 
-    const baseUrl = window.location.origin;
+    const shareUrl = `${window.location.origin}/#/calendar`;
     const dateOptions: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
     const eventDate = event.startTime ? new Date(event.startTime).toLocaleDateString('en-GB', dateOptions) : '';
-    const shareText = `Check out this event: ${event.title} on ${eventDate} in Bad Belzig. From The Fläming Eck.`;
     
-    const encodedUrl = encodeURIComponent(baseUrl);
-    const encodedText = encodeURIComponent(shareText);
+    const socialShareText = `Event in Bad Belzig: ${event.title} on ${eventDate}.`; 
+    const fullShareText = `Check out this event: ${event.title} on ${eventDate} in Bad Belzig. See more at The Fläming Eck: ${shareUrl}`;
+    const emailBody = `Check out this event: ${event.title} on ${eventDate} in Bad Belzig.\n\nFind more details on the events calendar:\n${shareUrl}`;
+    
+    const encodedUrl = encodeURIComponent(shareUrl);
+    const encodedSocialText = encodeURIComponent(socialShareText);
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(shareText + " " + baseUrl).then(() => {
+        navigator.clipboard.writeText(fullShareText).then(() => {
             setIsCopied(true);
             setTimeout(() => setIsCopied(false), 2000);
         }).catch(err => console.error('Failed to copy text: ', err));
     };
     
     const platforms = [
-      { name: 'Twitter', icon: <TwitterIcon className="w-5 h-5" />, url: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}` },
-      { name: 'Facebook', icon: <FacebookIcon className="w-5 h-5" />, url: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}` },
-      { name: 'Email', icon: <EmailIcon className="w-5 h-5" />, url: `mailto:?subject=${encodeURIComponent(event.title)}&body=${encodedText}` },
+      { name: 'Twitter', icon: <TwitterIcon className="w-5 h-5" />, url: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedSocialText}` },
+      { name: 'Facebook', icon: <FacebookIcon className="w-5 h-5" />, url: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedSocialText}` },
+      { name: 'Email', icon: <EmailIcon className="w-5 h-5" />, url: `mailto:?subject=${encodeURIComponent(event.title)}&body=${encodeURIComponent(emailBody)}` },
     ];
     
     const dropdownVariants = {

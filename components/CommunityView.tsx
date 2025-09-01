@@ -1,7 +1,6 @@
 
 
 
-
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Article, Post, Reply } from '../types';
@@ -10,7 +9,7 @@ import { moderateContent, generateTopicSuggestion } from '../services/apiService
 import { fuzzySearch, timeAgo } from '../utils/helpers';
 import SparklesIcon from './icons/SparklesIcon';
 import PinIcon from './icons/PinIcon';
-// FIX: Removed import for SearchIcon as the file was deleted.
+import SearchIcon from './icons/SearchIcon';
 import Tag from './Tag';
 import RelatedArticleItem from './RelatedArticleItem';
 
@@ -72,12 +71,12 @@ interface CommunityViewProps {
 
 const categoryColorMap: { [key: string]: string } = {
   'Announcements': 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300',
-  'Food': 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300',
-  'Nature': 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300',
-  'Events': 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300',
-  'History': 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300',
+  'Food': 'bg-sunshine/20 text-yellow-800 dark:bg-sunshine/30 dark:text-sunshine',
+  'Nature': 'bg-forest-green/10 text-green-800 dark:bg-forest-green/20 dark:text-green-300',
+  'Events': 'bg-ocean/10 text-ocean-dark dark:bg-ocean/20 dark:text-cyan-300',
+  'History': 'bg-poppy/10 text-poppy-dark dark:bg-poppy/20 dark:text-red-300',
   'Local Life': 'bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300',
-  'General': 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300',
+  'General': 'bg-slate/20 text-slate-800 dark:bg-slate-700 dark:text-slate-300',
 };
 
 function PostCard({ post, onReply, allArticles, onSelectArticle, onSelectTag }: { post: Post; onReply: (reply: Omit<Reply, 'id' | 'timestamp'>) => void; allArticles: Article[], onSelectArticle: (id: string) => void; onSelectTag: (tag: string) => void; }) {
@@ -92,12 +91,26 @@ function PostCard({ post, onReply, allArticles, onSelectArticle, onSelectTag }: 
             .slice(0, 3);
     }, [post.tags, allArticles]);
 
-    const isLongPost = post.content.length > 250;
-    const displayContent = isLongPost && !isExpanded ? `${post.content.substring(0, 250)}...` : post.content;
+    const content = typeof post.content === 'string' ? post.content : '';
+    const isLongPost = content.length > 250;
+    const displayContent = isLongPost && !isExpanded ? `${content.substring(0, 250)}...` : content;
     const categoryClasses = post.category ? (categoryColorMap[post.category] || categoryColorMap['General']) : categoryColorMap['General'];
+
+    const replyContainerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
+        }
+    };
+    
+    const replyItemVariants = {
+        hidden: { opacity: 0, y: 10 },
+        visible: { opacity: 1, y: 0 }
+    };
     
     return (
-        <div className={`p-4 sm:p-6 rounded-2xl shadow-sm border ${post.pinned ? 'bg-amber-50 dark:bg-amber-900/40 border-sandstone-ochre' : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-slate-700'}`}>
+        <div className={`p-4 sm:p-6 rounded-2xl shadow-sm border ${post.pinned ? 'bg-sunshine/10 dark:bg-sunshine/20 border-sunshine' : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-slate-700'}`}>
             <div className="flex items-start gap-4">
                 <UserAvatar name={post.author} />
                 <div className="flex-grow">
@@ -115,9 +128,9 @@ function PostCard({ post, onReply, allArticles, onSelectArticle, onSelectTag }: 
             </div>
 
             <div className="mt-4 space-y-3">
-                <p className="text-charcoal dark:text-slate-300 whitespace-pre-wrap">{displayContent}</p>
+                <p className="text-charcoal dark:text-seafoam whitespace-pre-wrap">{displayContent}</p>
                 {isLongPost && (
-                     <button onClick={() => setIsExpanded(!isExpanded)} className="text-sm font-semibold text-brand-green hover:underline mt-2">
+                     <button onClick={() => setIsExpanded(!isExpanded)} className="text-sm font-semibold text-ocean hover:underline mt-2">
                         {isExpanded ? 'Show Less' : 'Read More'}
                     </button>
                 )}
@@ -146,29 +159,25 @@ function PostCard({ post, onReply, allArticles, onSelectArticle, onSelectTag }: 
                 
                 <AnimatePresence>
                 {post.replies.length > 0 && (
-                    // FIX: Suppress TypeScript error. The framer-motion props are not recognized in this environment.
-                    // @ts-ignore
                     <motion.div 
+                        key="replies-container"
                         className="space-y-4"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ staggerChildren: 0.1 }}
+                        variants={replyContainerVariants}
+                        initial="hidden"
+                        animate="visible"
                     >
                         {post.replies.map(reply => (
-                            // FIX: Suppress TypeScript error. The framer-motion props are not recognized in this environment.
-                            // @ts-ignore
                             <motion.div 
                                 key={reply.id} 
                                 className="flex items-start gap-3"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                variants={replyItemVariants}
                             >
                                 <UserAvatar name={reply.author} />
-                                <div className="flex-grow p-3 rounded-md bg-brand-green/10 dark:bg-brand-green/20">
+                                <div className="flex-grow p-3 rounded-md bg-ocean/10 dark:bg-ocean/20">
                                     <p className="text-sm text-slate-500 dark:text-slate-400">
                                         <span className="font-semibold text-charcoal dark:text-slate-300">{reply.author}</span> · {timeAgo(reply.timestamp)}
                                     </p>
-                                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-300 whitespace-pre-wrap">{reply.content}</p>
+                                    <p className="mt-1 text-sm text-slate-600 dark:text-seafoam whitespace-pre-wrap">{reply.content}</p>
                                 </div>
                             </motion.div>
                         ))}
@@ -195,7 +204,7 @@ function PostCard({ post, onReply, allArticles, onSelectArticle, onSelectTag }: 
                     ) : (
                          <button 
                             onClick={() => setShowReplyForm(true)}
-                            className="px-4 py-2 text-sm font-semibold text-white bg-brand-green rounded-lg hover:opacity-90 transition-colors"
+                            className="px-4 py-2 text-sm font-semibold text-white bg-ocean rounded-lg hover:opacity-90 transition-colors"
                         >
                             Write a reply
                         </button>
@@ -271,10 +280,10 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
             transition={{ duration: 0.5, ease: "easeInOut" }}
         >
             <div className="flex justify-between items-center mb-6 border-b-2 border-slate-200 dark:border-slate-700 pb-2">
-                <h2 className="text-3xl font-serif font-bold text-charcoal dark:text-green-300">Community Forum</h2>
+                <h2 className="text-3xl font-serif font-bold text-charcoal dark:text-cyan-300">Community Forum</h2>
                 <button 
                     onClick={onClose}
-                    className="shrink-0 ml-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 rounded-lg hover:bg-light-grey dark:hover:bg-zinc-700 transition-colors"
+                    className="shrink-0 ml-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-seafoam bg-slate-100 dark:bg-zinc-800 rounded-lg hover:bg-seafoam dark:hover:bg-zinc-700 transition-colors"
                 >
                     &larr; Back to Magazine
                 </button>
@@ -283,7 +292,7 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 {/* Main Content */}
                 <div className="md:col-span-3">
-                    <div className="p-4 rounded-lg bg-light-grey dark:bg-zinc-900/50 border border-slate-200 dark:border-slate-700/50 flex-grow mb-6">
+                    <div className="p-4 rounded-lg bg-seafoam dark:bg-zinc-900/50 border border-slate-200 dark:border-slate-700/50 flex-grow mb-6">
                          <h3 className="font-semibold text-charcoal dark:text-slate-200">Welcome to the Forum!</h3>
                          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Share tips, ask questions, and connect with others in English. All posts are moderated for safety.</p>
                     </div>
@@ -293,21 +302,23 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                         {activeTag ? (
                              <div className="flex items-center gap-4">
                                 <h3 className="text-sm font-semibold text-charcoal dark:text-slate-200">
-                                    Showing posts tagged: <span className="text-brand-green">#{activeTag}</span>
+                                    Showing posts tagged: <span className="text-ocean">#{activeTag}</span>
                                 </h3>
-                                <button onClick={onClearTag} className="text-sm font-semibold text-sandstone-ochre hover:underline">
+                                <button onClick={onClearTag} className="text-sm font-semibold text-poppy hover:underline">
                                     Clear filter
                                 </button>
                             </div>
                         ) : (
                             <>
                                 <div className="relative">
-                                    {/* FIX: Removed SearchIcon component as its file was deleted. */}
+                                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                        <SearchIcon className="h-5 w-5 text-slate-400" />
+                                    </div>
                                     <input
                                         type="search"
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm px-4 py-2 focus:border-sandstone-ochre focus:ring-sandstone-ochre sm:text-sm bg-white dark:bg-zinc-900"
+                                        className="block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm pl-10 pr-4 py-2 focus:border-sunshine focus:ring-sunshine sm:text-sm bg-white dark:bg-zinc-900"
                                         placeholder="Search discussions..."
                                     />
                                 </div>
@@ -317,7 +328,7 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                                         <button 
                                             key={cat}
                                             onClick={() => setActiveCategory(cat)}
-                                            className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors ${activeCategory === cat ? 'bg-brand-blue text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'}`}
+                                            className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors ${activeCategory === cat ? 'bg-ocean text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'}`}
                                         >
                                             {cat}
                                         </button>
@@ -327,8 +338,8 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                         )}
                          <div className="flex items-center gap-2">
                             <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">Sort by:</span>
-                            <button onClick={() => setSortBy('newest')} className={`px-3 py-1 text-sm font-medium rounded-full transition-colors ${sortBy === 'newest' ? 'bg-brand-blue text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'}`}>Newest</button>
-                            <button onClick={() => setSortBy('replies')} className={`px-3 py-1 text-sm font-medium rounded-full transition-colors ${sortBy === 'replies' ? 'bg-brand-blue text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'}`}>Most Replies</button>
+                            <button onClick={() => setSortBy('newest')} className={`px-3 py-1 text-sm font-medium rounded-full transition-colors ${sortBy === 'newest' ? 'bg-ocean text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'}`}>Newest</button>
+                            <button onClick={() => setSortBy('replies')} className={`px-3 py-1 text-sm font-medium rounded-full transition-colors ${sortBy === 'replies' ? 'bg-ocean text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'}`}>Most Replies</button>
                         </div>
                     </div>
 
@@ -346,16 +357,16 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
 
                 {/* Sidebar */}
                 <aside className="md:col-span-1 space-y-6">
-                    <div className="p-4 rounded-lg bg-sandstone-ochre/5 dark:bg-sandstone-ochre/10 shadow-sm border border-slate-200 dark:border-slate-700 bg-texture-wood">
+                    <div className="p-4 rounded-lg bg-poppy/5 dark:bg-poppy/10 shadow-sm border border-slate-200 dark:border-slate-700 bg-texture-wood">
                         <button
                             onClick={() => setShowNewPostForm(true)}
-                            className="w-full px-4 py-3 text-sm font-semibold text-white bg-sandstone-ochre rounded-lg shadow-md hover:bg-warm-terracotta disabled:bg-slate-400 transition-colors"
+                            className="w-full px-4 py-3 text-sm font-semibold text-white bg-poppy rounded-lg shadow-md hover:bg-poppy-dark disabled:bg-slate-400 transition-colors"
                         >
                             Start a New Discussion
                         </button>
                     </div>
 
-                    <div className="p-4 rounded-lg bg-sandstone-ochre/5 dark:bg-sandstone-ochre/10 border border-slate-200 dark:border-slate-700/50 bg-texture-wood">
+                    <div className="p-4 rounded-lg bg-sunshine/5 dark:bg-sunshine/10 border border-slate-200 dark:border-slate-700/50 bg-texture-wood">
                         <h4 className="font-semibold text-charcoal dark:text-slate-300">Need an idea?</h4>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                             Get an AI-powered conversation starter.
@@ -374,7 +385,7 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                         <button 
                             onClick={handleSuggestTopic}
                             disabled={isSuggesting}
-                            className="w-full flex items-center justify-center gap-2 mt-3 px-3 py-2 text-xs font-semibold text-brand-green bg-green-500/10 rounded-md hover:bg-green-500/20 transition-colors disabled:opacity-50"
+                            className="w-full flex items-center justify-center gap-2 mt-3 px-3 py-2 text-xs font-semibold text-ocean bg-ocean/10 rounded-md hover:bg-ocean/20 transition-colors disabled:opacity-50"
                         >
                             <SparklesIcon className="w-3 h-3" />
                             {isSuggesting ? 'Thinking...' : 'Suggest a Topic'}
@@ -400,7 +411,7 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                         initial={{ scale: 0.95, y: 20 }}
                         animate={{ scale: 1, y: 0 }}
                         exit={{ scale: 0.95, y: -20 }}
-                        className="w-full max-w-2xl bg-off-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6"
+                        className="w-full max-w-2xl bg-cream dark:bg-slate-900 rounded-2xl shadow-2xl p-6"
                         onClick={(e) => e.stopPropagation()}
                     >
                          <h3 className="text-2xl font-serif font-bold text-charcoal dark:text-slate-200 mb-4">Start a New Discussion</h3>

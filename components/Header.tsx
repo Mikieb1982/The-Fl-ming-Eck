@@ -1,5 +1,8 @@
 
 
+
+
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '../context/UserContext';
@@ -16,6 +19,7 @@ import UserIcon from './icons/UserIcon';
 import HomeIcon from './icons/HomeIcon';
 import MenuIcon from './icons/MenuIcon';
 import InfoIcon from './icons/InfoIcon';
+import HeartIcon from './icons/HeartIcon';
 
 type LegalPageType = "impressum" | "privacy" | "about" | "corrections" | "advertise";
 
@@ -30,24 +34,13 @@ interface HeaderProps {
     setLegalPage: (page: LegalPageType | null) => void;
     searchQuery: string;
     onSearchChange: (query: string) => void;
-    activeView: 'home' | 'community' | 'directory' | 'more' | 'none' | 'calendar';
+    activeView: 'home' | 'community' | 'directory' | 'more' | 'calendar';
 }
 
 function BottomNavBar(props: HeaderProps) {
     const { onGoHome, onOpenCalendarPage, onToggleCommunity, onToggleDirectory, onToggleBookmarks, onToggleProfile, setLegalPage, activeView } = props;
     const { user, signOut } = useUser();
     const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
-    const moreMenuRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
-                setIsMoreMenuOpen(false);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [moreMenuRef]);
 
     const navItems = [
         { label: 'Home', icon: <HomeIcon className="w-6 h-6" />, action: onGoHome, view: 'home' },
@@ -57,86 +50,104 @@ function BottomNavBar(props: HeaderProps) {
     ];
     
     const baseButtonClass = "flex flex-col items-center justify-center flex-grow text-slate-600 dark:text-slate-400 transition-colors duration-200 pt-2 pb-1";
-    const activeButtonClass = "text-brand-blue dark:text-accent-blue";
+    const activeButtonClass = "text-ocean dark:text-cyan-300";
+
+    const menuItems = (
+        <div className="p-2 space-y-1">
+            <button onClick={() => { onToggleBookmarks(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+                <BookmarkIcon className="w-5 h-5" />
+                <span>Bookmarks</span>
+            </button>
+            {user && (
+                <button onClick={() => { onToggleProfile(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+                    <UserIcon className="w-5 h-5" />
+                    <span>My Profile</span>
+                </button>
+            )}
+            <div className="my-1 h-px bg-slate-200 dark:bg-slate-700" />
+            <button onClick={() => { setLegalPage('about'); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+                <InfoIcon className="w-5 h-5" />
+                <span>About Us</span>
+            </button>
+            <button onClick={() => { setLegalPage('advertise'); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+                <BuildingOfficeIcon className="w-5 h-5" />
+                <span>Advertise</span>
+            </button>
+            <a href="https://ko-fi.com/example" target="_blank" rel="noopener noreferrer" className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+                <HeartIcon className="w-5 h-5" />
+                <span>Support Us</span>
+            </a>
+            <div className="my-1 h-px bg-slate-200 dark:bg-slate-700" />
+            <div className="flex items-center justify-between px-3 py-2 text-sm text-charcoal dark:text-slate-300">
+                <span>Theme</span>
+                <ThemeToggle />
+            </div>
+            {user && (
+                <>
+                    <div className="my-1 h-px bg-slate-200 dark:bg-slate-700" />
+                    <button onClick={() => { signOut(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+                        <LogoutIcon className="w-5 h-5" />
+                        <span>Sign Out</span>
+                    </button>
+                </>
+            )}
+        </div>
+    );
 
     return (
         <>
-            <AnimatePresence>
-                {isMoreMenuOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={() => setIsMoreMenuOpen(false)}
-                        className="fixed inset-0 bg-black/40 z-40 md:hidden"
-                    />
-                )}
-            </AnimatePresence>
-
-            <div className="fixed bottom-0 left-0 right-0 z-[60] h-20 bg-white/90 dark:bg-charcoal/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-700 md:hidden">
+            <div className="fixed bottom-0 left-0 right-0 z-[60] h-20 bg-white/90 dark:bg-deep-blue/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-700 md:hidden">
                 <div className="flex items-stretch justify-around h-full">
                     {navItems.map(item => (
-                        <button key={item.label} onClick={item.action} className={`${baseButtonClass} ${activeView === item.view ? activeButtonClass : 'hover:text-brand-accent-red dark:hover:text-accent-red'}`}>
+                        <button key={item.label} onClick={item.action} className={`${baseButtonClass} ${activeView === item.view ? activeButtonClass : 'hover:text-poppy dark:hover:text-poppy'}`}>
                             {item.icon}
                             <span className={`text-xs mt-1 ${activeView === item.view ? 'font-bold' : ''}`}>{item.label}</span>
                         </button>
                     ))}
-                     <div ref={moreMenuRef} className="relative flex flex-col items-center justify-center flex-grow">
-                        <button onClick={() => setIsMoreMenuOpen(prev => !prev)} className={`${baseButtonClass} ${activeView === 'more' ? activeButtonClass : 'hover:text-brand-accent-red dark:hover:text-accent-red'}`}>
+                     <div className="flex flex-col items-center justify-center flex-grow">
+                        <button onClick={() => setIsMoreMenuOpen(true)} className={`${baseButtonClass} ${activeView === 'more' ? activeButtonClass : 'hover:text-poppy dark:hover:text-poppy'}`}>
                             <MenuIcon className="w-6 h-6" />
                             <span className={`text-xs mt-1 ${activeView === 'more' ? 'font-bold' : ''}`}>More</span>
                         </button>
-
-                        <AnimatePresence>
-                            {isMoreMenuOpen && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    transition={{ duration: 0.2, ease: "easeOut" }}
-                                    className="absolute bottom-full right-0 mb-3 w-56 rounded-lg shadow-xl bg-white dark:bg-zinc-900 ring-1 ring-black dark:ring-slate-700 ring-opacity-5"
-                                >
-                                    <div className="p-2">
-                                        <button onClick={() => { onToggleBookmarks(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
-                                            <BookmarkIcon className="w-5 h-5" />
-                                            <span>Bookmarks</span>
-                                        </button>
-                                        {user && (
-                                            <button onClick={() => { onToggleProfile(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
-                                                <UserIcon className="w-5 h-5" />
-                                                <span>My Profile</span>
-                                            </button>
-                                        )}
-                                        <div className="my-1 h-px bg-slate-200 dark:bg-slate-700" />
-                                        <button onClick={() => { setLegalPage('about'); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
-                                            <InfoIcon className="w-5 h-5" />
-                                            <span>About Us</span>
-                                        </button>
-                                        <button onClick={() => { setLegalPage('advertise'); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
-                                            <BuildingOfficeIcon className="w-5 h-5" />
-                                            <span>Advertise</span>
-                                        </button>
-                                        <div className="my-1 h-px bg-slate-200 dark:bg-slate-700" />
-                                        <div className="flex items-center justify-between px-3 py-2 text-sm text-charcoal dark:text-slate-300">
-                                            <span>Theme</span>
-                                            <ThemeToggle />
-                                        </div>
-                                        {user && (
-                                            <>
-                                                <div className="my-1 h-px bg-slate-200 dark:bg-slate-700" />
-                                                <button onClick={() => { signOut(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
-                                                    <LogoutIcon className="w-5 h-5" />
-                                                    <span>Sign Out</span>
-                                                </button>
-                                            </>
-                                        )}
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
                      </div>
                 </div>
             </div>
+
+            <AnimatePresence>
+                {isMoreMenuOpen && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            onClick={() => setIsMoreMenuOpen(false)}
+                            className="fixed inset-0 bg-black/50 z-[70] md:hidden"
+                            aria-hidden="true"
+                        />
+                        <motion.div
+                            initial={{ x: "100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "100%" }}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            className="fixed top-0 right-0 h-full w-full max-w-xs z-[80] bg-cream dark:bg-zinc-900 shadow-2xl md:hidden flex flex-col"
+                            role="dialog"
+                            aria-modal="true"
+                            aria-labelledby="more-options-title"
+                        >
+                            <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+                                <h3 id="more-options-title" className="text-lg font-semibold text-charcoal dark:text-slate-200">More Options</h3>
+                                <button onClick={() => setIsMoreMenuOpen(false)} className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" aria-label="Close menu">
+                                    <CloseIcon className="w-6 h-6" />
+                                </button>
+                            </div>
+                            <div className="overflow-y-auto flex-grow">
+                                {menuItems}
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
         </>
     );
 }
@@ -149,6 +160,24 @@ export default function Header(props: HeaderProps) {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const searchInputRef = useRef<HTMLInputElement>(null);
     const userMenuRef = useRef<HTMLDivElement>(null);
+    const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+    const lastScrollY = useRef(0);
+
+    useEffect(() => {
+        const controlHeaderVisibility = () => {
+            if (typeof window !== 'undefined') {
+                if (window.scrollY > lastScrollY.current && window.scrollY > 200) {
+                    setIsHeaderVisible(false); // Scrolling down
+                } else {
+                    setIsHeaderVisible(true); // Scrolling up
+                }
+                lastScrollY.current = window.scrollY;
+            }
+        };
+
+        window.addEventListener('scroll', controlHeaderVisibility);
+        return () => window.removeEventListener('scroll', controlHeaderVisibility);
+    }, []);
 
     useEffect(() => {
         if (isSearchOpen && searchInputRef.current) {
@@ -174,8 +203,8 @@ export default function Header(props: HeaderProps) {
         { label: 'Bookmarks', icon: <BookmarkIcon className="w-6 h-6" />, action: onToggleBookmarks, view: 'more' },
     ];
     
-    const baseNavButtonClasses = "flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg text-slate-600 dark:text-slate-300 hover:bg-brand-accent-red hover:text-white dark:hover:bg-brand-accent-red dark:hover:text-white transition-colors";
-    const activeNavButtonClasses = "bg-brand-blue text-white dark:bg-accent-blue dark:text-white";
+    const baseNavButtonClasses = "flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg text-slate-600 dark:text-slate-300 hover:bg-poppy hover:text-white dark:hover:bg-poppy dark:hover:text-white transition-colors";
+    const activeNavButtonClasses = "bg-ocean text-white dark:bg-ocean-dark dark:text-white";
     
     const handleCloseSearch = () => {
         setIsSearchOpen(false);
@@ -198,14 +227,22 @@ export default function Header(props: HeaderProps) {
 
     return (
         <>
-            <header className="sticky top-0 z-30 bg-white/80 dark:bg-charcoal/80 backdrop-blur-lg border-b border-sandstone-ochre/40 dark:border-sandstone-ochre/50">
+            <motion.header
+                className="sticky top-0 z-30 bg-white/80 dark:bg-deep-blue/80 backdrop-blur-lg border-b border-sunshine/40 dark:border-sunshine/50"
+                variants={{
+                    visible: { y: 0 },
+                    hidden: { y: "-100%" },
+                }}
+                animate={isHeaderVisible ? "visible" : "hidden"}
+                transition={{ duration: 0.35, ease: "easeInOut" }}
+            >
                 <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
                     <div className="flex items-center justify-between h-20 md:h-28">
                         {/* Logo */}
                         <div className="flex-shrink-0">
                             <button 
                                 onClick={onGoHome} 
-                                className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-charcoal focus-visible:ring-sandstone-ochre rounded-md" 
+                                className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-deep-blue focus-visible:ring-sunshine rounded-md" 
                                 aria-label="Go to homepage"
                             >
                                 <Logo className="h-16 md:h-20 w-auto text-charcoal dark:text-slate-200" />
@@ -239,7 +276,7 @@ export default function Header(props: HeaderProps) {
                                 <div className="relative" ref={userMenuRef}>
                                     {user ? (
                                         <>
-                                            <button onClick={() => setIsUserMenuOpen(prev => !prev)} className="rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sandstone-ochre">
+                                            <button onClick={() => setIsUserMenuOpen(prev => !prev)} className="rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sunshine">
                                                 <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full" />
                                             </button>
                                             
@@ -306,7 +343,7 @@ export default function Header(props: HeaderProps) {
                                 </div>
                             )}
                              {user && (
-                                <button onClick={onToggleProfile} className="rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sandstone-ochre">
+                                <button onClick={onToggleProfile} className="rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sunshine">
                                     <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full" />
                                 </button>
                             )}
@@ -322,7 +359,7 @@ export default function Header(props: HeaderProps) {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="absolute inset-0 h-20 md:h-28 bg-white/95 dark:bg-charcoal/95 backdrop-blur-sm z-10"
+                            className="absolute inset-0 h-20 md:h-28 bg-white/95 dark:bg-deep-blue/95 backdrop-blur-sm z-10"
                         >
                             <div className="max-w-7xl mx-auto px-4 lg:px-8 h-full">
                                 <div className="flex items-center h-full gap-4">
@@ -347,7 +384,7 @@ export default function Header(props: HeaderProps) {
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </header>
+            </motion.header>
             <BottomNavBar {...props} />
         </>
     );

@@ -1,5 +1,6 @@
 
 
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import CloseIcon from './icons/CloseIcon';
@@ -30,7 +31,7 @@ export default function LegalView({ title, onClose, children }: LegalViewProps) 
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.95, y: 20 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className="relative w-full max-w-4xl max-h-[90vh] bg-off-white dark:bg-slate-900 rounded-2xl shadow-2xl flex flex-col"
+        className="relative w-full max-w-4xl max-h-[90vh] bg-cream dark:bg-slate-900 rounded-2xl shadow-2xl flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <header className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 shrink-0">

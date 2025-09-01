@@ -1,10 +1,11 @@
 
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useUser } from '../context/UserContext';
 import { useBookmarks } from '../context/BookmarkContext';
 import { Article, Post } from '../types';
-import { timeAgo } from '../utils/helpers';
+import { timeAgo, isArticleSafe, isPostSafe } from '../utils/helpers';
 import LogoutIcon from './icons/LogoutIcon';
 import RelatedArticleItem from './RelatedArticleItem';
 
@@ -25,7 +26,7 @@ export default function ProfileView({ posts, articles, onSelectArticle, onClose 
         <p className="text-slate-600 dark:text-slate-400">Please sign in to view your profile.</p>
         <button 
             onClick={onClose}
-            className="mt-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 rounded-lg hover:bg-light-grey dark:hover:bg-zinc-700 transition-colors"
+            className="mt-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-seafoam bg-slate-100 dark:bg-zinc-800 rounded-lg hover:bg-seafoam dark:hover:bg-zinc-700 transition-colors"
         >
             &larr; Back to Magazine
         </button>
@@ -33,8 +34,8 @@ export default function ProfileView({ posts, articles, onSelectArticle, onClose 
     );
   }
 
-  const bookmarkedArticles = articles.filter(a => bookmarks.includes(a.id));
-  const userPosts = posts.filter(p => p.author === user.name);
+  const bookmarkedArticles = articles.filter(a => isArticleSafe(a) && bookmarks.includes(a.id));
+  const userPosts = posts.filter(p => isPostSafe(p) && p.author === user.name);
 
   return (
     <motion.div
@@ -45,10 +46,10 @@ export default function ProfileView({ posts, articles, onSelectArticle, onClose 
     >
         {/* Header */}
         <div className="flex justify-between items-center mb-6 border-b-2 border-slate-200 dark:border-slate-700 pb-2">
-            <h2 className="text-3xl font-serif font-bold text-charcoal dark:text-green-300">My Profile</h2>
+            <h2 className="text-3xl font-serif font-bold text-charcoal dark:text-cyan-300">My Profile</h2>
             <button 
                 onClick={onClose}
-                className="shrink-0 ml-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 rounded-lg hover:bg-light-grey dark:hover:bg-zinc-700 transition-colors"
+                className="shrink-0 ml-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-seafoam bg-slate-100 dark:bg-zinc-800 rounded-lg hover:bg-seafoam dark:hover:bg-zinc-700 transition-colors"
             >
                 &larr; Back to Magazine
             </button>
@@ -61,7 +62,7 @@ export default function ProfileView({ posts, articles, onSelectArticle, onClose 
                     <img src={user.picture} alt={user.name} className="w-24 h-24 rounded-full mx-auto shadow-lg ring-4 ring-white dark:ring-zinc-900" />
                     <h3 className="mt-4 text-2xl font-serif font-bold text-charcoal dark:text-slate-100">{user.name}</h3>
                     <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{user.email}</p>
-                    <button onClick={signOut} className="mt-6 w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-warm-terracotta rounded-lg hover:opacity-90 transition-colors shadow-sm">
+                    <button onClick={signOut} className="mt-6 w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-poppy rounded-lg hover:opacity-90 transition-colors shadow-sm">
                         <LogoutIcon className="w-4 h-4" />
                         Sign Out
                     </button>

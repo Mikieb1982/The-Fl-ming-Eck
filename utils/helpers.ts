@@ -1,17 +1,76 @@
 
-import { Article, ArticleBodyBlock } from './types';
+import { Article, ArticleBodyBlock, Post, Reply } from './types';
 
 export function sortByDateDesc(items: Article[]): Article[] {
   return [...items].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
+export function sortByTimestampDesc(items: Post[]): Post[] {
+  return [...items].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 }
 
 export function fmtDate(d: string | number | Date): string {
   return new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 }
 
-export function isArticleSafe(a: Article | undefined | null): a is Article {
-  return Boolean(a && a.id && a.title && a.author && a.category && a.hero && a.date && Array.isArray(a.body));
+function isArticleBodyBlockSafe(b: any): b is ArticleBodyBlock {
+    if (!b || typeof b.type !== 'string') return false;
+
+    switch (b.type) {
+        case 'paragraph':
+        case 'subheading':
+            return typeof b.content === 'string';
+        case 'audio':
+            return typeof b.src === 'string';
+        case 'video':
+            return typeof b.youtubeId === 'string';
+        case 'poll':
+            return typeof b.question === 'string' &&
+                   Array.isArray(b.options) &&
+                   b.options.every((opt: any) => typeof opt.text === 'string' && typeof opt.votes === 'number');
+        default:
+            return false;
+    }
 }
+
+export function isArticleSafe(a: any): a is Article {
+  return Boolean(
+    a &&
+    typeof a.id === 'string' &&
+    typeof a.title === 'string' &&
+    typeof a.author === 'string' &&
+    typeof a.category === 'string' &&
+    typeof a.excerpt === 'string' &&
+    Array.isArray(a.hero) &&
+    typeof a.date === 'string' &&
+    Array.isArray(a.body) &&
+    a.body.every(isArticleBodyBlockSafe)
+  );
+}
+
+function isReplySafe(r: any): r is Reply {
+  return Boolean(
+    r &&
+    typeof r.id === 'string' &&
+    typeof r.author === 'string' &&
+    typeof r.content === 'string' &&
+    typeof r.timestamp === 'string'
+  );
+}
+
+export function isPostSafe(p: any): p is Post {
+  return Boolean(
+    p &&
+    typeof p.id === 'string' &&
+    typeof p.author === 'string' &&
+    typeof p.title === 'string' &&
+    typeof p.content === 'string' &&
+    typeof p.timestamp === 'string' &&
+    Array.isArray(p.replies) &&
+    p.replies.every(isReplySafe)
+  );
+}
+
 
 export function englishHeuristic(text: string): boolean {
   for (const ch of text) {
@@ -81,6 +140,9 @@ export function levenshteinDistance(a: string, b: string): number {
  * allowing for minor typos.
  */
 export function fuzzySearch(query: string, text: string): boolean {
+  if (typeof text !== 'string') {
+    return false;
+  }
   const queryLower = query.toLowerCase().trim();
   const textLower = text.toLowerCase();
 

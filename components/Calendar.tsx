@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import ChevronLeftIcon from './icons/ChevronLeftIcon';
 import ChevronRightIcon from './icons/ChevronRightIcon';
@@ -71,22 +72,22 @@ export default function Calendar({ selectedDate, onDateSelect, eventDates, curre
             <div key={day} className="flex justify-center items-center">
               <button
                 onClick={() => handleDateClick(day)}
-                className={`relative w-9 h-9 rounded-full text-sm flex items-center justify-center transition-all duration-200 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-zinc-800 focus:ring-brand-blue
+                className={`relative w-9 h-9 rounded-full text-sm flex items-center justify-center transition-all duration-200 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-zinc-800 focus:ring-ocean
                   ${isSelected
-                    ? 'bg-brand-green text-white font-bold shadow-lg scale-110'
+                    ? 'bg-ocean text-white font-bold shadow-lg scale-110'
                     : `hover:bg-slate-100 dark:hover:bg-zinc-800 ${
                         isToday
-                          ? 'bg-sandstone-ochre/20 ring-1 ring-sandstone-ochre text-sandstone-ochre-dark dark:text-yellow-400 font-bold'
+                          ? 'bg-sunshine/20 ring-1 ring-sunshine text-yellow-700 dark:text-sunshine font-bold'
                           : hasEvent
-                          ? 'text-brand-green dark:text-green-300 font-semibold'
-                          : 'text-charcoal dark:text-slate-300'
+                          ? 'text-ocean dark:text-cyan-300 font-semibold'
+                          : 'text-charcoal dark:text-seafoam'
                       }`
                   }
                 `}
               >
                 {day}
                 {hasEvent && !isSelected && (
-                  <span className="absolute bottom-1.5 w-1.5 h-1.5 bg-accent-green rounded-full" />
+                  <span className="absolute bottom-1.5 w-1.5 h-1.5 bg-ocean-dark rounded-full" />
                 )}
               </button>
             </div>

@@ -59,7 +59,7 @@ export const directoryData: DirectoryData = {
         {
           name: "Praxis Dr. Christian Hartung",
           specialization: "General Medicine",
-          address: "Ragösener Straße 45, 14806 Bad Belzig"
+          address: "Ragösener Straße 45, 14806 Bad Belzig",
         },
         {
           name: "Kinderarztpraxis Dr. med. Antje Karras",

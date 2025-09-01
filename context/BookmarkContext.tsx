@@ -27,7 +27,13 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
     try {
       const storedBookmarks = localStorage.getItem(storageKey);
       if (storedBookmarks) {
-        setBookmarks(JSON.parse(storedBookmarks));
+        const parsedBookmarks = JSON.parse(storedBookmarks);
+        // Validate that it's an array of strings to prevent crashes from corrupted data
+        if (Array.isArray(parsedBookmarks) && parsedBookmarks.every(item => typeof item === 'string')) {
+          setBookmarks(parsedBookmarks);
+        } else {
+          setBookmarks([]);
+        }
       } else {
         setBookmarks([]); // Reset if key changes and no bookmarks exist for it
       }

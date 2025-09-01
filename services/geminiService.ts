@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 
 if (!process.env.API_KEY) {
@@ -61,8 +62,23 @@ export async function moderateContent(text: string): Promise<{isAppropriate: boo
             }
         });
 
-        const result = JSON.parse(response.text.trim());
-        return result;
+        try {
+            const result = JSON.parse(response.text.trim());
+            // Add validation to ensure the response from the AI has the expected shape,
+            // protecting against null or non-object responses.
+            if (result && typeof result === 'object' && typeof result.isAppropriate === 'boolean') {
+                 return {
+                    isAppropriate: result.isAppropriate,
+                    reason: typeof result.reason === 'string' ? result.reason : 'No reason provided.'
+                };
+            }
+            // Fail open if the response isn't in the expected shape, but log it.
+            console.warn("Invalid JSON shape from moderation API", { response: result });
+            return { isAppropriate: true, reason: 'Moderation check passed due to response format.' };
+        } catch (parseError) {
+            console.error("Error parsing JSON from moderation API:", parseError, "Raw response:", response.text);
+            return { isAppropriate: true, reason: 'Moderation check passed due to a response parsing error.' };
+        }
 
     } catch (error) {
         console.error("Error moderating content:", error);

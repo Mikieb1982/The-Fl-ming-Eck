@@ -1,11 +1,13 @@
 
 
 
+
+
 import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { Article, Post, Reply } from "./types";
-import { sortByDateDesc, fuzzySearch, extractTextFromArticleBody } from "./utils/helpers";
+import { sortByDateDesc, fuzzySearch, extractTextFromArticleBody, sortByTimestampDesc } from "./utils/helpers";
 import * as api from './services/apiService';
 import { BRAND } from './constants';
 import ArticleView from "./components/ArticleView";
@@ -49,67 +51,81 @@ export default function App() {
   const { bookmarks } = useBookmarks();
   const sortedArticles = useMemo(() => sortByDateDesc(articles), [articles]);
 
-  const closeAllViews = useCallback(() => {
-    setActiveIndex(null);
-    setIsCommunityOpen(false);
-    setIsDirectoryOpen(false);
-    setIsBookmarksOpen(false);
-    setIsProfileOpen(false);
-    setIsCalendarPage(false);
-    setSearchQuery('');
-    setActiveTag(null);
+  // Hash-based routing state
+  const [currentPath, setCurrentPath] = useState(() => window.location.hash.substring(1) || '/');
+
+  const navigate = useCallback((path: string) => {
+    window.location.hash = path;
+    window.scrollTo(0, 0); // Scroll to top on navigation
+  }, []);
+
+  // Listen to hash changes to update the current path
+  useEffect(() => {
+    const handleHashChange = () => {
+      setCurrentPath(window.location.hash.substring(1) || '/');
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
   
-  const handleRouting = useCallback((path: string) => {
-    closeAllViews();
+  // Effect to handle routing logic based on the currentPath state
+  useEffect(() => {
+    const path = currentPath;
+    const isCommunity = path === '/community';
+    const isDirectory = path === '/directory';
+    const isBookmarks = path === '/bookmarks';
+    const isProfile = path === '/profile';
+    const isCalendar = path === '/calendar';
+    let articleIndex: number | null = null;
+
     if (path.startsWith('/article/')) {
         const articleId = path.split('/article/')[1];
         const index = sortedArticles.findIndex(a => a.id === articleId);
         if (index !== -1) {
-            setActiveIndex(index);
+            articleIndex = index;
         } else {
-             // If article not found, go home.
-            window.history.replaceState({}, '', '/');
+            // Article not found, navigate to home.
+            navigate('/');
         }
-    } else if (path === '/community') {
-        setIsCommunityOpen(true);
-    } else if (path === '/directory') {
-        setIsDirectoryOpen(true);
-    } else if (path === '/bookmarks') {
-        setIsBookmarksOpen(true);
-    } else if (path === '/profile') {
-        setIsProfileOpen(true);
-    } else if (path === '/calendar') {
-        setIsCalendarPage(true);
     }
-  }, [sortedArticles, closeAllViews]);
-  
-  const navigate = (path: string) => {
-      window.history.pushState({}, '', path);
-      handleRouting(path);
-  };
-  
+
+    // Set all view states based on the derived values. React batches these updates.
+    setActiveIndex(articleIndex);
+    setIsCommunityOpen(isCommunity);
+    setIsDirectoryOpen(isDirectory);
+    setIsBookmarksOpen(isBookmarks);
+    setIsProfileOpen(isProfile);
+    setIsCalendarPage(isCalendar);
+
+    // Reset other states for any navigation
+    setSearchQuery('');
+    setActiveTag(null);
+  }, [currentPath, sortedArticles, navigate]);
+
   const handleSelectArticleById = useCallback((id: string) => {
     navigate(`/article/${id}`);
-  }, []);
+  }, [navigate]);
+
+  const handlePrevArticle = useCallback(() => {
+    if (activeIndex !== null && activeIndex > 0) {
+        const prevArticleId = sortedArticles[activeIndex - 1].id;
+        navigate(`/article/${prevArticleId}`);
+    }
+  }, [activeIndex, sortedArticles, navigate]);
+
+  const handleNextArticle = useCallback(() => {
+      if (activeIndex !== null && activeIndex < sortedArticles.length - 1) {
+          const nextArticleId = sortedArticles[activeIndex + 1].id;
+          navigate(`/article/${nextArticleId}`);
+      }
+  }, [activeIndex, sortedArticles, navigate]);
 
   useEffect(() => {
     setArticles(api.getArticles());
     const initialPosts = api.getPosts();
-    setPosts(sortByDateDesc(initialPosts));
+    setPosts(sortByTimestampDesc(initialPosts));
     setIsLoading(false);
   }, []);
-
-  useEffect(() => {
-      if (!isLoading) {
-        handleRouting(window.location.pathname);
-      }
-
-      const handlePopState = () => handleRouting(window.location.pathname);
-      window.addEventListener('popstate', handlePopState);
-
-      return () => window.removeEventListener('popstate', handlePopState);
-  }, [isLoading, handleRouting]);
   
   const activeArticle = useMemo(() => {
       if (activeIndex !== null && sortedArticles[activeIndex]) {
@@ -127,55 +143,52 @@ export default function App() {
       
       let title = `${BRAND.title} Magazine`;
       let description = "An interactive digital magazine for Bad Belzig and the Hoher Fläming, featuring AI-powered summaries for articles.";
-      let url = baseUrl;
+      let path = '/';
 
       if (activeArticle) {
           title = `${activeArticle.title} | ${BRAND.title}`;
           description = activeArticle.excerpt;
-          url = `${baseUrl}/article/${activeArticle.id}`;
+          path = `/article/${activeArticle.id}`;
       } else if (isCommunityOpen) {
           title = `Community Forum | ${BRAND.title}`;
           description = "Join the conversation! A space for English-speakers in the Hoher Fläming to connect.";
-          url = `${baseUrl}/community`;
+          path = `/community`;
       } else if (isDirectoryOpen) {
           title = `Community Directory | ${BRAND.title}`;
           description = "Your guide to essential services and points of interest in Bad Belzig and the Hoher Fläming.";
-          url = `${baseUrl}/directory`;
+          path = `/directory`;
       } else if (isCalendarPage) {
           title = `Events Calendar | ${BRAND.title}`;
           description = "Find out what's on in Bad Belzig and the Hoher Fläming.";
-          url = `${baseUrl}/calendar`;
+          path = `/calendar`;
       } else if (isBookmarksOpen) {
           title = `My Bookmarks | ${BRAND.title}`;
           description = "Your saved articles from The Fläming Eck.";
-          url = `${baseUrl}/bookmarks`;
+          path = `/bookmarks`;
       }
 
       document.title = title;
       descriptionTag.setAttribute('content', description);
-      canonicalTag.setAttribute('href', url);
+      
+      // Set the canonical URL correctly for hash-based routing.
+      const canonicalUrl = path === '/' ? baseUrl : `${baseUrl}/#${path}`;
+      canonicalTag.setAttribute('href', canonicalUrl);
 
   }, [activeArticle, isCommunityOpen, isDirectoryOpen, isCalendarPage, isBookmarksOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
-        if (mainContentRef.current && mainContentRef.current.scrollTop > 300) {
+        if (window.scrollY > 300) {
             setIsBackToTopVisible(true);
         } else {
             setIsBackToTopVisible(false);
         }
     };
     
-    // Attaching scroll listener to the main content area if it exists
-    const contentArea = mainContentRef.current;
-    if (contentArea) {
-      // In a real browser environment, you'd listen to the scroll event
-      // but in this simulated one, direct manipulation might be needed
-      // or we just assume a default state. For this app, we'll keep it simple.
-    }
+    window.addEventListener('scroll', handleScroll);
 
     return () => {
-      // Cleanup
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
   
@@ -214,28 +227,23 @@ export default function App() {
   const handleClearTag = useCallback(() => {
     setActiveTag(null);
     navigate('/community');
-  }, []);
+  }, [navigate]);
   
   const handleSelectTag = useCallback((tag: string) => {
     setActiveTag(tag);
     navigate('/community');
-  }, []);
+  }, [navigate]);
 
   const handleGoHome = useCallback(() => {
     navigate('/');
-  }, []);
+  }, [navigate]);
 
   const scrollToTop = () => {
-    if(mainContentRef.current) {
-        mainContentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const searchResults = useMemo(() => {
     if (!searchQuery) return [];
-    const lowercasedQuery = searchQuery.toLowerCase();
     return sortedArticles.filter(
       (a) =>
         fuzzySearch(searchQuery, a.title) ||
@@ -255,8 +263,6 @@ export default function App() {
   else if (isProfileOpen) currentView = 'profile';
   else if (isCalendarPage) currentView = 'calendar';
   
-  // FIX: Correctly determine the active mobile view for the bottom navigation,
-  // including the 'more' state for bookmarks and profile views, and provide an explicit type to prevent type errors.
   const activeMobileView: 'home' | 'community' | 'directory' | 'calendar' | 'more' = isCommunityOpen
     ? 'community'
     : isDirectoryOpen
@@ -282,78 +288,83 @@ export default function App() {
   };
 
   return (
-      <div className="bg-creme dark:bg-slate-900 min-h-screen">
+      <div className="bg-cream dark:bg-deep-blue min-h-screen">
           <Header {...headerProps} />
-          <div className="pb-24 md:pb-4">
-              <main ref={mainContentRef} className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 pt-4 md:pt-8">
-                  <AnimatePresence mode="wait">
-                      {currentView === 'article' && (
-                          <ArticleView 
-                              key={activeArticle?.id || 'article'}
-                              article={activeArticle} 
-                              allArticles={sortedArticles}
-                              onSelectArticle={handleSelectArticleById}
-                              onSelectTag={handleSelectTag}
-                              onClose={handleGoHome}
-                          />
-                      )}
-                      {currentView === 'search' && (
-                          <SearchResults 
-                              key="search"
-                              articles={searchResults} 
-                              onSelectArticle={handleSelectArticleById} 
-                              searchQuery={searchQuery}
-                          />
-                      )}
-                      {currentView === 'community' && (
-                          <CommunityView 
-                              key="community"
-                              posts={posts}
-                              allArticles={articles}
-                              onAddPost={handleAddPost}
-                              onAddReply={handleAddReply}
-                              onSelectArticle={handleSelectArticleById}
-                              activeTag={activeTag}
-                              onSelectTag={handleSelectTag}
-                              onClearTag={handleClearTag}
-                              onClose={handleGoHome}
-                          />
-                      )}
-                      {currentView === 'directory' && <DirectoryView key="directory" onClose={handleGoHome} />}
-                      {currentView === 'bookmarks' && <BookmarksView key="bookmarks" articles={articles} onSelectArticle={handleSelectArticleById} onClose={handleGoHome} />}
-                      {currentView === 'profile' && <ProfileView key="profile" posts={posts} articles={articles} onSelectArticle={handleSelectArticleById} onClose={handleGoHome} />}
-                      {currentView === 'calendar' && <EventsCalendar key="calendar-page" isOpen={true} onClose={handleGoHome} onSelectArticle={handleSelectArticleById} isPage={true} />}
+          
+          <main ref={mainContentRef} className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 pt-4 md:pt-8">
+              <AnimatePresence mode="wait">
+                  {currentView === 'article' && (
+                      <ArticleView 
+                          key={activeArticle?.id || 'article'}
+                          article={activeArticle} 
+                          allArticles={sortedArticles}
+                          onSelectArticle={handleSelectArticleById}
+                          onSelectTag={handleSelectTag}
+                          onClose={handleGoHome}
+                          onPrev={handlePrevArticle}
+                          onNext={handleNextArticle}
+                          currentIndex={activeIndex}
+                          totalArticles={sortedArticles.length}
+                      />
+                  )}
+                  {currentView === 'search' && (
+                      <SearchResults 
+                          key="search"
+                          articles={searchResults} 
+                          onSelectArticle={handleSelectArticleById} 
+                          searchQuery={searchQuery}
+                      />
+                  )}
+                  {currentView === 'community' && (
+                      <CommunityView 
+                          key="community"
+                          posts={posts}
+                          allArticles={articles}
+                          onAddPost={handleAddPost}
+                          onAddReply={handleAddReply}
+                          onSelectArticle={handleSelectArticleById}
+                          activeTag={activeTag}
+                          onSelectTag={handleSelectTag}
+                          onClearTag={handleClearTag}
+                          onClose={handleGoHome}
+                      />
+                  )}
+                  {currentView === 'directory' && <DirectoryView key="directory" onClose={handleGoHome} />}
+                  {currentView === 'bookmarks' && <BookmarksView key="bookmarks" articles={articles} onSelectArticle={handleSelectArticleById} onClose={handleGoHome} />}
+                  {currentView === 'profile' && <ProfileView key="profile" posts={posts} articles={articles} onSelectArticle={handleSelectArticleById} onClose={handleGoHome} />}
+                  {currentView === 'calendar' && <EventsCalendar key="calendar-page" isOpen={true} onClose={handleGoHome} onSelectArticle={handleSelectArticleById} isPage={true} />}
 
-                      {currentView === 'home' && (
-                          <div className="space-y-12" key="home">
-                              <HomePage articles={sortedArticles} onSelectArticle={handleSelectArticleById} />
-                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                  {remainingArticles.map(article => (
-                                      <ArticleCard key={article.id} article={article} onClick={() => handleSelectArticleById(article.id)} />
-                                  ))}
-                              </div>
+                  {currentView === 'home' && (
+                      <div className="space-y-12" key="home">
+                          <HomePage articles={sortedArticles} onSelectArticle={handleSelectArticleById} />
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                              {remainingArticles.map(article => (
+                                  <ArticleCard key={article.id} article={article} onClick={() => handleSelectArticleById(article.id)} />
+                              ))}
                           </div>
-                      )}
-                  </AnimatePresence>
-              </main>
-
-              <AnimatePresence>
-                  {isBackToTopVisible && <BackToTopButton onClick={scrollToTop} />}
+                      </div>
+                  )}
               </AnimatePresence>
-              
-              <footer className="text-center text-xs text-slate-500 dark:text-slate-400 py-4 border-t border-slate-200 dark:border-slate-700">
-                  <button onClick={() => setLegalPage("about")} className="hover:underline px-2">About Us</button>
-                  <span>|</span>
-                  <button onClick={() => setLegalPage("impressum")} className="hover:underline px-2">Impressum</button>
-                  <span>|</span>
-                  <button onClick={() => setLegalPage("privacy")} className="hover:underline px-2">Data Protection</button>
-                  <span>|</span>
-                  <button onClick={() => setLegalPage("corrections")} className="hover:underline px-2">Corrections Policy</button>
-                   <span>|</span>
-                  <button onClick={() => setLegalPage("advertise")} className="hover:underline px-2">Advertise With Us</button>
-              </footer>
-          </div>
+          </main>
 
+          <footer className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 mt-12 text-center text-xs text-slate-500 dark:text-slate-400 py-4 border-t border-slate-200 dark:border-slate-700 pb-24 md:pb-4">
+              <button onClick={() => setLegalPage("about")} className="hover:underline px-2">About Us</button>
+              <span>|</span>
+              <button onClick={() => setLegalPage("impressum")} className="hover:underline px-2">Impressum</button>
+              <span>|</span>
+              <button onClick={() => setLegalPage("privacy")} className="hover:underline px-2">Data Protection</button>
+              <span>|</span>
+              <button onClick={() => setLegalPage("corrections")} className="hover:underline px-2">Corrections Policy</button>
+               <span>|</span>
+              <button onClick={() => setLegalPage("advertise")} className="hover:underline px-2">Advertise With Us</button>
+              <span>|</span>
+              <a href="https://ko-fi.com/example" target="_blank" rel="noopener noreferrer" className="hover:underline px-2">Support Us</a>
+          </footer>
+
+          <AnimatePresence>
+              {isBackToTopVisible && <BackToTopButton onClick={scrollToTop} />}
+          </AnimatePresence>
+          
           <CookieConsent onShowPrivacy={() => setLegalPage("privacy")} />
 
           <AnimatePresence>

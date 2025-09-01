@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useBookmarks } from '../context/BookmarkContext';
@@ -15,7 +14,10 @@ export default function BookmarkButton({ articleId, className, asText = false }:
     const bookmarked = isBookmarked(articleId);
 
     const handleClick = (e: React.MouseEvent) => {
+        // Prevent the browser's default link navigation and stop the event from bubbling to the parent link's React onClick.
+        e.preventDefault();
         e.stopPropagation();
+        
         if (bookmarked) {
             removeBookmark(articleId);
         } else {
@@ -27,7 +29,7 @@ export default function BookmarkButton({ articleId, className, asText = false }:
         return (
              <button
                 onClick={handleClick}
-                className={`flex items-center gap-2 text-sm font-semibold transition-colors ${bookmarked ? 'text-sandstone-ochre' : 'text-slate-600 dark:text-slate-300'} hover:text-sandstone-ochre/80 dark:hover:text-sandstone-ochre/80 ${className}`}
+                className={`flex items-center gap-2 text-sm font-semibold transition-colors ${bookmarked ? 'text-poppy' : 'text-slate-600 dark:text-slate-300'} hover:text-poppy/80 dark:hover:text-poppy/80 ${className}`}
                 aria-label={bookmarked ? 'Remove bookmark' : 'Add bookmark'}
             >
                 <BookmarkIcon filled={bookmarked} className="w-5 h-5" />
@@ -39,7 +41,7 @@ export default function BookmarkButton({ articleId, className, asText = false }:
     return (
         <button
             onClick={handleClick}
-            className={`p-2 rounded-full transition-colors ${bookmarked ? 'text-sandstone-ochre' : 'text-slate-600 dark:text-slate-300'} hover:bg-slate-100 dark:hover:bg-slate-700 ${className}`}
+            className={`p-2 rounded-full transition-colors ${bookmarked ? 'text-poppy' : 'text-slate-600 dark:text-slate-300'} hover:bg-slate-100 dark:hover:bg-slate-700 ${className}`}
             aria-label={bookmarked ? 'Remove bookmark' : 'Add bookmark'}
             title={bookmarked ? 'Remove bookmark' : 'Add bookmark'}
         >

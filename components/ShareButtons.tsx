@@ -1,3 +1,6 @@
+
+
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Article } from '../types';
@@ -16,9 +19,7 @@ export default function ShareButtons({ article }: ShareButtonsProps) {
 
   if (!article) return null;
 
-  const baseUrl = window.location.origin + window.location.pathname;
-  const shareUrl = `${baseUrl}?article=${article.id}`;
-
+  const shareUrl = `${window.location.origin}/#/article/${article.id}`;
   const encodedUrl = encodeURIComponent(shareUrl);
   const encodedTitle = encodeURIComponent(article.title);
 
@@ -47,7 +48,7 @@ export default function ShareButtons({ article }: ShareButtonsProps) {
     {
       name: 'Email',
       icon: <EmailIcon className="w-5 h-5" />,
-      url: `mailto:?subject=${encodedTitle}&body=Check out this article: ${encodedUrl}`,
+      url: `mailto:?subject=${encodedTitle}&body=Check out this article: ${shareUrl}`,
       color: 'hover:text-slate-600 dark:hover:text-slate-400',
     },
   ];

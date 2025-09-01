@@ -16,9 +16,13 @@ const THEME_SETTING_KEY = 'flaming-eck-theme-setting';
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [themeSetting, setThemeSettingState] = useState<ThemeSetting>(() => {
     if (typeof window !== 'undefined') {
-      const storedSetting = localStorage.getItem(THEME_SETTING_KEY);
-      if (storedSetting === 'light' || storedSetting === 'dark' || storedSetting === 'system') {
-        return storedSetting as ThemeSetting;
+      try {
+        const storedSetting = localStorage.getItem(THEME_SETTING_KEY);
+        if (storedSetting === 'light' || storedSetting === 'dark' || storedSetting === 'system') {
+          return storedSetting as ThemeSetting;
+        }
+      } catch (error) {
+          console.error("Could not read theme setting from localStorage:", error);
       }
     }
     return 'system'; // Default to system preference

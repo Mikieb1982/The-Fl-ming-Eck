@@ -25,12 +25,18 @@ export default function Poll({ articleId, question, initialOptions }: PollProps)
     try {
       const storedVoted = localStorage.getItem(storageKeyVoted);
       if (storedVoted !== null) {
-        setVotedOption(parseInt(storedVoted, 10));
+        const parsedVoted = parseInt(storedVoted, 10);
+        if (!isNaN(parsedVoted)) {
+          setVotedOption(parsedVoted);
+        }
       }
 
       const storedVotes = localStorage.getItem(storageKeyVotes);
       if (storedVotes) {
-        setOptions(JSON.parse(storedVotes));
+        const parsedVotes = JSON.parse(storedVotes);
+        if (Array.isArray(parsedVotes) && parsedVotes.every(o => typeof o.text === 'string' && typeof o.votes === 'number')) {
+          setOptions(parsedVotes);
+        }
       }
     } catch (error) {
       console.error("Failed to access localStorage for poll:", error);
@@ -61,7 +67,7 @@ export default function Poll({ articleId, question, initialOptions }: PollProps)
   };
 
   return (
-    <div className="not-prose my-8 p-6 bg-sandstone-ochre/10 dark:bg-sandstone-ochre/20 rounded-lg border border-slate-200 dark:border-slate-700">
+    <div className="not-prose my-8 p-6 bg-sunshine/10 dark:bg-sunshine/20 rounded-lg border border-slate-200 dark:border-slate-700">
       <h4 className="font-serif font-bold text-xl text-charcoal dark:text-slate-200">{question}</h4>
       <div className="mt-4 space-y-3">
         <AnimatePresence mode="wait">
@@ -80,7 +86,7 @@ export default function Poll({ articleId, question, initialOptions }: PollProps)
                 <button
                   key={index}
                   onClick={() => handleVote(index)}
-                  className="w-full text-left p-3 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-brand-blue dark:hover:border-accent-blue transition-colors font-medium text-charcoal dark:text-slate-300"
+                  className="w-full text-left p-3 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-ocean dark:hover:border-ocean-dark transition-colors font-medium text-charcoal dark:text-slate-300"
                 >
                   {option.text}
                 </button>
@@ -95,13 +101,13 @@ export default function Poll({ articleId, question, initialOptions }: PollProps)
                     {/* FIX: Suppress TypeScript error. The framer-motion props are not recognized in this environment. */}
                     {/* @ts-ignore */}
                     <motion.div
-                      className={`absolute top-0 left-0 h-full ${isVoted ? 'bg-brand-green/20' : 'bg-slate-200 dark:bg-slate-700'}`}
+                      className={`absolute top-0 left-0 h-full ${isVoted ? 'bg-ocean/20' : 'bg-slate-200 dark:bg-slate-700'}`}
                       initial={{ width: 0 }}
                       animate={{ width: `${percentage}%` }}
                       transition={{ duration: 0.8, ease: 'easeInOut' }}
                     />
                     <div className="relative flex justify-between items-center">
-                      <span className={`font-semibold ${isVoted ? 'text-brand-green dark:text-green-300' : 'text-charcoal dark:text-slate-200'}`}>{option.text}</span>
+                      <span className={`font-semibold ${isVoted ? 'text-ocean dark:text-cyan-300' : 'text-charcoal dark:text-slate-200'}`}>{option.text}</span>
                       <span className="text-sm font-bold text-charcoal dark:text-slate-300">{percentage.toFixed(0)}%</span>
                     </div>
                   </div>

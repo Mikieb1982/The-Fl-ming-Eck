@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import EventCard from './EventCard';
@@ -21,7 +22,7 @@ const FilterButton = ({ label, isActive, onClick }: { label: string; isActive: b
     onClick={onClick}
     className={`px-3 py-1.5 text-sm font-semibold rounded-full transition-colors duration-200 ${
       isActive
-        ? 'bg-brand-blue text-white shadow'
+        ? 'bg-ocean text-white shadow'
         : 'bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-zinc-700'
     }`}
   >
@@ -272,7 +273,7 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle, isPag
 
   const renderEventList = () => (
     <>
-      { !selectedDate && <p className="text-sm text-charcoal dark:text-slate-300">{intro}</p>}
+      { !selectedDate && <p className="text-sm text-charcoal dark:text-seafoam">{intro}</p>}
       {filteredSections.length > 0 ? (
         filteredSections.map(section => (
           <div key={section.header} className="pt-2 first:pt-0">
@@ -298,7 +299,7 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle, isPag
               { selectedDate && (
                    <button 
                       onClick={() => setSelectedDate(null)}
-                      className="mt-2 text-sm text-brand-green hover:underline"
+                      className="mt-2 text-sm text-ocean hover:underline"
                   >
                       Show all events
                   </button>
@@ -317,10 +318,10 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle, isPag
         transition={{ duration: 0.5, ease: "easeInOut" }}
       >
         <div className="flex justify-between items-center mb-6 border-b-2 border-slate-200 dark:border-slate-700 pb-2">
-          <h2 className="text-3xl font-serif font-bold text-charcoal dark:text-green-300">What's On</h2>
+          <h2 className="text-3xl font-serif font-bold text-charcoal dark:text-cyan-300">What's On</h2>
           <button 
               onClick={onClose}
-              className="shrink-0 ml-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 rounded-lg hover:bg-light-grey dark:hover:bg-zinc-700 transition-colors"
+              className="shrink-0 ml-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-seafoam bg-slate-100 dark:bg-zinc-800 rounded-lg hover:bg-seafoam dark:hover:bg-zinc-700 transition-colors"
           >
               &larr; Back to Magazine
           </button>
@@ -358,7 +359,7 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle, isPag
             animate="open"
             exit="closed"
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed top-0 right-0 h-full w-full sm:max-w-md bg-off-white dark:bg-slate-900 z-50 shadow-2xl flex flex-col"
+            className="fixed top-0 right-0 h-full w-full sm:max-w-md bg-cream dark:bg-slate-900 z-50 shadow-2xl flex flex-col"
             aria-modal="true"
             role="dialog"
           >

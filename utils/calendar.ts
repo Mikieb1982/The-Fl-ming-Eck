@@ -85,6 +85,9 @@ function parseDate(dateStr: string): Date | null {
 }
 
 export function parseEventString(eventString: string): CalendarEvent | null {
+  if (typeof eventString !== 'string') {
+    return null;
+  }
   const parts = eventString.split('::').map(p => p.trim());
   const [dateStr, timeStr, title, location, description] = parts;
 

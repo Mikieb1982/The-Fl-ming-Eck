@@ -27,14 +27,14 @@ const article: Article = {
         { text: "The live music and headliners", votes: 128 },
         { text: "Discovering the food in the courtyards", votes: 95 },
         { text: "The community atmosphere and parade", votes: 72 },
-        { text: "Just enjoying a summer festival", votes: 54 },
+        { text: "Just enjoying a summer festival", votes: 54 }
       ]
     },
     { type: 'subheading', content: "The Courtyards: A World of Discovery" },
     { type: 'paragraph', content: "The main stage is just the beginning. Be sure to explore the various courtyards for different experiences." },
     { type: 'paragraph', content: "• Alter Brauhof ('Old Brewery'): This venue is a culinary highlight, serving up grill specialties and baked goods from a traditional 'Gulaschkanone' ('Goulash Cannon'). It also features live music, with blues from Axel Merseburger and Peter Schmidt on Sunday afternoon and rock and pop from the Curtain Call Band on Saturday evening." },
     { type: 'paragraph', content: "• Rewe-Hof: This courtyard is dedicated to family fun, featuring clowns from Potsdam and face painting for kids on Saturday afternoon. In the evening, the atmosphere changes with concerts, including Toni Gutewort and his Dance Orchestra." },
-    { type: 'paragraph', content: "• Stadtkirche St. Marien ('St. Mary\\'s Town Church'): The church courtyard is a great spot for families with children\\'s games and a children\\'s flea market." },
+    { type: 'paragraph', content: "• Stadtkirche St. Marien ('St. Mary's Town Church'): The church courtyard is a great spot for families with children's games and a children's flea market." },
     { type: 'paragraph', content: "• Fläming-Hof: This courtyard is a community-focused space hosted by local projects and associations, and it will feature a performance by the young grunge and indie band 'Nowhere to Black' on Saturday." },
     { type: 'paragraph', content: "• Beatz & Beer Hof: For those looking to dance, this party courtyard offers a diverse mix of music, from Bollywood dance performances and Schlager to techno and house music late into the night. The courtyard will also host a 'Polittalk' on Saturday afternoon with representatives from youth political organizations." },
     { type: 'paragraph', content: "For foodies, keep an eye out for local organic farmer NaturKonkret from Lütte, who will be serving up burgers and Bratwurst (grilled sausage) all weekend." },

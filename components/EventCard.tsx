@@ -1,9 +1,6 @@
 
 
 
-
-
-
 import React from 'react';
 import ClockIcon from './icons/ClockIcon';
 import LocationIcon from './icons/LocationIcon';
@@ -47,6 +44,9 @@ function getDateParts(dateStr: string): DateParts {
 
 
 export default function EventCard({ eventString, onSelectArticle }: EventCardProps) {
+  if (typeof eventString !== 'string') {
+    return null;
+  }
   const parts = eventString.split('::');
   if (parts.length < 3) {
     return null;
@@ -65,35 +65,44 @@ export default function EventCard({ eventString, onSelectArticle }: EventCardPro
   
   const categoryColorMap: { [key: string]: { bg: string, text: string } } = {
     'Community': { bg: 'bg-orange-100 dark:bg-orange-900/50', text: 'text-orange-800 dark:text-orange-300' },
-    'History': { bg: 'bg-orange-100 dark:bg-orange-900/50', text: 'text-orange-800 dark:text-orange-300' },
-    'Culture': { bg: 'bg-orange-100 dark:bg-orange-900/50', text: 'text-orange-800 dark:text-orange-300' },
-    
-    'Festival': { bg: 'bg-amber-100 dark:bg-amber-900/50', text: 'text-amber-800 dark:text-amber-300' },
-    'Food': { bg: 'bg-amber-100 dark:bg-amber-900/50', text: 'text-amber-800 dark:text-amber-300' },
-    'Market': { bg: 'bg-amber-100 dark:bg-amber-900/50', text: 'text-amber-800 dark:text-amber-300' },
-
-    'Tour': { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300' },
-    'Film': { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300' },
-    'Museum': { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300' },
-    'Art': { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300' },
-    'Family': { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300' },
-    'Music': { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300' },
-    'Sport': { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300' },
-    'Wellness': { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300' },
-    
+    'History': { bg: 'bg-amber-100 dark:bg-amber-900/50', text: 'text-amber-800 dark:text-amber-300' },
+    'Culture': { bg: 'bg-rose-100 dark:bg-rose-900/50', text: 'text-rose-800 dark:text-rose-300' },
+    'Festival': { bg: 'bg-poppy/10 dark:bg-poppy/20', text: 'text-poppy-dark dark:text-red-300' },
+    'Food': { bg: 'bg-sunshine/20 dark:bg-sunshine/30', text: 'text-yellow-700 dark:text-sunshine' },
+    'Market': { bg: 'bg-lime-100 dark:bg-lime-900/50', text: 'text-lime-800 dark:text-lime-300' },
+    'Tour': { bg: 'bg-teal-100 dark:bg-teal-900/50', text: 'text-teal-800 dark:text-teal-300' },
+    'Film': { bg: 'bg-indigo-100 dark:bg-indigo-900/50', text: 'text-indigo-800 dark:text-indigo-300' },
+    'Museum': { bg: 'bg-fuchsia-100 dark:bg-fuchsia-900/50', text: 'text-fuchsia-800 dark:text-fuchsia-300' },
+    'Art': { bg: 'bg-violet-100 dark:bg-violet-900/50', text: 'text-violet-800 dark:text-violet-300' },
+    'Family': { bg: 'bg-sky-100 dark:bg-sky-900/50', text: 'text-sky-800 dark:text-sky-300' },
+    'Music': { bg: 'bg-cyan-100 dark:bg-cyan-900/50', text: 'text-cyan-800 dark:text-cyan-300' },
+    'Sport': { bg: 'bg-emerald-100 dark:bg-emerald-900/50', text: 'text-emerald-800 dark:text-emerald-300' },
+    'Wellness': { bg: 'bg-blue-100 dark:bg-blue-900/50', text: 'text-blue-800 dark:text-blue-300' },
     'default': { bg: 'bg-slate-100 dark:bg-slate-700', text: 'text-slate-800 dark:text-slate-200' }
   };
   const categoryClasses = category ? (categoryColorMap[category] || categoryColorMap['default']) : categoryColorMap['default'];
 
+  const handleArticleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // Allow standard browser behavior for new tabs (middle-click, ctrl/cmd-click)
+    if (e.metaKey || e.ctrlKey || e.button === 1) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation(); // Prevent card click event if nested
+    if (onSelectArticle && articleId) {
+      onSelectArticle(articleId);
+    }
+  };
+
 
   return (
-    <div className="flex gap-4 items-start p-3 rounded-xl bg-white dark:bg-zinc-800 border border-transparent transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:border-sandstone-ochre dark:hover:border-sandstone-ochre">
+    <div className="flex gap-4 items-start p-3 rounded-xl bg-white dark:bg-zinc-800 border border-transparent transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:border-poppy dark:hover:border-poppy">
       
       {/* Date Block */}
-      <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-brand-blue/20 dark:bg-brand-blue/30 flex flex-col items-center justify-center text-center font-bold shadow-sm">
+      <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-ocean/20 dark:bg-ocean/30 flex flex-col items-center justify-center text-center font-bold shadow-sm">
         {dateParts.type === 'specific' ? (
           <>
-            <span className="text-2xl text-brand-green dark:text-green-400 -mb-1">{dateParts.day}</span>
+            <span className="text-2xl text-ocean-dark dark:text-cyan-400 -mb-1">{dateParts.day}</span>
             <span className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{dateParts.month}</span>
           </>
         ) : (
@@ -132,14 +141,15 @@ export default function EventCard({ eventString, onSelectArticle }: EventCardPro
         <div className="flex justify-between items-center mt-3 pt-2 border-t border-slate-200 dark:border-slate-700/50">
             <div>
                 {articleId && onSelectArticle && (
-                <button 
-                    onClick={(e) => { e.stopPropagation(); onSelectArticle(articleId); }}
-                    className="flex items-center gap-1.5 text-xs font-semibold text-brand-green hover:underline"
+                <a 
+                    href={`/#/article/${articleId}`}
+                    onClick={handleArticleClick}
+                    className="flex items-center gap-1.5 text-xs font-semibold text-ocean hover:underline"
                     title="Read related guide"
                 >
                     <InfoIcon className="w-4 h-4" />
                     <span>Read Guide</span>
-                </button>
+                </a>
                 )}
             </div>
             <div className="flex items-center gap-1">
