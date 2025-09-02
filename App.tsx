@@ -1,8 +1,4 @@
 
-
-
-
-
 import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -50,6 +46,9 @@ export default function App() {
   
   const { bookmarks } = useBookmarks();
   const sortedArticles = useMemo(() => sortByDateDesc(articles), [articles]);
+  
+  const newsArticles = useMemo(() => sortedArticles.filter(a => a.category === 'News'), [sortedArticles]);
+  const featureArticles = useMemo(() => sortedArticles.filter(a => a.category !== 'News'), [sortedArticles]);
 
   // Hash-based routing state
   const [currentPath, setCurrentPath] = useState(() => window.location.hash.substring(1) || '/');
@@ -252,7 +251,7 @@ export default function App() {
     );
   }, [searchQuery, sortedArticles]);
   
-  const remainingArticles = useMemo(() => sortedArticles.slice(8), [sortedArticles]);
+  const remainingArticles = useMemo(() => featureArticles.slice(3), [featureArticles]);
   
   let currentView: 'home' | 'article' | 'search' | 'community' | 'directory' | 'bookmarks' | 'profile' | 'calendar' = 'home';
   if (searchQuery) currentView = 'search';
@@ -336,7 +335,11 @@ export default function App() {
 
                   {currentView === 'home' && (
                       <div className="space-y-12" key="home">
-                          <HomePage articles={sortedArticles} onSelectArticle={handleSelectArticleById} />
+                          <HomePage 
+                            featureArticles={featureArticles}
+                            newsArticles={newsArticles}
+                            onSelectArticle={handleSelectArticleById} 
+                          />
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                               {remainingArticles.map(article => (
                                   <ArticleCard key={article.id} article={article} onClick={() => handleSelectArticleById(article.id)} />

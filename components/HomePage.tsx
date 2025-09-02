@@ -1,8 +1,4 @@
 
-
-
-
-
 import React from 'react';
 import { Article } from '../types';
 import { categoryStyleMap } from '../constants';
@@ -10,7 +6,8 @@ import WeatherWidget from './WeatherWidget';
 import SupportCard from './SupportCard';
 
 interface HomePageProps {
-  articles: Article[];
+  featureArticles: Article[];
+  newsArticles: Article[];
   onSelectArticle: (id: string) => void;
 }
 
@@ -23,15 +20,15 @@ const getHeroUrl = (article: Article): string => {
 };
 
 
-export default function HomePage({ articles, onSelectArticle }: HomePageProps) {
-    if (!articles || articles.length === 0) {
+export default function HomePage({ featureArticles, newsArticles, onSelectArticle }: HomePageProps) {
+    if (!featureArticles || featureArticles.length === 0) {
         return <div className="p-4 text-center text-slate-500">No articles available to display.</div>;
     }
     
-    const headlineArticle = articles[0];
-    const subFeatureLeft = articles.length > 1 ? articles[1] : null;
-    const subFeatureRight = articles.length > 2 ? articles[2] : null;
-    const sidebarArticles = articles.length > 3 ? articles.slice(3, 8) : [];
+    const headlineArticle = featureArticles[0];
+    const subFeatureLeft = featureArticles.length > 1 ? featureArticles[1] : null;
+    const subFeatureRight = featureArticles.length > 2 ? featureArticles[2] : null;
+    const sidebarArticles = newsArticles.slice(0, 5);
 
     const headlineCategoryStyles = headlineArticle && (categoryStyleMap[headlineArticle.category] || categoryStyleMap['default']);
     const subFeatureLeftStyles = subFeatureLeft && (categoryStyleMap[subFeatureLeft.category] || categoryStyleMap['default']);
@@ -119,6 +116,9 @@ export default function HomePage({ articles, onSelectArticle }: HomePageProps) {
                     <SupportCard />
                     {sidebarArticles.length > 0 && (
                         <div className="p-6 rounded-lg bg-ocean/5 dark:bg-ocean/10">
+                            <h3 className="text-xl font-serif font-bold text-charcoal dark:text-slate-200 mb-6 border-b border-slate-200 dark:border-slate-700 pb-2">
+                                Latest News
+                            </h3>
                             <div className="space-y-8">
                                 {sidebarArticles.map(article => {
                                     const categoryStyles = categoryStyleMap[article.category] || categoryStyleMap['default'];

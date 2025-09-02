@@ -3,7 +3,10 @@ import { Article } from '../types';
 // Import all articles. Grouping them can sometimes help with clarity and module resolution.
 
 // News
+import newsWorldPeaceDay20250901 from './news-world-peace-day-2025-09-01';
 import newsTrabantAccident20250830 from './news-trabant-accident-2025-08-30';
+import newsShedFire20250828 from './news-shed-fire-2025-08-28';
+import newsRoadClosures20250820 from './news-road-closures-2025-08-20';
 
 // Community, Events & Commentary
 import altstadtsommer2025 from './altstadtsommer-2025';
@@ -27,7 +30,9 @@ import guideWiesenburgPark from './guide-wiesenburg-park';
 // If an article is missing from this list, it will cause routing failures.
 // The order of this list determines the initial order on the homepage.
 export const articles: Article[] = [
+  newsWorldPeaceDay20250901,
   newsTrabantAccident20250830,
+  newsShedFire20250828,
   commentaryQuietCorner,
   altstadtsommerGuide2025,
   firmenlauf2025,
@@ -40,4 +45,5 @@ export const articles: Article[] = [
   guideNaturePark,
   guideHofgartenkino,
   eventsWeekly,
+  newsRoadClosures20250820,
 ];
