@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Article, Post, Reply } from '../types';
@@ -110,7 +107,7 @@ function PostCard({ post, onReply, allArticles, onSelectArticle, onSelectTag }: 
     };
     
     return (
-        <div className={`p-4 sm:p-6 rounded-2xl shadow-sm border ${post.pinned ? 'bg-sunshine/10 dark:bg-sunshine/20 border-sunshine' : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-slate-700'}`}>
+        <div className={`p-4 sm:p-6 rounded-2xl shadow-sm border ${post.pinned ? 'bg-sunshine/10 dark:bg-sunshine/25 border-sunshine' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}>
             <div className="flex items-start gap-4">
                 <UserAvatar name={post.author} />
                 <div className="flex-grow">
@@ -120,7 +117,7 @@ function PostCard({ post, onReply, allArticles, onSelectArticle, onSelectTag }: 
                     </div>
                     <div className="flex items-center gap-2 flex-wrap mt-1">
                         {post.category && <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${categoryClasses}`}>{post.category}</span>}
-                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                        <p className="text-sm text-slate-500 dark:text-slate-300">
                             Posted by <span className="font-semibold">{post.author}</span> · {timeAgo(post.timestamp)}
                         </p>
                     </div>
@@ -144,7 +141,7 @@ function PostCard({ post, onReply, allArticles, onSelectArticle, onSelectTag }: 
             <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
                 {relatedArticles.length > 0 && (
                     <div className="mb-4">
-                        <h4 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">Related Reading</h4>
+                        <h4 className="text-sm font-semibold text-slate-600 dark:text-slate-300 mb-2">Related Reading</h4>
                         <div className="space-y-2">
                             {relatedArticles.map(article => (
                                 <RelatedArticleItem key={article.id} article={article} onSelectArticle={onSelectArticle} />
@@ -153,7 +150,7 @@ function PostCard({ post, onReply, allArticles, onSelectArticle, onSelectTag }: 
                     </div>
                 )}
                 
-                <h4 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-3">
+                <h4 className="text-sm font-semibold text-slate-600 dark:text-slate-300 mb-3">
                     {post.replies.length} {post.replies.length === 1 ? 'Reply' : 'Replies'}
                 </h4>
                 
@@ -174,8 +171,8 @@ function PostCard({ post, onReply, allArticles, onSelectArticle, onSelectTag }: 
                             >
                                 <UserAvatar name={reply.author} />
                                 <div className="flex-grow p-3 rounded-md bg-ocean/10 dark:bg-ocean/20">
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                                        <span className="font-semibold text-charcoal dark:text-slate-300">{reply.author}</span> · {timeAgo(reply.timestamp)}
+                                    <p className="text-sm text-slate-500 dark:text-slate-300">
+                                        <span className="font-semibold text-charcoal dark:text-slate-200">{reply.author}</span> · {timeAgo(reply.timestamp)}
                                     </p>
                                     <p className="mt-1 text-sm text-slate-600 dark:text-seafoam whitespace-pre-wrap">{reply.content}</p>
                                 </div>
@@ -292,13 +289,13 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 {/* Main Content */}
                 <div className="md:col-span-3">
-                    <div className="p-4 rounded-lg bg-seafoam dark:bg-zinc-900/50 border border-slate-200 dark:border-slate-700/50 flex-grow mb-6">
+                    <div className="p-4 rounded-lg bg-seafoam dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 flex-grow mb-6">
                          <h3 className="font-semibold text-charcoal dark:text-slate-200">Welcome to the Forum!</h3>
-                         <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Share tips, ask questions, and connect with others in English. All posts are moderated for safety.</p>
+                         <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">Share tips, ask questions, and connect with others in English. All posts are moderated for safety.</p>
                     </div>
 
                     {/* Filters and Search */}
-                    <div className="mb-6 p-4 rounded-lg bg-white dark:bg-zinc-900 border border-slate-200 dark:border-slate-700 space-y-4">
+                    <div className="mb-6 p-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-4">
                         {activeTag ? (
                              <div className="flex items-center gap-4">
                                 <h3 className="text-sm font-semibold text-charcoal dark:text-slate-200">
@@ -318,12 +315,12 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                                         type="search"
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm pl-10 pr-4 py-2 focus:border-sunshine focus:ring-sunshine sm:text-sm bg-white dark:bg-zinc-900"
+                                        className="block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm pl-10 pr-4 py-2 focus:border-sunshine focus:ring-sunshine sm:text-sm bg-white dark:bg-slate-900 dark:placeholder-slate-400"
                                         placeholder="Search discussions..."
                                     />
                                 </div>
                                 <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="text-sm font-semibold text-slate-600 dark:text-slate-400 mr-2">Categories:</span>
+                                    <span className="text-sm font-semibold text-slate-600 dark:text-slate-300 mr-2">Categories:</span>
                                     {communityCategories.map(cat => (
                                         <button 
                                             key={cat}
@@ -337,7 +334,7 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                             </>
                         )}
                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">Sort by:</span>
+                            <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">Sort by:</span>
                             <button onClick={() => setSortBy('newest')} className={`px-3 py-1 text-sm font-medium rounded-full transition-colors ${sortBy === 'newest' ? 'bg-ocean text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'}`}>Newest</button>
                             <button onClick={() => setSortBy('replies')} className={`px-3 py-1 text-sm font-medium rounded-full transition-colors ${sortBy === 'replies' ? 'bg-ocean text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'}`}>Most Replies</button>
                         </div>
@@ -348,8 +345,8 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                              <PostCard key={post.id} post={post} onReply={(reply) => onAddReply(post.id, reply)} allArticles={allArticles} onSelectArticle={onSelectArticle} onSelectTag={onSelectTag} />
                         ))}
                         {displayedPosts.length === 0 && (
-                            <div className="text-center py-12 bg-white dark:bg-zinc-900 rounded-lg">
-                                <p className="text-slate-500 dark:text-slate-400">No discussions found. Try adjusting your search or filters.</p>
+                            <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-lg">
+                                <p className="text-slate-500 dark:text-slate-300">No discussions found. Try adjusting your search or filters.</p>
                             </div>
                         )}
                     </div>
@@ -367,8 +364,8 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                     </div>
 
                     <div className="p-4 rounded-lg bg-sunshine/5 dark:bg-sunshine/10 border border-slate-200 dark:border-slate-700/50 bg-texture-wood">
-                        <h4 className="font-semibold text-charcoal dark:text-slate-300">Need an idea?</h4>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        <h4 className="font-semibold text-charcoal dark:text-slate-200">Need an idea?</h4>
+                        <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">
                             Get an AI-powered conversation starter.
                         </p>
                         {topicSuggestion && (
@@ -377,7 +374,7 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                              <motion.p 
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="mt-3 text-sm italic text-charcoal dark:text-slate-300 bg-slate-100 dark:bg-slate-700 p-2 rounded-md"
+                                className="mt-3 text-sm italic text-charcoal dark:text-slate-200 bg-slate-100 dark:bg-slate-700 p-2 rounded-md"
                             >
                                 "{topicSuggestion}"
                              </motion.p>
@@ -411,7 +408,7 @@ export default function CommunityView({ posts, allArticles, onAddPost, onAddRepl
                         initial={{ scale: 0.95, y: 20 }}
                         animate={{ scale: 1, y: 0 }}
                         exit={{ scale: 0.95, y: -20 }}
-                        className="w-full max-w-2xl bg-cream dark:bg-slate-900 rounded-2xl shadow-2xl p-6"
+                        className="w-full max-w-2xl bg-cream dark:bg-slate-800 rounded-2xl shadow-2xl p-6"
                         onClick={(e) => e.stopPropagation()}
                     >
                          <h3 className="text-2xl font-serif font-bold text-charcoal dark:text-slate-200 mb-4">Start a New Discussion</h3>

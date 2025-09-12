@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useMemo, Fragment, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Article, ArticleBodyBlock } from '../types';
@@ -54,7 +51,6 @@ const renderWithLinks = (text: string) => {
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-ocean hover:underline decoration-ocean"
           >
             {url}
           </a>
@@ -247,7 +243,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
         </button>
 
       <div
-        className="bg-white dark:bg-zinc-900 rounded-2xl shadow-lg overflow-hidden bg-texture-paper border border-poppy/50 dark:border-poppy/60"
+        className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg overflow-hidden bg-texture-paper border border-poppy/50 dark:border-poppy/60"
       >
         {/* HERO SECTION */}
         <div className="relative h-[60vh] min-h-[400px] text-white">
@@ -281,7 +277,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
         <div className="grid grid-cols-12 gap-8 p-6 md:p-8">
            {/* Main Content */}
           <main className="col-span-12 lg:col-span-9">
-             <article className={`prose ${fontSizes[fontSizeIndex]} max-w-prose mx-auto dark:prose-invert prose-headings:text-charcoal dark:prose-headings:text-slate-100 prose-p:text-charcoal dark:prose-p:text-seafoam`}>
+             <article className={`prose ${fontSizes[fontSizeIndex]} max-w-prose mx-auto dark:prose-invert prose-headings:text-charcoal dark:prose-headings:text-slate-100 prose-p:text-charcoal dark:prose-p:text-slate-100`}>
               {article.pullQuote && (
                 <div className="not-prose my-6">
                     <div className="relative p-6 bg-ocean/20 dark:bg-ocean/30 rounded-lg">
@@ -296,7 +292,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
             {/* TAGS Section */}
             {article.tags && article.tags.length > 0 && (
               <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700 max-w-prose mx-auto">
-                <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">Tags</h3>
+                <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-300 mb-2">Tags</h3>
                 <div className="flex flex-wrap gap-2">
                   {article.tags.map(tag => (
                     <Tag key={tag} tag={tag} onClick={onSelectTag} />
@@ -319,7 +315,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
                   </button>
               </div>
 
-              {isSummarizing && <div className="mt-4 text-sm text-slate-500 dark:text-slate-400">Thinking...</div>}
+              {isSummarizing && <div className="mt-4 text-sm text-slate-500 dark:text-slate-300">Thinking...</div>}
               {error && <div className="mt-4 text-sm text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-900/50 p-3 rounded-lg">{error}</div>}
               {summary && (
                 // @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors.

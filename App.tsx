@@ -1,4 +1,3 @@
-
 import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -7,7 +6,6 @@ import { sortByDateDesc, fuzzySearch, extractTextFromArticleBody, sortByTimestam
 import * as api from './services/apiService';
 import { BRAND } from './constants';
 import ArticleView from "./components/ArticleView";
-import EventsCalendar from "./components/EventsCalendar";
 import SearchResults from "./components/SearchResults";
 import CookieConsent from "./components/CookieConsent";
 import LegalView from "./components/LegalView";
@@ -26,6 +24,8 @@ import ArticleCard from "./components/ArticleCard";
 import AboutUs from "./components/AboutUs";
 import CorrectionsPolicy from "./components/CorrectionsPolicy";
 import AdvertiseWithUs from "./components/AdvertiseWithUs";
+import RaffleChecker from "./components/RaffleChecker";
+import EventsCalendar from "./components/EventsCalendar";
 
 export default function App() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -33,12 +33,12 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isCommunityOpen, setIsCommunityOpen] = useState(false);
   const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
+  const [isRaffleOpen, setIsRaffleOpen] = useState(false);
   const [isBookmarksOpen, setIsBookmarksOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isCalendarPage, setIsCalendarPage] = useState(false);
+  const [isEventsOpen, setIsEventsOpen] = useState(false);
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [legalPage, setLegalPage] = useState<"impressum" | "privacy" | "about" | "corrections" | "advertise" | null>(null);
   const [isBackToTopVisible, setIsBackToTopVisible] = useState(false);
@@ -72,9 +72,9 @@ export default function App() {
     const path = currentPath;
     const isCommunity = path === '/community';
     const isDirectory = path === '/directory';
+    const isRaffle = path === '/raffle';
     const isBookmarks = path === '/bookmarks';
     const isProfile = path === '/profile';
-    const isCalendar = path === '/calendar';
     let articleIndex: number | null = null;
 
     if (path.startsWith('/article/')) {
@@ -92,9 +92,10 @@ export default function App() {
     setActiveIndex(articleIndex);
     setIsCommunityOpen(isCommunity);
     setIsDirectoryOpen(isDirectory);
+    setIsRaffleOpen(isRaffle);
     setIsBookmarksOpen(isBookmarks);
     setIsProfileOpen(isProfile);
-    setIsCalendarPage(isCalendar);
+    setIsEventsOpen(false); // Close sidebar on any main navigation
 
     // Reset other states for any navigation
     setSearchQuery('');
@@ -156,10 +157,10 @@ export default function App() {
           title = `Community Directory | ${BRAND.title}`;
           description = "Your guide to essential services and points of interest in Bad Belzig and the Hoher Fläming.";
           path = `/directory`;
-      } else if (isCalendarPage) {
-          title = `Events Calendar | ${BRAND.title}`;
-          description = "Find out what's on in Bad Belzig and the Hoher Fläming.";
-          path = `/calendar`;
+      } else if (isRaffleOpen) {
+          title = `ALTSTADT SOMMER Raffle Checker 2025 | ${BRAND.title}`;
+          description = "Check your Altstadtsommer raffle ticket number.";
+          path = `/raffle`;
       } else if (isBookmarksOpen) {
           title = `My Bookmarks | ${BRAND.title}`;
           description = "Your saved articles from The Fläming Eck.";
@@ -173,7 +174,7 @@ export default function App() {
       const canonicalUrl = path === '/' ? baseUrl : `${baseUrl}/#${path}`;
       canonicalTag.setAttribute('href', canonicalUrl);
 
-  }, [activeArticle, isCommunityOpen, isDirectoryOpen, isCalendarPage, isBookmarksOpen]);
+  }, [activeArticle, isCommunityOpen, isDirectoryOpen, isRaffleOpen, isBookmarksOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -253,29 +254,29 @@ export default function App() {
   
   const remainingArticles = useMemo(() => featureArticles.slice(3), [featureArticles]);
   
-  let currentView: 'home' | 'article' | 'search' | 'community' | 'directory' | 'bookmarks' | 'profile' | 'calendar' = 'home';
+  let currentView: 'home' | 'article' | 'search' | 'community' | 'directory' | 'bookmarks' | 'profile' | 'raffle' = 'home';
   if (searchQuery) currentView = 'search';
   else if (activeArticle) currentView = 'article';
   else if (isCommunityOpen) currentView = 'community';
   else if (isDirectoryOpen) currentView = 'directory';
+  else if (isRaffleOpen) currentView = 'raffle';
   else if (isBookmarksOpen) currentView = 'bookmarks';
   else if (isProfileOpen) currentView = 'profile';
-  else if (isCalendarPage) currentView = 'calendar';
   
-  const activeMobileView: 'home' | 'community' | 'directory' | 'calendar' | 'more' = isCommunityOpen
+  const activeMobileView: 'home' | 'community' | 'raffle' | 'events' | 'more' = isEventsOpen
+    ? 'events'
+    : isCommunityOpen
     ? 'community'
-    : isDirectoryOpen
-    ? 'directory'
-    : isCalendarPage
-    ? 'calendar'
-    : isBookmarksOpen || isProfileOpen
+    : isRaffleOpen
+    ? 'raffle'
+    : isDirectoryOpen || isBookmarksOpen || isProfileOpen
     ? 'more'
     : 'home';
 
   const headerProps = {
       onGoHome: handleGoHome,
-      onToggleCalendar: () => setIsCalendarOpen(!isCalendarOpen),
-      onOpenCalendarPage: () => navigate('/calendar'),
+      onToggleRaffle: () => navigate('/raffle'),
+      onToggleEvents: () => setIsEventsOpen(true),
       onToggleCommunity: () => navigate('/community'),
       onToggleDirectory: () => navigate('/directory'),
       onToggleBookmarks: () => navigate('/bookmarks'),
@@ -329,9 +330,9 @@ export default function App() {
                       />
                   )}
                   {currentView === 'directory' && <DirectoryView key="directory" onClose={handleGoHome} />}
+                  {currentView === 'raffle' && <RaffleChecker key="raffle" onClose={handleGoHome} />}
                   {currentView === 'bookmarks' && <BookmarksView key="bookmarks" articles={articles} onSelectArticle={handleSelectArticleById} onClose={handleGoHome} />}
                   {currentView === 'profile' && <ProfileView key="profile" posts={posts} articles={articles} onSelectArticle={handleSelectArticleById} onClose={handleGoHome} />}
-                  {currentView === 'calendar' && <EventsCalendar key="calendar-page" isOpen={true} onClose={handleGoHome} onSelectArticle={handleSelectArticleById} isPage={true} />}
 
                   {currentView === 'home' && (
                       <div className="space-y-12" key="home">
@@ -368,6 +369,17 @@ export default function App() {
               {isBackToTopVisible && <BackToTopButton onClick={scrollToTop} />}
           </AnimatePresence>
           
+          <AnimatePresence>
+              {isEventsOpen && (
+                  <EventsCalendar
+                      isOpen={isEventsOpen}
+                      onClose={() => setIsEventsOpen(false)}
+                      onSelectArticle={handleSelectArticleById}
+                      isPage={false}
+                  />
+              )}
+          </AnimatePresence>
+          
           <CookieConsent onShowPrivacy={() => setLegalPage("privacy")} />
 
           <AnimatePresence>
@@ -391,12 +403,6 @@ export default function App() {
                   </LegalView>
               )}
           </AnimatePresence>
-
-          <EventsCalendar 
-              isOpen={isCalendarOpen} 
-              onClose={() => setIsCalendarOpen(false)} 
-              onSelectArticle={handleSelectArticleById}
-          />
       </div>
   );
 }

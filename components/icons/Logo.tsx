@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BRAND } from '../../constants';
 
@@ -36,7 +35,7 @@ export default function Logo({ className }: { className?: string }) {
         fontWeight="500"
         fontSize="10"
         fill="currentColor"
-        opacity="0.7"
+        className="text-slate-600 dark:text-slate-300"
       >
         <tspan x="45" dy="1.2em">The Independent English-language magazine</tspan>
         <tspan x="45" dy="1.2em">for Bad Belzig and the Hoher Fläming</tspan>

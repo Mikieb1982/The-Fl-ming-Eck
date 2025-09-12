@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -118,7 +116,7 @@ export default function Poll({ articleId, question, initialOptions }: PollProps)
         </AnimatePresence>
       </div>
       {votedOption !== null && (
-        <p className="text-right text-xs mt-3 text-slate-500 dark:text-slate-400">
+        <p className="text-right text-xs mt-3 text-slate-500 dark:text-slate-300">
           Total votes: {totalVotes}
         </p>
       )}

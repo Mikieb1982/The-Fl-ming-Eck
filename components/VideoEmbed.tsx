@@ -50,7 +50,7 @@ export default function VideoEmbed({ youtubeId, caption }: VideoEmbedProps) {
         )}
       </div>
       {caption && (
-        <figcaption className="mt-2 text-sm text-center text-slate-500 dark:text-slate-400">
+        <figcaption className="mt-2 text-sm text-center text-slate-600 dark:text-slate-300">
           {caption}
         </figcaption>
       )}

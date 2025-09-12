@@ -1,3 +1,4 @@
+
 import { Article } from '../types';
 
 // Import all articles. Grouping them can sometimes help with clarity and module resolution.
@@ -12,11 +13,11 @@ import newsRoadClosures20250820 from './news-road-closures-2025-08-20';
 // Community, Events & Commentary
 import altstadtsommer2025 from './altstadtsommer-2025';
 import commentaryQuietCorner from './commentary-quiet-corner';
-import eventsWeekly from './events-weekly';
 import firmenlauf2025 from './firmenlauf-2025';
 
 // Features & History
 import featureBurgEisenhardt from './feature-burg-eisenhardt';
+import featureBadBelzigHistory from './feature-bad-belzig-history';
 
 // Guides
 import guideHistoricOldTown from './guide-historic-old-town';
@@ -38,12 +39,12 @@ export const articles: Article[] = [
   firmenlauf2025,
   altstadtsommer2025,
   featureBurgEisenhardt,
+  featureBadBelzigHistory,
   guideSteinthermeSpa,
   guideNatureExperienceTrail,
   guideWiesenburgPark,
   guideHistoricOldTown,
   guideNaturePark,
   guideHofgartenkino,
-  eventsWeekly,
   newsRoadClosures20250820,
 ];

@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useUser } from '../context/UserContext';
@@ -58,10 +56,10 @@ export default function ProfileView({ posts, articles, onSelectArticle, onClose 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Left Column: User Info */}
             <aside className="md:col-span-1">
-                <div className="p-6 rounded-lg bg-white dark:bg-zinc-900 border border-slate-200 dark:border-slate-700 text-center sticky top-28 shadow-sm">
-                    <img src={user.picture} alt={user.name} className="w-24 h-24 rounded-full mx-auto shadow-lg ring-4 ring-white dark:ring-zinc-900" />
+                <div className="p-6 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-center sticky top-28 shadow-sm">
+                    <img src={user.picture} alt={user.name} className="w-24 h-24 rounded-full mx-auto shadow-lg ring-4 ring-white dark:ring-slate-800" />
                     <h3 className="mt-4 text-2xl font-serif font-bold text-charcoal dark:text-slate-100">{user.name}</h3>
-                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{user.email}</p>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">{user.email}</p>
                     <button onClick={signOut} className="mt-6 w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-poppy rounded-lg hover:opacity-90 transition-colors shadow-sm">
                         <LogoutIcon className="w-4 h-4" />
                         Sign Out
@@ -74,7 +72,7 @@ export default function ProfileView({ posts, articles, onSelectArticle, onClose 
                 {/* Bookmarks Section */}
                 <section>
                     <h4 className="text-xl font-serif font-bold text-charcoal dark:text-slate-200 mb-4">Bookmarked Articles ({bookmarkedArticles.length})</h4>
-                    <div className="p-4 rounded-lg bg-white dark:bg-zinc-900 border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div className="p-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
                         {bookmarkedArticles.length > 0 ? (
                             <div className="space-y-2">
                                 {bookmarkedArticles.map(article => (
@@ -82,7 +80,7 @@ export default function ProfileView({ posts, articles, onSelectArticle, onClose 
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-sm text-slate-500 dark:text-slate-400 py-4 text-center">You haven't bookmarked any articles yet.</p>
+                            <p className="text-sm text-slate-500 dark:text-slate-300 py-4 text-center">You haven't bookmarked any articles yet.</p>
                         )}
                     </div>
                 </section>
@@ -90,18 +88,18 @@ export default function ProfileView({ posts, articles, onSelectArticle, onClose 
                 {/* Community Activity Section */}
                 <section>
                     <h4 className="text-xl font-serif font-bold text-charcoal dark:text-slate-200 mb-4">Community Activity ({userPosts.length})</h4>
-                     <div className="p-4 rounded-lg bg-white dark:bg-zinc-900 border border-slate-200 dark:border-slate-700 shadow-sm">
+                     <div className="p-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
                         {userPosts.length > 0 ? (
                             <div className="space-y-4">
                                 {userPosts.map(post => (
                                     <div key={post.id} className="pb-3 border-b border-slate-100 dark:border-slate-700 last:border-b-0 last:pb-0">
                                         <p className="font-semibold text-charcoal dark:text-slate-200">{post.title}</p>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Posted {timeAgo(post.timestamp)} · {post.replies.length} {post.replies.length === 1 ? 'reply' : 'replies'}</p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-300 mt-1">Posted {timeAgo(post.timestamp)} · {post.replies.length} {post.replies.length === 1 ? 'reply' : 'replies'}</p>
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-sm text-slate-500 dark:text-slate-400 py-4 text-center">You haven't posted in the community forum yet.</p>
+                            <p className="text-sm text-slate-500 dark:text-slate-300 py-4 text-center">You haven't posted in the community forum yet.</p>
                         )}
                     </div>
                 </section>

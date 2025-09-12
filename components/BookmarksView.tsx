@@ -1,5 +1,3 @@
-
-
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Article } from '../types';
@@ -57,9 +55,9 @@ export default function BookmarksView({ articles, onSelectArticle, onClose }: Bo
           ))}
         </motion.div>
       ) : (
-        <div className="text-center py-20 bg-white dark:bg-zinc-900 rounded-lg shadow-sm">
-          <p className="text-slate-600 dark:text-slate-400">You haven't bookmarked any articles yet.</p>
-          <p className="text-sm text-slate-500 dark:text-slate-500 mt-2">Click the bookmark icon on any article to save it for later.</p>
+        <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-lg shadow-sm">
+          <p className="text-slate-600 dark:text-slate-300">You haven't bookmarked any articles yet.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Click the bookmark icon on any article to save it for later.</p>
         </div>
       )}
     </motion.div>

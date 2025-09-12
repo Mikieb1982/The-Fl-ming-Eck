@@ -1,4 +1,3 @@
-
 import React, { useState, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { directoryData } from '../articles/directoryData';
@@ -28,11 +27,11 @@ const AccordionSection = ({ title, icon, children, isOpen, onToggle }: { title: 
             <button
                 type="button"
                 onClick={onToggle}
-                className={`flex items-center justify-between w-full p-5 font-medium text-left text-charcoal dark:text-slate-200 transition-colors ${isOpen ? 'bg-brand-blue/20 dark:bg-brand-blue/30' : 'bg-light-grey dark:bg-zinc-800 bg-texture-fieldstone hover:bg-sandstone-ochre/20 dark:hover:bg-sandstone-ochre/30'}`}
+                className={`flex items-center justify-between w-full p-5 font-medium text-left text-charcoal dark:text-slate-200 transition-colors ${isOpen ? 'bg-ocean/10 dark:bg-ocean/20' : 'bg-slate-50 dark:bg-slate-800 bg-texture-fieldstone hover:bg-ocean/5 dark:hover:bg-ocean/10'}`}
                 aria-expanded={isOpen}
             >
                 <div className="flex items-center gap-4">
-                    <span className="text-brand-green dark:text-green-400">{icon}</span>
+                    <span className="text-ocean dark:text-green-300">{icon}</span>
                     <span className="text-lg font-serif">{title}</span>
                 </div>
                 {/* @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors. */}
@@ -56,7 +55,7 @@ const AccordionSection = ({ title, icon, children, isOpen, onToggle }: { title: 
                     transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
                     className="overflow-hidden"
                 >
-                    <div className="p-5 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-zinc-900">
+                    <div className="p-5 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
                         {children}
                     </div>
                 </motion.div>
@@ -67,7 +66,7 @@ const AccordionSection = ({ title, icon, children, isOpen, onToggle }: { title: 
 
 const InfoItem = ({ icon, children }: { icon: ReactNode, children: ReactNode }) => (
     <div className="flex items-start gap-3">
-        <div className="flex-shrink-0 w-5 h-5 mt-0.5 text-slate-400">{icon}</div>
+        <div className="flex-shrink-0 w-5 h-5 mt-0.5 text-slate-500 dark:text-slate-400">{icon}</div>
         <div className="text-sm text-slate-600 dark:text-slate-300">{children}</div>
     </div>
 );
@@ -93,8 +92,8 @@ const HospitalCard = ({ item }: { item: Hospital }) => (
         <p className="font-semibold text-charcoal dark:text-slate-200">{item.name}</p>
         <InfoItem icon={<MapPinIcon />}>{item.address}</InfoItem>
         <InfoItem icon={<PhoneIcon />}><a href={`tel:${item.phone}`} className="hover:underline">{item.phone}</a></InfoItem>
-        <InfoItem icon={<AlertTriangleIcon />}><a href={`tel:${item.emergency_phone}`} className="hover:underline font-semibold text-warm-terracotta">{item.emergency_phone} (Emergency)</a></InfoItem>
-        <InfoItem icon={<LinkIcon />}><a href={item.website} target="_blank" rel="noopener noreferrer" className="hover:underline text-brand-blue dark:text-accent-blue">{item.website}</a></InfoItem>
+        <InfoItem icon={<AlertTriangleIcon />}><a href={`tel:${item.emergency_phone}`} className="hover:underline font-semibold text-poppy">{item.emergency_phone} (Emergency)</a></InfoItem>
+        <InfoItem icon={<LinkIcon />}><a href={item.website} target="_blank" rel="noopener noreferrer" className="hover:underline text-ocean dark:text-cyan-400">{item.website}</a></InfoItem>
     </div>
 );
 
@@ -113,7 +112,7 @@ const MedicalCenterCard = ({ item }: { item: MedicalCenter }) => (
 
 const PracticeCard = ({ item }: { item: Practice }) => (
     <div className="space-y-2">
-        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name} <span className="text-sm font-normal text-slate-500 dark:text-slate-400">({item.specialization})</span></p>
+        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name} <span className="text-sm font-normal text-slate-500 dark:text-slate-300">({item.specialization})</span></p>
         <InfoItem icon={<MapPinIcon />}>{item.address}</InfoItem>
         {item.phone && <InfoItem icon={<PhoneIcon />}><a href={`tel:${item.phone}`} className="hover:underline">{item.phone}</a></InfoItem>}
         {item.doctors && <InfoItem icon={<UsersIcon />}><p>{item.doctors.join(', ')}</p></InfoItem>}
@@ -145,23 +144,23 @@ const BankCard = ({ item }: { item: BankEntry }) => (
 
 const AccommodationCard = ({ item }: { item: Accommodation }) => (
     <div className="space-y-2">
-        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name} <span className="text-sm font-normal text-slate-500 dark:text-slate-400">({item.type})</span></p>
+        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name} <span className="text-sm font-normal text-slate-500 dark:text-slate-300">({item.type})</span></p>
         <InfoItem icon={<MapPinIcon />}>{item.address}</InfoItem>
         <InfoItem icon={<PhoneIcon />}><a href={`tel:${item.phone}`} className="hover:underline">{item.phone}</a></InfoItem>
-        <InfoItem icon={<LinkIcon />}><a href={item.website} target="_blank" rel="noopener noreferrer" className="hover:underline text-brand-blue dark:text-accent-blue">{item.website}</a></InfoItem>
+        <InfoItem icon={<LinkIcon />}><a href={item.website} target="_blank" rel="noopener noreferrer" className="hover:underline text-ocean dark:text-cyan-400">{item.website}</a></InfoItem>
     </div>
 );
 
 const RestaurantCard = ({ item }: { item: Restaurant }) => (
     <div className="space-y-2">
-        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name} <span className="text-sm font-normal text-slate-500 dark:text-slate-400">({item.cuisine})</span></p>
+        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name} <span className="text-sm font-normal text-slate-500 dark:text-slate-300">({item.cuisine})</span></p>
         {item.address && <InfoItem icon={<MapPinIcon />}>{item.address}</InfoItem>}
     </div>
 );
 
 const AttractionCard = ({ item }: { item: Attraction }) => (
     <div className="space-y-2">
-        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name} <span className="text-sm font-normal text-slate-500 dark:text-slate-400">({item.type})</span></p>
+        <p className="font-semibold text-charcoal dark:text-slate-200">{item.name} <span className="text-sm font-normal text-slate-500 dark:text-slate-300">({item.type})</span></p>
         {item.hours && <InfoItem icon={<ClockIcon />}><p>{item.hours}</p></InfoItem>}
         {item.facilities && Object.entries(item.facilities).map(([key, value]) => (
              <p key={key} className="text-sm text-slate-500 dark:text-slate-400 pl-8 -indent-8"><span className="font-semibold text-charcoal dark:text-slate-300">{key}:</span> {value}</p>
@@ -194,7 +193,7 @@ const BusCard = ({ item }: { item: BusTransport }) => (
 
 const TaxiCard = ({ item }: { item: TaxiService }) => (
     <div className="space-y-4">
-        <p className="text-sm text-slate-500 dark:text-slate-400 italic">{item.note}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-300 italic">{item.note}</p>
         {item.companies.map(company => (
             <div key={company.name} className="space-y-2">
                 <p className="font-semibold text-charcoal dark:text-slate-200">{company.name}</p>
@@ -203,7 +202,7 @@ const TaxiCard = ({ item }: { item: TaxiService }) => (
             </div>
         ))}
          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Sample Fares</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-300">Sample Fares</p>
             <p className="text-sm text-slate-600 dark:text-slate-300">Base: {item.fares.base_fare}, Per km: {item.fares.per_km_rate}, Waiting (hourly): {item.fares.waiting_time_hourly}</p>
         </div>
     </div>
@@ -242,7 +241,7 @@ export default function DirectoryView({ onClose }: DirectoryViewProps) {
                     &larr; Back to Magazine
                 </button>
             </div>
-            <p className="mb-6 text-slate-600 dark:text-slate-400">
+            <p className="mb-6 text-slate-600 dark:text-slate-300">
                 A curated list of essential services and points of interest for residents and visitors in {directoryData.region}.
             </p>
 

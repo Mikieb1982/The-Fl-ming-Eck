@@ -1,6 +1,3 @@
-
-
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import CloseIcon from './icons/CloseIcon';
@@ -45,9 +42,7 @@ export default function LegalView({ title, onClose, children }: LegalViewProps) 
           </button>
         </header>
         <div className="flex-grow p-6 overflow-y-auto">
-          <div className="prose dark:prose-invert max-w-none prose-h2:text-charcoal dark:prose-h2:text-slate-200 prose-p:text-charcoal dark:prose-p:text-slate-300">
-            {children}
-          </div>
+          {children}
         </div>
       </motion.div>
     </motion.div>

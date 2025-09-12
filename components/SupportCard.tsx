@@ -5,7 +5,7 @@ export default function SupportCard() {
   return (
     <div className="p-6 rounded-lg bg-poppy/5 dark:bg-poppy/10 mb-8 border border-slate-200 dark:border-slate-700 shadow-sm">
       <h3 className="font-serif font-bold text-lg text-charcoal dark:text-slate-200">Support Our Work</h3>
-      <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+      <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
         If you enjoy our independent magazine, please consider supporting us. Every contribution helps.
       </p>
       <a

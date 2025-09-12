@@ -1,4 +1,3 @@
-
 import React from 'react';
 import MinusIcon from './icons/MinusIcon';
 import PlusIcon from './icons/PlusIcon';
@@ -12,11 +11,11 @@ interface FontSizeAdjusterProps {
 }
 
 export default function FontSizeAdjuster({ onIncrease, onDecrease, isMin, isMax }: FontSizeAdjusterProps) {
-  const buttonClasses = "p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent";
+  const buttonClasses = "p-2 rounded-full text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent";
   
   return (
     <div className="flex items-center gap-1">
-        <span className="text-slate-500 dark:text-slate-400" title="Adjust font size">
+        <span className="text-slate-500 dark:text-slate-300" title="Adjust font size">
             <TypeIcon className="w-5 h-5"/>
         </span>
         <button

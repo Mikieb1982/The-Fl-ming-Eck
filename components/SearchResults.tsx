@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Article } from '../types';
@@ -44,12 +42,12 @@ const SearchResultItem = ({ article, onSelectArticle }: { article: Article, onSe
                 <span className={`inline-block px-2 py-1 text-xs font-bold uppercase rounded-full ${categoryStyles.bg} ${categoryStyles.text} self-start`}>
                     {article.category}
                 </span>
-                <time dateTime={article.date} className="text-sm text-slate-500 dark:text-slate-400">{fmtDate(article.date)}</time>
+                <time dateTime={article.date} className="text-sm text-slate-500 dark:text-slate-300">{fmtDate(article.date)}</time>
             </div>
             <h3 className="mt-2 text-xl font-serif font-bold text-charcoal dark:text-slate-200 group-hover:text-sandstone-ochre dark:group-hover:text-yellow-500 transition-colors select-none">
                 {article.title}
             </h3>
-            <p className="mt-2 text-slate-600 dark:text-slate-400 line-clamp-2 select-none">
+            <p className="mt-2 text-slate-600 dark:text-slate-300 line-clamp-2 select-none">
                 {article.excerpt}
             </p>
         </a>

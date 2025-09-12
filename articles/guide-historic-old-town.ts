@@ -11,9 +11,9 @@ const article: Article = {
   pullQuote: "An old town shaped by trade routes, brickwork, and careful restoration.",
   body: [
     { type: 'paragraph', content: "Bad Belzig’s historic core formed as a market settlement north of Burg Eisenhardt in the early 13th century and gained town rights in the 14th century. Today the compact center shows irregular medieval street lines that frame the market square." },
-    { type: 'paragraph', content: "Highlights include St. Mary’s Town Church, where Martin Luther preached in 1530, the timber-framed Reissiger House linked to composer Carl Gottlieb Reissiger, and the town hall ensemble. Guided tours such as ‘Houses Tell History’ bring details to life." },
+    { type: 'paragraph', content: "Highlights include St. Mary’s Town Church, where Martin Luther preached in 1530, the timber-framed Reissiger House linked to composer Carl Gottlieb Reißiger, and the town hall ensemble. Guided tours such as ‘Houses Tell History’ bring details to life." },
     { type: 'paragraph', content: "Start your walk at the market and circle the lanes toward the castle." },
-    { type: 'paragraph', content: "For more information on guided tours and local sights, visit the official Bad Belzig tourism website: https://www.bad-belzig.de/tourismus/" }
+    { type: 'paragraph', content: "For more information on guided tours and local sights, visit the official Bad Belzig tourism website: https://www.belzig.com/" }
   ],
   tags: ['bad-belzig', 'history', 'city-guide', 'walking', 'architecture'],
 };

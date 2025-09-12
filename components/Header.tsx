@@ -1,13 +1,7 @@
-
-
-
-
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '../context/UserContext';
 import ThemeToggle from './ThemeToggle';
-import CalendarDaysIcon from './icons/CalendarDaysIcon';
 import UsersIcon from './icons/UsersIcon';
 import BuildingOfficeIcon from './icons/BuildingOfficeIcon';
 import LogoutIcon from './icons/LogoutIcon';
@@ -20,13 +14,15 @@ import HomeIcon from './icons/HomeIcon';
 import MenuIcon from './icons/MenuIcon';
 import InfoIcon from './icons/InfoIcon';
 import HeartIcon from './icons/HeartIcon';
+import TicketIcon from './icons/TicketIcon';
+import CalendarIcon from './icons/CalendarIcon';
 
 type LegalPageType = "impressum" | "privacy" | "about" | "corrections" | "advertise";
 
 interface HeaderProps {
     onGoHome: () => void;
-    onToggleCalendar: () => void;
-    onOpenCalendarPage: () => void;
+    onToggleRaffle: () => void;
+    onToggleEvents: () => void;
     onToggleCommunity: () => void;
     onToggleDirectory: () => void;
     onToggleBookmarks: () => void;
@@ -34,58 +30,62 @@ interface HeaderProps {
     setLegalPage: (page: LegalPageType | null) => void;
     searchQuery: string;
     onSearchChange: (query: string) => void;
-    activeView: 'home' | 'community' | 'directory' | 'more' | 'calendar';
+    activeView: 'home' | 'community' | 'raffle' | 'events' | 'more';
 }
 
 function BottomNavBar(props: HeaderProps) {
-    const { onGoHome, onOpenCalendarPage, onToggleCommunity, onToggleDirectory, onToggleBookmarks, onToggleProfile, setLegalPage, activeView } = props;
+    const { onGoHome, onToggleRaffle, onToggleEvents, onToggleCommunity, onToggleDirectory, onToggleBookmarks, onToggleProfile, setLegalPage, activeView } = props;
     const { user, signOut } = useUser();
     const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
 
     const navItems = [
         { label: 'Home', icon: <HomeIcon className="w-6 h-6" />, action: onGoHome, view: 'home' },
-        { label: 'What\'s On', icon: <CalendarDaysIcon className="w-6 h-6" />, action: onOpenCalendarPage, view: 'calendar' as const },
+        { label: 'Sommer Raffle', icon: <TicketIcon className="w-6 h-6" />, action: onToggleRaffle, view: 'raffle' as const },
+        { label: "What's On", icon: <CalendarIcon className="w-6 h-6" />, action: onToggleEvents, view: 'events' as const },
         { label: 'Community', icon: <UsersIcon className="w-6 h-6" />, action: onToggleCommunity, view: 'community' },
-        { label: 'Directory', icon: <BuildingOfficeIcon className="w-6 h-6" />, action: onToggleDirectory, view: 'directory' },
     ];
     
-    const baseButtonClass = "flex flex-col items-center justify-center flex-grow text-slate-600 dark:text-slate-400 transition-colors duration-200 pt-2 pb-1";
+    const baseButtonClass = "flex flex-col items-center justify-center flex-grow text-slate-600 dark:text-slate-300 transition-colors duration-200 pt-2 pb-1";
     const activeButtonClass = "text-ocean dark:text-cyan-300";
 
     const menuItems = (
         <div className="p-2 space-y-1">
-            <button onClick={() => { onToggleBookmarks(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+            <button onClick={() => { onToggleDirectory(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-seafoam hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+                <BuildingOfficeIcon className="w-5 h-5" />
+                <span>Directory</span>
+            </button>
+            <button onClick={() => { onToggleBookmarks(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-seafoam hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
                 <BookmarkIcon className="w-5 h-5" />
                 <span>Bookmarks</span>
             </button>
             {user && (
-                <button onClick={() => { onToggleProfile(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+                <button onClick={() => { onToggleProfile(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-seafoam hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
                     <UserIcon className="w-5 h-5" />
                     <span>My Profile</span>
                 </button>
             )}
             <div className="my-1 h-px bg-slate-200 dark:bg-slate-700" />
-            <button onClick={() => { setLegalPage('about'); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+            <button onClick={() => { setLegalPage('about'); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-seafoam hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
                 <InfoIcon className="w-5 h-5" />
                 <span>About Us</span>
             </button>
-            <button onClick={() => { setLegalPage('advertise'); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+            <button onClick={() => { setLegalPage('advertise'); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-seafoam hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
                 <BuildingOfficeIcon className="w-5 h-5" />
                 <span>Advertise</span>
             </button>
-            <a href="https://ko-fi.com/example" target="_blank" rel="noopener noreferrer" className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+            <a href="https://ko-fi.com/example" target="_blank" rel="noopener noreferrer" className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-seafoam hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
                 <HeartIcon className="w-5 h-5" />
                 <span>Support Us</span>
             </a>
             <div className="my-1 h-px bg-slate-200 dark:bg-slate-700" />
-            <div className="flex items-center justify-between px-3 py-2 text-sm text-charcoal dark:text-slate-300">
+            <div className="flex items-center justify-between px-3 py-2 text-sm text-charcoal dark:text-seafoam">
                 <span>Theme</span>
                 <ThemeToggle />
             </div>
             {user && (
                 <>
                     <div className="my-1 h-px bg-slate-200 dark:bg-slate-700" />
-                    <button onClick={() => { signOut(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+                    <button onClick={() => { signOut(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-seafoam hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
                         <LogoutIcon className="w-5 h-5" />
                         <span>Sign Out</span>
                     </button>
@@ -130,13 +130,13 @@ function BottomNavBar(props: HeaderProps) {
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            className="fixed top-0 right-0 h-full w-full max-w-xs z-[80] bg-cream dark:bg-zinc-900 shadow-2xl md:hidden flex flex-col"
+                            className="fixed top-0 right-0 h-full w-full max-w-xs z-[80] bg-cream dark:bg-slate-900 shadow-2xl md:hidden flex flex-col"
                             role="dialog"
                             aria-modal="true"
                             aria-labelledby="more-options-title"
                         >
                             <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
-                                <h3 id="more-options-title" className="text-lg font-semibold text-charcoal dark:text-slate-200">More Options</h3>
+                                <h3 id="more-options-title" className="text-lg font-semibold text-charcoal dark:text-slate-100">More Options</h3>
                                 <button onClick={() => setIsMoreMenuOpen(false)} className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" aria-label="Close menu">
                                     <CloseIcon className="w-6 h-6" />
                                 </button>
@@ -154,7 +154,7 @@ function BottomNavBar(props: HeaderProps) {
 
 
 export default function Header(props: HeaderProps) {
-    const { onGoHome, onToggleCalendar, onToggleCommunity, onToggleDirectory, onToggleBookmarks, onToggleProfile, searchQuery, onSearchChange, activeView } = props;
+    const { onGoHome, onToggleRaffle, onToggleEvents, onToggleCommunity, onToggleDirectory, onToggleBookmarks, onToggleProfile, searchQuery, onSearchChange, activeView } = props;
     const { user, signOut, isLoading } = useUser();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -197,14 +197,15 @@ export default function Header(props: HeaderProps) {
 
 
     const desktopNavItems = [
-        { label: 'What\'s On', icon: <CalendarDaysIcon className="w-6 h-6" />, action: onToggleCalendar, view: 'calendar' },
+        { label: "Sommer Raffle", icon: <TicketIcon className="w-6 h-6" />, action: onToggleRaffle, view: 'raffle' },
+        { label: "What's On", icon: <CalendarIcon className="w-6 h-6" />, action: onToggleEvents, view: 'events' },
         { label: 'Community', icon: <UsersIcon className="w-6 h-6" />, action: onToggleCommunity, view: 'community' },
-        { label: 'Directory', icon: <BuildingOfficeIcon className="w-6 h-6" />, action: onToggleDirectory, view: 'directory' },
+        { label: 'Directory', icon: <BuildingOfficeIcon className="w-6 h-6" />, action: onToggleDirectory, view: 'more' },
         { label: 'Bookmarks', icon: <BookmarkIcon className="w-6 h-6" />, action: onToggleBookmarks, view: 'more' },
     ];
     
     const baseNavButtonClasses = "flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg text-slate-600 dark:text-slate-300 hover:bg-poppy hover:text-white dark:hover:bg-poppy dark:hover:text-white transition-colors";
-    const activeNavButtonClasses = "bg-ocean text-white dark:bg-ocean-dark dark:text-white";
+    const activeNavButtonClasses = "bg-ocean text-white dark:bg-ocean dark:text-white";
     
     const handleCloseSearch = () => {
         setIsSearchOpen(false);
@@ -245,7 +246,7 @@ export default function Header(props: HeaderProps) {
                                 className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-deep-blue focus-visible:ring-sunshine rounded-md" 
                                 aria-label="Go to homepage"
                             >
-                                <Logo className="h-16 md:h-20 w-auto text-charcoal dark:text-slate-200" />
+                                <Logo className="h-16 md:h-20 w-auto text-charcoal dark:text-seafoam" />
                             </button>
                         </div>
 
@@ -265,7 +266,7 @@ export default function Header(props: HeaderProps) {
                             <div className="flex items-center gap-1 sm:gap-2">
                                 <button
                                     onClick={() => setIsSearchOpen(true)}
-                                    className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                    className="p-2 rounded-full text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                                     aria-label="Open search"
                                 >
                                     <SearchIcon className="w-5 h-5" />
@@ -283,7 +284,7 @@ export default function Header(props: HeaderProps) {
                                             <AnimatePresence>
                                                 {isUserMenuOpen && (
                                                     <motion.div 
-                                                        className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-zinc-900 ring-1 ring-black dark:ring-slate-700 ring-opacity-5 focus:outline-none z-10 top-full"
+                                                        className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-slate-800 ring-1 ring-black dark:ring-slate-700 ring-opacity-5 focus:outline-none z-10 top-full"
                                                         initial={{ opacity: 0, scale: 0.95 }}
                                                         animate={{ opacity: 1, scale: 1 }}
                                                         exit={{ opacity: 0, scale: 0.95 }}
@@ -292,7 +293,7 @@ export default function Header(props: HeaderProps) {
                                                         <div className="py-1">
                                                             <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
                                                                 <p className="text-sm font-semibold text-charcoal dark:text-slate-200 truncate">{user.name}</p>
-                                                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
+                                                                <p className="text-xs text-slate-500 dark:text-slate-300 truncate">{user.email}</p>
                                                             </div>
                                                             <div className="p-1">
                                                                 <button onClick={() => { onToggleProfile(); setIsUserMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
@@ -328,7 +329,7 @@ export default function Header(props: HeaderProps) {
                         <div className="flex md:hidden items-center gap-2">
                              <button
                                 onClick={() => setIsSearchOpen(true)}
-                                className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                className="p-2 rounded-full text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                                 aria-label="Open search"
                             >
                                 <SearchIcon className="w-5 h-5" />

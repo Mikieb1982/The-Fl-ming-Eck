@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import SunIcon from './icons/SunIcon';
 import SunCloudIcon from './icons/SunCloudIcon';
@@ -69,7 +68,7 @@ const WeatherWidget = () => {
 
 
   return (
-    <div className="inline-flex items-center gap-4 p-3 rounded-lg bg-light-grey dark:bg-zinc-900/50 border border-slate-200 dark:border-slate-700">
+    <div className="inline-flex items-center gap-4 p-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
         {isLoading && <div className="text-sm text-slate-500 animate-pulse">Loading weather...</div>}
         {error && <div className="text-sm text-red-500">{error}</div>}
         {weather && !isLoading && (
@@ -79,7 +78,7 @@ const WeatherWidget = () => {
                     <h3 className="font-semibold text-charcoal dark:text-slate-200">
                         Bad Belzig · {weather.temperature}°C
                     </h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-400">{formattedDate}</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-300">{formattedDate}</p>
                 </div>
             </>
         )}

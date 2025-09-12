@@ -63,7 +63,7 @@ export default function PostForm({ onSave, onCancel, isReply = false }: PostForm
                     id="author"
                     value={author}
                     onChange={(e) => setAuthor(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-sandstone-ochre focus:ring-sandstone-ochre sm:text-sm bg-white dark:bg-zinc-900 disabled:bg-slate-100 disabled:dark:bg-slate-800 disabled:cursor-not-allowed"
+                    className="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-sandstone-ochre focus:ring-sandstone-ochre sm:text-sm bg-white dark:bg-slate-700 disabled:bg-slate-100 disabled:dark:bg-slate-600 disabled:cursor-not-allowed"
                     required
                     disabled={!!user}
                 />
@@ -79,7 +79,7 @@ export default function PostForm({ onSave, onCancel, isReply = false }: PostForm
                                 id="title"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
-                                className="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-sandstone-ochre focus:ring-sandstone-ochre sm:text-sm bg-white dark:bg-zinc-900"
+                                className="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-sandstone-ochre focus:ring-sandstone-ochre sm:text-sm bg-white dark:bg-slate-700"
                                 required
                             />
                         </div>
@@ -89,7 +89,7 @@ export default function PostForm({ onSave, onCancel, isReply = false }: PostForm
                                 id="category"
                                 value={category}
                                 onChange={(e) => setCategory(e.target.value)}
-                                className="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-sandstone-ochre focus:ring-sandstone-ochre sm:text-sm bg-white dark:bg-zinc-900"
+                                className="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-sandstone-ochre focus:ring-sandstone-ochre sm:text-sm bg-white dark:bg-slate-700"
                             >
                                 {communityCategories.map(cat => (
                                     <option key={cat} value={cat}>{cat}</option>
@@ -105,7 +105,7 @@ export default function PostForm({ onSave, onCancel, isReply = false }: PostForm
                             value={tags}
                             onChange={(e) => setTags(e.target.value)}
                             placeholder="e.g. food, hiking, castle"
-                            className="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-sandstone-ochre focus:ring-sandstone-ochre sm:text-sm bg-white dark:bg-zinc-900"
+                            className="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-sandstone-ochre focus:ring-sandstone-ochre sm:text-sm bg-white dark:bg-slate-700"
                         />
                     </div>
                 </>
@@ -118,7 +118,7 @@ export default function PostForm({ onSave, onCancel, isReply = false }: PostForm
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     rows={isReply ? 3 : 5}
-                    className="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-sandstone-ochre focus:ring-sandstone-ochre sm:text-sm bg-white dark:bg-zinc-900"
+                    className="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-sandstone-ochre focus:ring-sandstone-ochre sm:text-sm bg-white dark:bg-slate-700"
                     required
                 />
             </div>

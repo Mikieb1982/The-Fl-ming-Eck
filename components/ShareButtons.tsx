@@ -1,6 +1,3 @@
-
-
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Article } from '../types';
@@ -55,7 +52,7 @@ export default function ShareButtons({ article }: ShareButtonsProps) {
 
   return (
     <div className="flex items-center gap-2">
-      <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">Share:</p>
+      <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Share:</p>
       <div className="flex items-center gap-1">
         {platforms.map((platform) => (
           <a

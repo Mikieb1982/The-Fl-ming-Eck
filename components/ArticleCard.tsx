@@ -1,6 +1,3 @@
-
-
-
 import React from 'react';
 import { Article } from '../types';
 import { calculateReadTime, isArticleSafe } from '../utils/helpers';
@@ -42,9 +39,9 @@ export default function ArticleCard({ article, onClick }: ArticleCardProps) {
     <a
       href={`/#/article/${article.id}`}
       onClick={handleClick}
-      className="group cursor-pointer flex flex-col h-full rounded-lg overflow-hidden bg-white dark:bg-zinc-900 shadow-md hover:shadow-xl dark:shadow-none dark:hover:shadow-2xl dark:hover:shadow-poppy/10 transition-all duration-300 ease-in-out group-hover:-translate-y-1 border border-slate-200 dark:border-slate-700 relative"
+      className="group cursor-pointer flex flex-col h-full rounded-lg overflow-hidden bg-white dark:bg-slate-800 shadow-md hover:shadow-xl dark:shadow-none dark:hover:shadow-lg dark:hover:shadow-poppy/10 transition-all duration-300 ease-in-out group-hover:-translate-y-1 border border-slate-200 dark:border-slate-700 dark:hover:bg-slate-700 relative"
     >
-      <div className="absolute top-2 right-2 z-10 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm rounded-full">
+      <div className="absolute top-2 right-2 z-10 bg-white/70 dark:bg-slate-700/70 backdrop-blur-sm rounded-full">
         <BookmarkButton articleId={article.id} />
       </div>
       <div className="shrink-0 overflow-hidden">
@@ -63,7 +60,7 @@ export default function ArticleCard({ article, onClick }: ArticleCardProps) {
             {article.category}
         </span>
         <h3 className="text-lg sm:text-xl font-serif font-bold mt-2 text-charcoal dark:text-slate-200 group-hover:text-ocean dark:group-hover:text-cyan-300 transition-colors flex-grow group-hover:underline decoration-ocean dark:decoration-cyan-400 select-none">{article.title}</h3>
-        <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 line-clamp-3 select-none">{article.excerpt}</p>
+        <p className="text-sm text-slate-600 dark:text-slate-300 mt-2 line-clamp-3 select-none">{article.excerpt}</p>
         
         <div className="mt-auto pt-2">
             {article.tags && article.tags.length > 0 && (
@@ -75,7 +72,7 @@ export default function ArticleCard({ article, onClick }: ArticleCardProps) {
                     ))}
                 </div>
             )}
-            <p className="font-mono text-xs text-slate-500 dark:text-slate-400 select-none">{readTime} min read</p>
+            <p className="font-mono text-xs text-slate-600 dark:text-slate-300 select-none">{readTime} min read</p>
         </div>
       </div>
     </a>

@@ -10,7 +10,7 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700&family=Playfair+Display:wght@700;800;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Montserrat:wght@700&family=Playfair+Display:wght@700;800;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
       .bg-texture-paper {
@@ -22,21 +22,253 @@
       .bg-texture-wood {
         background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
       }
-      /* Raffle Checker Styles */
-      :root {
-            --background-color-start: #005F7A;
-            --background-color-end: #415A77;
-            --app-background-color: rgba(13, 27, 42, 0.5);
-            --input-background-color: rgba(0, 0, 0, 0.2);
-            --text-color: #FEFBF6;
-            --text-color-secondary: rgba(255, 255, 255, 0.7);
-            --primary-color: #D90429;
-            --primary-hover-color: #A4031F;
-            --button-text-color: #FEFBF6;
-            --win-color: #FFC300;
-            --loss-color: #ff4d4d;
-            --border-color: rgba(255, 255, 255, 0.3);
-            --font-family: 'Inter', sans-serif;
+
+      .raffle-checker-page {
+          --background-color-start: #781d7e;
+          --background-color-end: #d71969;
+          --app-background-color: rgba(44, 0, 43, 0.5);
+          --input-background-color: rgba(0, 0, 0, 0.2);
+          --text-color: #ffffff;
+          --text-color-secondary: rgba(255, 255, 255, 0.85);
+          --primary-color: #f58220;
+          --primary-hover-color: #f79c4a;
+          --button-text-color: #000000;
+          --win-color: #f58220;
+          --loss-color: #ff4d4d;
+          --border-color: rgba(255, 255, 255, 0.3);
+          --font-family: 'Inter', sans-serif;
+          
+          font-family: var(--font-family);
+          background: linear-gradient(135deg, var(--background-color-start), var(--background-color-end));
+          color: var(--text-color);
+          display: grid;
+          place-items: center;
+          padding: 1rem;
+          font-size: 18px;
+          line-height: 1.6;
+          min-height: calc(100vh - 112px);
+      }
+
+      .raffle-checker-page .root-container {
+          width: 100%;
+          max-width: 500px;
+          text-align: center;
+          position: relative;
+      }
+
+      .raffle-checker-page .app-container {
+          background-color: var(--app-background-color);
+          padding: 2.5rem 2rem;
+          border-radius: 16px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+          width: 100%;
+          border: 1px solid var(--border-color);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+      }
+
+      .raffle-checker-page .lang-toggle {
+          position: absolute;
+          top: 1rem;
+          right: 1.5rem;
+          background: none;
+          border: none;
+          font-family: var(--font-family);
+          font-weight: 700;
+          color: var(--text-color-secondary);
+          cursor: pointer;
+          font-size: 0.9rem;
+          padding: 0.5rem;
+          border-radius: 8px;
+          transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+          z-index: 10;
+      }
+
+      .raffle-checker-page .lang-toggle:hover,
+      .raffle-checker-page .lang-toggle:focus {
+          color: var(--primary-color);
+          background-color: rgba(245, 130, 32, 0.1);
+          outline: none;
+      }
+
+      .raffle-checker-page .logo-header {
+          margin-bottom: 1rem;
+          font-weight: 900;
+          text-transform: uppercase;
+      }
+
+      .raffle-checker-page .logo-main {
+          display: block;
+          font-size: 2rem;
+          color: var(--primary-color);
+          letter-spacing: 1px;
+          line-height: 1;
+      }
+
+      .raffle-checker-page .logo-sub {
+          display: block;
+          font-size: 3rem;
+          color: var(--text-color);
+          letter-spacing: -2px;
+          line-height: 1;
+      }
+
+      .raffle-checker-page .title {
+          font-size: 1.5rem;
+          margin-bottom: 2rem;
+          font-weight: 400;
+          color: var(--text-color-secondary);
+      }
+
+      .raffle-checker-page .label {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border-width: 0;
+      }
+
+      .raffle-checker-page .input-field {
+          width: 100%;
+          padding: 1rem;
+          font-size: 1.5rem;
+          text-align: center;
+          background-color: var(--input-background-color);
+          color: var(--text-color);
+          border: 2px solid var(--border-color);
+          border-radius: 8px;
+          margin-bottom: 1.5rem;
+          font-family: var(--font-family);
+          transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      }
+
+      .raffle-checker-page .input-field::-webkit-outer-spin-button,
+      .raffle-checker-page .input-field::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      .raffle-checker-page .input-field[type=number] {
+        -moz-appearance: textfield;
+      }
+
+      .raffle-checker-page .input-field:focus {
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.4);
+          outline: none;
+      }
+
+      .raffle-checker-page .button {
+          width: 100%;
+          padding: 1rem;
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: var(--button-text-color);
+          background-color: var(--primary-color);
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+      }
+
+      .raffle-checker-page .button:hover,
+      .raffle-checker-page .button:focus {
+          background-color: var(--primary-hover-color);
+          outline: none;
+      }
+
+      .raffle-checker-page .button:disabled {
+          background-color: var(--primary-color);
+          opacity: 0.5;
+          cursor: not-allowed;
+      }
+
+      .raffle-checker-page .result-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 250px;
+      }
+
+      .raffle-checker-page .result-icon {
+          font-size: 80px;
+          line-height: 1;
+      }
+
+      .raffle-checker-page .result-icon.win {
+          color: var(--win-color);
+      }
+
+      .raffle-checker-page .result-icon.loss {
+          color: var(--loss-color);
+      }
+
+      .raffle-checker-page .result-text {
+          font-size: 1.5rem;
+          font-weight: 700;
+          margin-top: 1.5rem;
+      }
+
+      .raffle-checker-page .prize-card {
+          background-color: var(--input-background-color);
+          border: 1px solid var(--border-color);
+          border-radius: 12px;
+          padding: 1.5rem;
+          margin: 1.5rem 0;
+          width: 100%;
+          text-align: left;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+      }
+
+      .raffle-checker-page .prize-header {
+          font-size: 0.9rem;
+          font-weight: 700;
+          color: var(--text-color-secondary);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+      }
+
+      .raffle-checker-page .prize-description {
+          font-size: 1.4rem;
+          font-weight: 700;
+          color: var(--primary-color);
+          line-height: 1.2;
+      }
+
+      .raffle-checker-page .prize-sponsor {
+          font-size: 0.9rem;
+          color: var(--text-color-secondary);
+      }
+
+
+      @media (max-width: 600px) {
+          .raffle-checker-page {
+              font-size: 16px;
+          }
+          .raffle-checker-page .app-container {
+              padding: 2rem 1.5rem;
+          }
+          .raffle-checker-page .logo-main {
+              font-size: 1.8rem;
+          }
+          .raffle-checker-page .logo-sub {
+              font-size: 2.5rem;
+          }
+          .raffle-checker-page .title {
+              font-size: 1.2rem;
+          }
+          .raffle-checker-page .result-text {
+              font-size: 1.2rem;
+          }
+          .raffle-checker-page .prize-description {
+              font-size: 1.2rem;
+          }
       }
     </style>
     <script>
@@ -97,6 +329,7 @@
 </head>
   <body class="bg-cream dark:bg-deep-blue text-base text-charcoal dark:text-seafoam font-sans leading-relaxed">
     <div id="root"></div>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <script type="text/babel" data-type="module" src="/index.tsx"></script>
   </body>
 </html>

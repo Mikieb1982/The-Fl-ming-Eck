@@ -1,6 +1,5 @@
 
 
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import EventCard from './EventCard';
@@ -359,7 +358,7 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle, isPag
             animate="open"
             exit="closed"
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed top-0 right-0 h-full w-full sm:max-w-md bg-cream dark:bg-slate-900 z-50 shadow-2xl flex flex-col"
+            className="fixed top-0 right-0 h-full w-full sm:max-w-md bg-white dark:bg-slate-900 z-50 shadow-2xl flex flex-col"
             aria-modal="true"
             role="dialog"
           >
