@@ -13,7 +13,8 @@ import AudioPlayer from './AudioPlayer';
 import VideoEmbed from './VideoEmbed';
 import Poll from './Poll';
 import BookmarkButton from './BookmarkButton';
-import { categoryStyleMap, BRAND } from '../constants';
+// FIX: Corrected import name from categoryStyleMap to articleCategoryStyleMap to match exports.
+import { articleCategoryStyleMap, BRAND } from '../constants';
 import ShareButtons from './ShareButtons';
 import Navigation from './Navigation';
 import VenueBadge from './poster/VenueBadge';
@@ -190,7 +191,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
   const heroUrl = hasHero ? article.hero[0] : generatedUrl;
 
   const readTime = calculateReadTime(article.body);
-  const categoryStyles = categoryStyleMap[article.category] || categoryStyleMap['default'];
+  const categoryStyles = articleCategoryStyleMap[article.category] || articleCategoryStyleMap['default'];
 
 
   const renderArticleBody = (block: ArticleBodyBlock, index: number) => {

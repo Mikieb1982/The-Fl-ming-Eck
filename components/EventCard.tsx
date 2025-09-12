@@ -1,10 +1,24 @@
 import React from 'react';
+import { eventCategoryStyleMap } from '../constants';
 import ClockIcon from './icons/ClockIcon';
 import LocationIcon from './icons/LocationIcon';
 import CalendarIcon from './icons/CalendarIcon';
 import InfoIcon from './icons/InfoIcon';
 import SaveToCalendarButton from './SaveToCalendarButton';
 import ShareEventButton from './ShareEventButton';
+import UsersIcon from './icons/UsersIcon';
+import BookOpenIcon from './icons/BookOpenIcon';
+import PaletteIcon from './icons/PaletteIcon';
+import SparklesIcon from './icons/SparklesIcon';
+import UtensilsIcon from './icons/UtensilsIcon';
+import ShoppingBagIcon from './icons/ShoppingBagIcon';
+import CameraIcon from './icons/CameraIcon';
+import LeafIcon from './icons/LeafIcon';
+import RunningIcon from './icons/RunningIcon';
+import HeartIcon from './icons/HeartIcon';
+// FIX: Import the MusicNoteIcon component to resolve 'Cannot find name' error.
+import MusicNoteIcon from './icons/MusicNoteIcon';
+
 
 interface EventCardProps {
   eventString: string;
@@ -39,6 +53,24 @@ function getDateParts(dateStr: string): DateParts {
     return { type: 'complex', full: dateStr };
 }
 
+const categoryIconMap: { [key: string]: React.ReactNode } = {
+    'Community': <UsersIcon className="w-4 h-4" />,
+    'History': <BookOpenIcon className="w-4 h-4" />,
+    'Culture': <PaletteIcon className="w-4 h-4" />,
+    'Festival': <SparklesIcon className="w-4 h-4" />,
+    'Food': <UtensilsIcon className="w-4 h-4" />,
+    'Market': <ShoppingBagIcon className="w-4 h-4" />,
+    'Tour': <LocationIcon className="w-4 h-4" />,
+    'Film': <CameraIcon className="w-4 h-4" />,
+    'Museum': <BookOpenIcon className="w-4 h-4" />,
+    'Art': <PaletteIcon className="w-4 h-4" />,
+    'Family': <UsersIcon className="w-4 h-4" />,
+    'Music': <MusicNoteIcon className="w-4 h-4" />,
+    'Sport': <RunningIcon className="w-4 h-4" />,
+    'Wellness': <HeartIcon className="w-4 h-4" />,
+    'Nature': <LeafIcon className="w-4 h-4" />,
+};
+
 
 export default function EventCard({ eventString, onSelectArticle }: EventCardProps) {
   if (typeof eventString !== 'string') {
@@ -60,24 +92,8 @@ export default function EventCard({ eventString, onSelectArticle }: EventCardPro
     return null;
   }
   
-  const categoryColorMap: { [key: string]: { bg: string, text: string } } = {
-    'Community': { bg: 'bg-orange-100 dark:bg-orange-900/50', text: 'text-orange-800 dark:text-orange-300' },
-    'History': { bg: 'bg-amber-100 dark:bg-amber-900/50', text: 'text-amber-800 dark:text-amber-300' },
-    'Culture': { bg: 'bg-rose-100 dark:bg-rose-900/50', text: 'text-rose-800 dark:text-rose-300' },
-    'Festival': { bg: 'bg-poppy/10 dark:bg-poppy/20', text: 'text-poppy-dark dark:text-red-300' },
-    'Food': { bg: 'bg-sunshine/20 dark:bg-sunshine/30', text: 'text-yellow-700 dark:text-sunshine' },
-    'Market': { bg: 'bg-lime-100 dark:bg-lime-900/50', text: 'text-lime-800 dark:text-lime-300' },
-    'Tour': { bg: 'bg-teal-100 dark:bg-teal-900/50', text: 'text-teal-800 dark:text-teal-300' },
-    'Film': { bg: 'bg-indigo-100 dark:bg-indigo-900/50', text: 'text-indigo-800 dark:text-indigo-300' },
-    'Museum': { bg: 'bg-fuchsia-100 dark:bg-fuchsia-900/50', text: 'text-fuchsia-800 dark:text-fuchsia-300' },
-    'Art': { bg: 'bg-violet-100 dark:bg-violet-900/50', text: 'text-violet-800 dark:text-violet-300' },
-    'Family': { bg: 'bg-sky-100 dark:bg-sky-900/50', text: 'text-sky-800 dark:text-sky-300' },
-    'Music': { bg: 'bg-cyan-100 dark:bg-cyan-900/50', text: 'text-cyan-800 dark:text-cyan-300' },
-    'Sport': { bg: 'bg-emerald-100 dark:bg-emerald-900/50', text: 'text-emerald-800 dark:text-emerald-300' },
-    'Wellness': { bg: 'bg-blue-100 dark:bg-blue-900/50', text: 'text-blue-800 dark:text-blue-300' },
-    'default': { bg: 'bg-slate-100 dark:bg-slate-700', text: 'text-slate-800 dark:text-slate-200' }
-  };
-  const categoryClasses = category ? (categoryColorMap[category] || categoryColorMap['default']) : categoryColorMap['default'];
+  const categoryClasses = category ? (eventCategoryStyleMap[category] || eventCategoryStyleMap['default']) : eventCategoryStyleMap['default'];
+  const categoryIcon = category ? categoryIconMap[category] : null;
 
   const handleArticleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     // Allow standard browser behavior for new tabs (middle-click, ctrl/cmd-click)
@@ -110,9 +126,10 @@ export default function EventCard({ eventString, onSelectArticle }: EventCardPro
       {/* Event Details */}
       <div className="flex-grow pt-1">
         {category && (
-          <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full mb-2 ${categoryClasses.bg} ${categoryClasses.text}`}>
-            {category}
-          </span>
+          <div className={`inline-flex items-center gap-2 px-2 py-0.5 text-xs font-semibold rounded-full mb-2 ${categoryClasses.bg} ${categoryClasses.text}`}>
+            {categoryIcon}
+            <span>{category}</span>
+          </div>
         )}
         <h4 className="font-serif font-bold text-lg leading-tight text-charcoal dark:text-slate-100">{title}</h4>
         

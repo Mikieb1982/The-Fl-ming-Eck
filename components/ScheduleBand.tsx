@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
 import eventsArticle from '../articles/events-weekly';
+import { eventCategoryStyleMap } from '../constants';
 import ClockIcon from './icons/ClockIcon';
 import LocationIcon from './icons/LocationIcon';
+import { ArticleBodyBlock } from '../types';
 
 // A simplified parser for this component
 function parseSimpleEvent(eventString: string) {
@@ -12,6 +14,8 @@ function parseSimpleEvent(eventString: string) {
         time: parts[1],
         title: parts[2],
         location: parts[3],
+        description: parts[4],
+        category: parts.length > 6 ? parts[6] : null,
     };
 }
 
@@ -40,7 +44,9 @@ export default function ScheduleBand() {
 
     const upcomingEvents = useMemo(() => {
         const eventBlocks = eventsArticle.body
-            .filter(b => b.type === 'paragraph' && !b.content.startsWith('**') && !b.content.toLowerCase().includes('every'))
+            // FIX: Use a type guard to ensure 'b' is a paragraph block before accessing 'b.content'.
+            .filter((b): b is { type: 'paragraph'; content: string } => b.type === 'paragraph')
+            .filter(b => !b.content.startsWith('**') && !b.content.toLowerCase().includes('every'))
             .map(b => b.content);
 
         return eventBlocks
@@ -70,25 +76,35 @@ export default function ScheduleBand() {
             </h2>
             <div className="relative">
                 <div className="flex overflow-x-auto space-x-6 pb-4 snap-x snap-mandatory">
-                    {upcomingEvents.map((event, index) => event && (
-                        <div
-                            key={index}
-                            className="flex-shrink-0 w-72 bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 border border-slate-200 dark:border-slate-700 snap-center"
-                        >
-                            <p className="text-sm font-bold text-ocean dark:text-cyan-400">{event.date}</p>
-                            <h3 className="mt-1 font-serif font-semibold text-charcoal dark:text-slate-100 truncate">{event.title}</h3>
-                            <div className="mt-2 space-y-1 text-xs text-slate-500 dark:text-slate-400">
-                                <div className="flex items-center gap-2">
-                                    <ClockIcon className="w-3 h-3" />
-                                    <span>{event.time}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <LocationIcon className="w-3 h-3" />
-                                    <span className="truncate">{event.location}</span>
+                    {upcomingEvents.map((event, index) => {
+                        if (!event) return null;
+                        const categoryClasses = event.category ? (eventCategoryStyleMap[event.category] || eventCategoryStyleMap['default']) : eventCategoryStyleMap['default'];
+                        return (
+                            <div
+                                key={index}
+                                className="flex-shrink-0 w-72 bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 border border-slate-200 dark:border-slate-700 snap-center"
+                            >
+                                {event.category && (
+                                    <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full mb-2 ${categoryClasses.bg} ${categoryClasses.text}`}>
+                                        {event.category}
+                                    </span>
+                                )}
+                                <p className="text-sm font-bold text-ocean dark:text-cyan-400">{event.date}</p>
+                                <h3 className="mt-1 font-serif font-semibold text-charcoal dark:text-slate-100 truncate">{event.title}</h3>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{event.description}</p>
+                                <div className="mt-2 space-y-1 text-xs text-slate-500 dark:text-slate-400">
+                                    <div className="flex items-center gap-2">
+                                        <ClockIcon className="w-3 h-3" />
+                                        <span>{event.time}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <LocationIcon className="w-3 h-3" />
+                                        <span className="truncate">{event.location}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        )
+                    })}
                 </div>
             </div>
         </div>

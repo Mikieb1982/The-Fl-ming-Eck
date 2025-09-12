@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Article } from '../types';
 import { fmtDate, isArticleSafe } from '../utils/helpers';
-import { categoryStyleMap } from '../constants';
+import { articleCategoryStyleMap } from '../constants';
 
 interface SearchResultsProps {
   articles: Article[];
@@ -19,7 +19,7 @@ const SearchResultItem = ({ article, onSelectArticle }: { article: Article, onSe
   if (!isArticleSafe(article)) {
     return null;
   }
-  const categoryStyles = categoryStyleMap[article.category] || categoryStyleMap['default'];
+  const categoryStyles = articleCategoryStyleMap[article.category] || articleCategoryStyleMap['default'];
   
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     // Allow standard browser behavior for new tabs (middle-click, ctrl/cmd-click)

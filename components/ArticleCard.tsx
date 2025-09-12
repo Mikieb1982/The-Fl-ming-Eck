@@ -3,7 +3,7 @@ import { Article } from '../types';
 import { calculateReadTime, isArticleSafe } from '../utils/helpers';
 import { useGeneratedPlaceholder } from '../hooks/useGeneratedPlaceholder';
 import BookmarkButton from './BookmarkButton';
-import { categoryStyleMap } from '../constants';
+import { articleCategoryStyleMap } from '../constants';
 
 interface ArticleCardProps {
   article: Article;
@@ -20,7 +20,7 @@ export default function ArticleCard({ article, onClick }: ArticleCardProps) {
   }
 
   const readTime = calculateReadTime(article.body);
-  const categoryStyles = categoryStyleMap[article.category] || categoryStyleMap['default'];
+  const categoryStyles = articleCategoryStyleMap[article.category] || articleCategoryStyleMap['default'];
 
   const hasHero = article.hero && article.hero.length > 0 && article.hero[0];
   const { generatedUrl, isLoading } = useGeneratedPlaceholder(article, !hasHero);

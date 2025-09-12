@@ -41,7 +41,7 @@ export default function App() {
   const [isBookmarksOpen, setIsBookmarksOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isPosterOpen, setIsPosterOpen] = useState(false);
-  const [isEventsOpen, setIsEventsOpen] = useState(false);
+  const [isEventsPage, setIsEventsPage] = useState(false);
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [legalPage, setLegalPage] = useState<"impressum" | "privacy" | "about" | "corrections" | "advertise" | null>(null);
   const [isBackToTopVisible, setIsBackToTopVisible] = useState(false);
@@ -79,6 +79,7 @@ export default function App() {
     const isBookmarks = path === '/bookmarks';
     const isProfile = path === '/profile';
     const isPoster = path === '/poster';
+    const isEvents = path === '/events';
     let articleIndex: number | null = null;
 
     if (path.startsWith('/article/')) {
@@ -100,7 +101,7 @@ export default function App() {
     setIsBookmarksOpen(isBookmarks);
     setIsProfileOpen(isProfile);
     setIsPosterOpen(isPoster);
-    setIsEventsOpen(false); // Close sidebar on any main navigation
+    setIsEventsPage(isEvents);
 
     // Reset other states for any navigation
     setSearchQuery('');
@@ -170,6 +171,10 @@ export default function App() {
           title = `My Bookmarks | ${BRAND.title}`;
           description = "Your saved articles from The Fläming Eck.";
           path = `/bookmarks`;
+      } else if (isEventsPage) {
+          title = `What's On: Events Calendar | ${BRAND.title}`;
+          description = "Your guide to events in Bad Belzig and the Hoher Fläming.";
+          path = `/events`;
       }
 
       document.title = title;
@@ -179,7 +184,7 @@ export default function App() {
       const canonicalUrl = path === '/' ? baseUrl : `${baseUrl}/#${path}`;
       canonicalTag.setAttribute('href', canonicalUrl);
 
-  }, [activeArticle, isCommunityOpen, isDirectoryOpen, isRaffleOpen, isBookmarksOpen]);
+  }, [activeArticle, isCommunityOpen, isDirectoryOpen, isRaffleOpen, isBookmarksOpen, isEventsPage]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -259,7 +264,7 @@ export default function App() {
   
   const remainingArticles = useMemo(() => featureArticles.slice(3), [featureArticles]);
   
-  let currentView: 'home' | 'article' | 'search' | 'community' | 'directory' | 'bookmarks' | 'profile' | 'raffle' | 'poster' = 'home';
+  let currentView: 'home' | 'article' | 'search' | 'community' | 'directory' | 'bookmarks' | 'profile' | 'raffle' | 'poster' | 'events' = 'home';
   if (isPosterOpen) currentView = 'poster';
   else if (searchQuery) currentView = 'search';
   else if (activeArticle) currentView = 'article';
@@ -268,8 +273,9 @@ export default function App() {
   else if (isRaffleOpen) currentView = 'raffle';
   else if (isBookmarksOpen) currentView = 'bookmarks';
   else if (isProfileOpen) currentView = 'profile';
+  else if (isEventsPage) currentView = 'events';
   
-  const activeMobileView: 'home' | 'community' | 'raffle' | 'events' | 'more' = isEventsOpen
+  const activeMobileView: 'home' | 'community' | 'raffle' | 'events' | 'more' = isEventsPage
     ? 'events'
     : isCommunityOpen
     ? 'community'
@@ -282,7 +288,7 @@ export default function App() {
   const headerProps = {
       onGoHome: handleGoHome,
       onToggleRaffle: () => navigate('/raffle'),
-      onToggleEvents: () => setIsEventsOpen(true),
+      onToggleEvents: () => navigate('/events'),
       onToggleCommunity: () => navigate('/community'),
       onToggleDirectory: () => navigate('/directory'),
       onToggleBookmarks: () => navigate('/bookmarks'),
@@ -355,6 +361,15 @@ export default function App() {
                   {currentView === 'directory' && <DirectoryView key="directory" onClose={handleGoHome} />}
                   {currentView === 'bookmarks' && <BookmarksView key="bookmarks" articles={articles} onSelectArticle={handleSelectArticleById} onClose={handleGoHome} />}
                   {currentView === 'profile' && <ProfileView key="profile" posts={posts} articles={articles} onSelectArticle={handleSelectArticleById} onClose={handleGoHome} />}
+                   {currentView === 'events' && (
+                        <EventsCalendar
+                            key="events-page"
+                            isOpen={true} // It's a page, so it's always "open" in this context
+                            onClose={handleGoHome} // The back button will navigate home
+                            onSelectArticle={handleSelectArticleById}
+                            isPage={true}
+                        />
+                   )}
 
                   {currentView === 'home' && (
                       <div className="space-y-12" key="home">
@@ -389,17 +404,6 @@ export default function App() {
 
           <AnimatePresence>
               {isBackToTopVisible && <BackToTopButton onClick={scrollToTop} />}
-          </AnimatePresence>
-          
-          <AnimatePresence>
-              {isEventsOpen && (
-                  <EventsCalendar
-                      isOpen={isEventsOpen}
-                      onClose={() => setIsEventsOpen(false)}
-                      onSelectArticle={handleSelectArticleById}
-                      isPage={false}
-                  />
-              )}
           </AnimatePresence>
           
           <CookieConsent onShowPrivacy={() => setLegalPage("privacy")} />
