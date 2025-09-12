@@ -27,7 +27,7 @@ export default function Impressum() {
             titleEn="Information according to § 5 TMG (German Telemedia Act)"
             de={
                 <p>
-                    Max Mustermann (Einzelunternehmer)
+                    Max Mustermann (Einzelunternehmen)
                     <br />
                     Musterstraße 1
                     <br />
@@ -38,7 +38,7 @@ export default function Impressum() {
             }
             en={
                 <p>
-                    Max Mustermann (Sole Proprietor)
+                    Max Mustermann (Sole Proprietorship)
                     <br />
                     Musterstraße 1
                     <br />

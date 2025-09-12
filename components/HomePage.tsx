@@ -1,9 +1,11 @@
-
-import React from 'react';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Article } from '../types';
 import { categoryStyleMap } from '../constants';
 import WeatherWidget from './WeatherWidget';
 import SupportCard from './SupportCard';
+import ScheduleBand from './ScheduleBand';
+import SupportButton from './SupportButton';
 
 interface HomePageProps {
   featureArticles: Article[];
@@ -24,6 +26,13 @@ export default function HomePage({ featureArticles, newsArticles, onSelectArticl
     if (!featureArticles || featureArticles.length === 0) {
         return <div className="p-4 text-center text-slate-500">No articles available to display.</div>;
     }
+
+    const heroRef = useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: heroRef,
+        offset: ["start start", "end start"]
+    });
+    const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
     
     const headlineArticle = featureArticles[0];
     const subFeatureLeft = featureArticles.length > 1 ? featureArticles[1] : null;
@@ -44,28 +53,41 @@ export default function HomePage({ featureArticles, newsArticles, onSelectArticl
     };
 
     return (
-        <div className="bg-cream dark:bg-deep-blue p-2 sm:p-4 mx-auto" style={{ maxWidth: '1200px' }}>
+        <div>
             
-            <div className="mb-6 flex justify-center md:justify-start">
+            {/* Mobile-only top bar */}
+            <div className="mb-6 flex md:hidden justify-between items-center gap-4">
+                <WeatherWidget />
+                <SupportButton />
+            </div>
+            
+            {/* Desktop-only weather widget */}
+            <div className="mb-6 hidden md:flex justify-start">
                 <WeatherWidget />
             </div>
 
             {headlineArticle && (
                 <div className="mb-6">
                     <a 
+                        ref={heroRef}
                         href={`/#/article/${headlineArticle.id}`}
                         onClick={(e) => handleArticleClick(e, headlineArticle.id)}
                         className="relative block cursor-pointer group rounded-lg shadow-md overflow-hidden" 
                     >
                         <div className="aspect-video max-h-[65vh]">
-                            <img src={getHeroUrl(headlineArticle)} alt={headlineArticle.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                            <motion.img 
+                                src={getHeroUrl(headlineArticle)} 
+                                alt={headlineArticle.title} 
+                                className="w-full h-full object-cover scale-110" 
+                                style={{ y, top: '-5%' }}
+                            />
                         </div>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
                         <div className="absolute bottom-0 left-0 p-4 sm:p-8 z-10">
                             <span className={`inline-block px-3 py-1.5 text-sm font-bold uppercase rounded-full ${headlineCategoryStyles.bg} ${headlineCategoryStyles.text} drop-shadow-md`}>
                                 {headlineArticle.category}
                             </span>
-                            <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold mt-2 text-white leading-tight drop-shadow-lg group-hover:underline decoration-poppy select-none">{headlineArticle.title}</h1>
+                            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-serif font-bold mt-2 text-white leading-tight drop-shadow-lg group-hover:underline decoration-poppy select-none">{headlineArticle.title}</h1>
                         </div>
                     </a>
                 </div>
@@ -113,7 +135,9 @@ export default function HomePage({ featureArticles, newsArticles, onSelectArticl
                 </div>
 
                 <div className="md:col-span-1">
-                    <SupportCard />
+                    <div className="hidden md:block">
+                        <SupportCard />
+                    </div>
                     {sidebarArticles.length > 0 && (
                         <div className="p-6 rounded-lg bg-ocean/5 dark:bg-ocean/10">
                             <h3 className="text-xl font-serif font-bold text-charcoal dark:text-slate-200 mb-6 border-b border-slate-200 dark:border-slate-700 pb-2">
@@ -141,6 +165,9 @@ export default function HomePage({ featureArticles, newsArticles, onSelectArticl
                     )}
                 </div>
             </div>
+            
+            <ScheduleBand />
+
         </div>
     );
 }

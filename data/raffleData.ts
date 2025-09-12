@@ -101,7 +101,7 @@ export const prizes: { [key: number]: Prize } = {
   1599: { nr: 94, sponsor: "Agrargenossenschaft", prize: "1x 20 kg Kartoffeln" },
   1028: { nr: 95, sponsor: "Agrargenossenschaft", prize: "1x 20 kg Kartoffeln" },
   49: { nr: 96, sponsor: "Agrargenossenschaft", prize: "1x 10 kg Karftoffeln" },
-  // nr 97 (Herbert Grüneberg, Lütte, 1x Kartoffeln) has no key/number in the provided correct list
+  963: { nr: 97, sponsor: " Herbert Grüneberg, Lütte,", prize: "1x Kartoffeln" },
   900: { nr: 98, sponsor: "NABU", prize: "1 Kalender 2026" },
   1758: { nr: 99, sponsor: "NABU", prize: "1 Kalender 2026" },
   30: { nr: 100, sponsor: "NABU", prize: "1 Kalender 2026" },
@@ -112,7 +112,7 @@ export const prizes: { [key: number]: Prize } = {
 
 export const translations = {
     en: {
-        title: "Raffle Checker 2025",
+        title: "Raffle Checker",
         label: "Enter your number",
         checkButton: "Check Number",
         winMessage: "Congratulations! You have a winning number.",
@@ -124,7 +124,7 @@ export const translations = {
         sponsoredBy: "Sponsored by",
     },
     de: {
-        title: "Los Prüfer 2025",
+        title: "Los Prüfer",
         label: "Geben Sie Ihre Nummer ein",
         checkButton: "Nummer prüfen",
         winMessage: "Herzlichen Glückwunsch! Sie haben eine Gewinnzahl.",

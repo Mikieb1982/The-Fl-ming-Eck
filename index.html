@@ -1,28 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en" class="">
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Fläming Eck Magazine</title>
-    <meta id="meta-description" name="description" content="An interactive digital magazine for Bad Belzig and the Hoher Fläming, featuring AI-powered summaries for articles." />
-    <link id="canonical-link" rel="canonical" href="" />
-    <script src="https://cdn.tailwindcss.com?plugins=typography,forms"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <title>The Fläming Eck</title>
+    <meta id="meta-description" name="description" content="An interactive digital magazine for Bad Belzig and the Hoher Fläming, featuring AI-powered summaries for articles.">
+    <link id="canonical-link" rel="canonical" href="https://example.com" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Montserrat:wght@700&family=Playfair+Display:wght@700;800;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <style>
-      .bg-texture-paper {
-        background-image: url('https://www.transparenttextures.com/patterns/light-paper-fibers.png');
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'cream': '#FDF9F4',
+            'charcoal': '#2F3D47',
+            'deep-blue': '#0D1B2A',
+            'seafoam': '#E0E1DD',
+            'sandstone-ochre': '#DDAF72',
+            'brand-green': '#24523a',
+            'sunshine': '#facc15', // yellow-400
+            'ocean': '#0891b2', // cyan-600
+            'ocean-dark': '#0e7490', // cyan-700
+            'poppy': '#ef4444', // red-500
+            'poppy-dark': '#dc2626', // red-600
+            'forest-green': '#166534', // green-800
+            'steel': '#475569', // slate-600
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+          },
+          backgroundImage: {
+            'texture-paper': "url('https://www.transparenttextures.com/patterns/paper-fibers.png')",
+            'texture-fieldstone': "url('https://www.transparenttextures.com/patterns/checkered-light-emboss.png')",
+            'texture-wood': "url('https://www.transparenttextures.com/patterns/wood-pattern.png')",
+          },
+          fontSize: {
+            '5xl': '3rem',
+            '7xl': '5rem',
+            '8xl': '6rem',
+            '9xl': '8rem',
+          },
+          fontWeight: {
+            black: 900,
+          },
+          letterSpacing: {
+            tighter: '-0.05em',
+          }
+        }
       }
-      .bg-texture-fieldstone {
-        background-image: url('https://www.transparenttextures.com/patterns/rocky-wall.png');
-      }
-      .bg-texture-wood {
-        background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
-      }
-
+    }
+    </script>
+    
+    <style type="text/tailwindcss">
       .raffle-checker-page {
           --background-color-start: #781d7e;
           --background-color-end: #d71969;
@@ -37,7 +73,7 @@
           --loss-color: #ff4d4d;
           --border-color: rgba(255, 255, 255, 0.3);
           --font-family: 'Inter', sans-serif;
-          
+
           font-family: var(--font-family);
           background: linear-gradient(135deg, var(--background-color-start), var(--background-color-end));
           color: var(--text-color);
@@ -46,290 +82,95 @@
           padding: 1rem;
           font-size: 18px;
           line-height: 1.6;
-          min-height: calc(100vh - 112px);
+          min-height: 100vh;
       }
-
       .raffle-checker-page .root-container {
-          width: 100%;
-          max-width: 500px;
-          text-align: center;
-          position: relative;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
       }
-
       .raffle-checker-page .app-container {
-          background-color: var(--app-background-color);
-          padding: 2.5rem 2rem;
-          border-radius: 16px;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-          width: 100%;
-          border: 1px solid var(--border-color);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
+            background-color: var(--app-background-color);
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
       }
-
       .raffle-checker-page .lang-toggle {
-          position: absolute;
-          top: 1rem;
-          right: 1.5rem;
-          background: none;
-          border: none;
-          font-family: var(--font-family);
-          font-weight: 700;
-          color: var(--text-color-secondary);
-          cursor: pointer;
-          font-size: 0.9rem;
-          padding: 0.5rem;
-          border-radius: 8px;
-          transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
-          z-index: 10;
-      }
-
-      .raffle-checker-page .lang-toggle:hover,
-      .raffle-checker-page .lang-toggle:focus {
-          color: var(--primary-color);
-          background-color: rgba(245, 130, 32, 0.1);
-          outline: none;
-      }
-
-      .raffle-checker-page .logo-header {
-          margin-bottom: 1rem;
-          font-weight: 900;
-          text-transform: uppercase;
-      }
-
-      .raffle-checker-page .logo-main {
-          display: block;
-          font-size: 2rem;
-          color: var(--primary-color);
-          letter-spacing: 1px;
-          line-height: 1;
-      }
-
-      .raffle-checker-page .logo-sub {
-          display: block;
-          font-size: 3rem;
-          color: var(--text-color);
-          letter-spacing: -2px;
-          line-height: 1;
-      }
-
-      .raffle-checker-page .title {
-          font-size: 1.5rem;
-          margin-bottom: 2rem;
-          font-weight: 400;
-          color: var(--text-color-secondary);
-      }
-
-      .raffle-checker-page .label {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          padding: 0;
-          margin: -1px;
-          overflow: hidden;
-          clip: rect(0, 0, 0, 0);
-          white-space: nowrap;
-          border-width: 0;
-      }
-
-      .raffle-checker-page .input-field {
-          width: 100%;
-          padding: 1rem;
-          font-size: 1.5rem;
-          text-align: center;
-          background-color: var(--input-background-color);
-          color: var(--text-color);
-          border: 2px solid var(--border-color);
-          border-radius: 8px;
-          margin-bottom: 1.5rem;
-          font-family: var(--font-family);
-          transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-      }
-
-      .raffle-checker-page .input-field::-webkit-outer-spin-button,
-      .raffle-checker-page .input-field::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-      }
-      .raffle-checker-page .input-field[type=number] {
-        -moz-appearance: textfield;
-      }
-
-      .raffle-checker-page .input-field:focus {
-          border-color: var(--primary-color);
-          box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.4);
-          outline: none;
-      }
-
-      .raffle-checker-page .button {
-          width: 100%;
-          padding: 1rem;
-          font-size: 1.2rem;
-          font-weight: 700;
-          color: var(--button-text-color);
-          background-color: var(--primary-color);
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
-      }
-
-      .raffle-checker-page .button:hover,
-      .raffle-checker-page .button:focus {
-          background-color: var(--primary-hover-color);
-          outline: none;
-      }
-
-      .raffle-checker-page .button:disabled {
-          background-color: var(--primary-color);
-          opacity: 0.5;
-          cursor: not-allowed;
-      }
-
-      .raffle-checker-page .result-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          min-height: 250px;
-      }
-
-      .raffle-checker-page .result-icon {
-          font-size: 80px;
-          line-height: 1;
-      }
-
-      .raffle-checker-page .result-icon.win {
-          color: var(--win-color);
-      }
-
-      .raffle-checker-page .result-icon.loss {
-          color: var(--loss-color);
-      }
-
-      .raffle-checker-page .result-text {
-          font-size: 1.5rem;
-          font-weight: 700;
-          margin-top: 1.5rem;
-      }
-
-      .raffle-checker-page .prize-card {
-          background-color: var(--input-background-color);
-          border: 1px solid var(--border-color);
-          border-radius: 12px;
-          padding: 1.5rem;
-          margin: 1.5rem 0;
-          width: 100%;
-          text-align: left;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-      }
-
-      .raffle-checker-page .prize-header {
-          font-size: 0.9rem;
-          font-weight: 700;
-          color: var(--text-color-secondary);
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-      }
-
-      .raffle-checker-page .prize-description {
-          font-size: 1.4rem;
-          font-weight: 700;
-          color: var(--primary-color);
-          line-height: 1.2;
-      }
-
-      .raffle-checker-page .prize-sponsor {
-          font-size: 0.9rem;
-          color: var(--text-color-secondary);
-      }
-
-
-      @media (max-width: 600px) {
-          .raffle-checker-page {
-              font-size: 16px;
-          }
-          .raffle-checker-page .app-container {
-              padding: 2rem 1.5rem;
-          }
-          .raffle-checker-page .logo-main {
-              font-size: 1.8rem;
-          }
-          .raffle-checker-page .logo-sub {
-              font-size: 2.5rem;
-          }
-          .raffle-checker-page .title {
-              font-size: 1.2rem;
-          }
-          .raffle-checker-page .result-text {
-              font-size: 1.2rem;
-          }
-          .raffle-checker-page .prize-description {
-              font-size: 1.2rem;
-          }
-      }
-    </style>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              'cream': '#FEFBF6',
-              'charcoal': '#2b2b2b',
-              'deep-blue': '#0D1B2A',
-              'seafoam': '#E0E1DD',
-              'slate': '#415A77',
-              'steel': '#778DA9',
-              'poppy': '#D90429',
-              'poppy-dark': '#A4031F',
-              'sunshine': '#FFC300',
-              'ocean': '#0081A7',
-              'ocean-dark': '#005F7A',
-              'forest-green': '#2E7D32',
-            },
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              serif: ['Playfair Display', 'serif'],
-              mono: ['Roboto Mono', 'monospace'],
-              montserrat: ['Montserrat', 'sans-serif'],
-            },
-            typography: ({ theme }) => ({
-              DEFAULT: {
-                css: {
-                  '--tw-prose-links': theme('colors.ocean'),
-                  '--tw-prose-invert-links': theme('colors.blue[400]'),
-                  a: {
-                    textDecoration: 'none',
-                    fontWeight: '500',
-                    '&:hover': {
-                      textDecoration: 'underline',
-                    },
-                  },
-                },
-              },
-            }),
-          }
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-family: var(--font-family);
+            font-weight: 700;
+            color: var(--text-color-secondary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+            z-index: 10;
         }
+        .raffle-checker-page .lang-toggle:hover,
+        .raffle-checker-page .lang-toggle:focus {
+            color: var(--primary-color);
+            background-color: rgba(245, 130, 32, 0.1);
+            outline: none;
+        }
+        .raffle-checker-page .logo-header { margin-bottom: 1rem; font-weight: 900; text-transform: uppercase; }
+        .raffle-checker-page .logo-main { display: block; font-size: 2rem; color: var(--primary-color); letter-spacing: 1px; line-height: 1; }
+        .raffle-checker-page .logo-sub { display: block; font-size: 3rem; color: var(--text-color); letter-spacing: -2px; line-height: 1; }
+        .raffle-checker-page .title { font-size: 1.5rem; margin-bottom: 2rem; font-weight: 400; color: var(--text-color-secondary); }
+        .raffle-checker-page .label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
+        .raffle-checker-page .input-field {
+            width: 100%; padding: 1rem; font-size: 1.5rem; text-align: center; background-color: var(--input-background-color); color: var(--text-color);
+            border: 2px solid var(--border-color); border-radius: 8px; margin-bottom: 1.5rem; font-family: var(--font-family); transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .raffle-checker-page .input-field::-webkit-outer-spin-button,
+        .raffle-checker-page .input-field::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .raffle-checker-page .input-field[type=number] { -moz-appearance: textfield; }
+        .raffle-checker-page .input-field:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.4); outline: none; }
+        .raffle-checker-page .button {
+            width: 100%; padding: 1rem; font-size: 1.2rem; font-weight: 700; color: var(--button-text-color); background-color: var(--primary-color);
+            border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+        }
+        .raffle-checker-page .button:hover,
+        .raffle-checker-page .button:focus { background-color: var(--primary-hover-color); outline: none; }
+        .raffle-checker-page .button:disabled { background-color: var(--primary-color); opacity: 0.5; cursor: not-allowed; }
+        .raffle-checker-page .result-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 250px; }
+        .raffle-checker-page .result-icon { font-size: 80px; line-height: 1; }
+        .raffle-checker-page .result-icon.win { color: var(--win-color); }
+        .raffle-checker-page .result-icon.loss { color: var(--loss-color); }
+        .raffle-checker-page .result-text { font-size: 1.5rem; font-weight: 700; margin-top: 1.5rem; }
+        .raffle-checker-page .prize-card {
+            background-color: var(--input-background-color); border: 1px solid var(--border-color); border-radius: 12px;
+            padding: 1.5rem; margin: 1.5rem 0; width: 100%; text-align: left; display: flex; flex-direction: column; gap: 0.5rem;
+        }
+        .raffle-checker-page .prize-header { font-size: 0.9rem; font-weight: 700; color: var(--text-color-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .raffle-checker-page .prize-description { font-size: 1.4rem; font-weight: 700; color: var(--primary-color); line-height: 1.2; }
+        .raffle-checker-page .prize-sponsor { font-size: 0.9rem; color: var(--text-color-secondary); }
+    </style>
+    
+    <script type="importmap">
+    {
+      "imports": {
+        "react/": "https://aistudiocdn.com/react@^19.1.1/",
+        "react": "https://aistudiocdn.com/react@^19.1.1",
+        "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+        "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.12",
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.19.0"
       }
+    }
     </script>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://aistudiocdn.com/react@^19.1.1",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
-    "react/": "https://aistudiocdn.com/react@^19.1.1/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.15.0",
-    "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.12"
-  }
-}
-</script>
 </head>
-  <body class="bg-cream dark:bg-deep-blue text-base text-charcoal dark:text-seafoam font-sans leading-relaxed">
+<body class="bg-cream dark:bg-deep-blue">
     <div id="root"></div>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
-    <script type="text/babel" data-type="module" src="/index.tsx"></script>
-  </body>
+    <script type="module" src="./index.tsx"></script>
+</body>
 </html>

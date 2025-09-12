@@ -26,6 +26,8 @@ import CorrectionsPolicy from "./components/CorrectionsPolicy";
 import AdvertiseWithUs from "./components/AdvertiseWithUs";
 import RaffleChecker from "./components/RaffleChecker";
 import EventsCalendar from "./components/EventsCalendar";
+// FIX: Correct import path for PosterLayout to resolve module error.
+import PosterLayout from "./components/poster/PosterLayout";
 
 export default function App() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -38,6 +40,7 @@ export default function App() {
   const [isRaffleOpen, setIsRaffleOpen] = useState(false);
   const [isBookmarksOpen, setIsBookmarksOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isPosterOpen, setIsPosterOpen] = useState(false);
   const [isEventsOpen, setIsEventsOpen] = useState(false);
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [legalPage, setLegalPage] = useState<"impressum" | "privacy" | "about" | "corrections" | "advertise" | null>(null);
@@ -75,6 +78,7 @@ export default function App() {
     const isRaffle = path === '/raffle';
     const isBookmarks = path === '/bookmarks';
     const isProfile = path === '/profile';
+    const isPoster = path === '/poster';
     let articleIndex: number | null = null;
 
     if (path.startsWith('/article/')) {
@@ -95,6 +99,7 @@ export default function App() {
     setIsRaffleOpen(isRaffle);
     setIsBookmarksOpen(isBookmarks);
     setIsProfileOpen(isProfile);
+    setIsPosterOpen(isPoster);
     setIsEventsOpen(false); // Close sidebar on any main navigation
 
     // Reset other states for any navigation
@@ -158,7 +163,7 @@ export default function App() {
           description = "Your guide to essential services and points of interest in Bad Belzig and the Hoher Fläming.";
           path = `/directory`;
       } else if (isRaffleOpen) {
-          title = `ALTSTADT SOMMER Raffle Checker 2025 | ${BRAND.title}`;
+          title = `ALTSTADT SOMMER Raffle Checker | ${BRAND.title}`;
           description = "Check your Altstadtsommer raffle ticket number.";
           path = `/raffle`;
       } else if (isBookmarksOpen) {
@@ -254,8 +259,9 @@ export default function App() {
   
   const remainingArticles = useMemo(() => featureArticles.slice(3), [featureArticles]);
   
-  let currentView: 'home' | 'article' | 'search' | 'community' | 'directory' | 'bookmarks' | 'profile' | 'raffle' = 'home';
-  if (searchQuery) currentView = 'search';
+  let currentView: 'home' | 'article' | 'search' | 'community' | 'directory' | 'bookmarks' | 'profile' | 'raffle' | 'poster' = 'home';
+  if (isPosterOpen) currentView = 'poster';
+  else if (searchQuery) currentView = 'search';
   else if (activeArticle) currentView = 'article';
   else if (isCommunityOpen) currentView = 'community';
   else if (isDirectoryOpen) currentView = 'directory';
@@ -286,9 +292,26 @@ export default function App() {
       onSearchChange: setSearchQuery,
       activeView: activeMobileView
   };
+  
+  if (currentView === 'poster') {
+      return (
+          <PosterLayout 
+              articles={sortedArticles} 
+              onNavigate={handleSelectArticleById}
+              onGoHome={handleGoHome}
+          />
+      );
+  }
+
+  if (currentView === 'raffle') {
+      return (
+          <RaffleChecker key="raffle" onClose={handleGoHome} />
+      );
+  }
+
 
   return (
-      <div className="bg-cream dark:bg-deep-blue min-h-screen">
+      <div className="bg-cream dark:bg-deep-blue min-h-screen overflow-x-clip">
           <Header {...headerProps} />
           
           <main ref={mainContentRef} className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 pt-4 md:pt-8">
@@ -330,7 +353,6 @@ export default function App() {
                       />
                   )}
                   {currentView === 'directory' && <DirectoryView key="directory" onClose={handleGoHome} />}
-                  {currentView === 'raffle' && <RaffleChecker key="raffle" onClose={handleGoHome} />}
                   {currentView === 'bookmarks' && <BookmarksView key="bookmarks" articles={articles} onSelectArticle={handleSelectArticleById} onClose={handleGoHome} />}
                   {currentView === 'profile' && <ProfileView key="profile" posts={posts} articles={articles} onSelectArticle={handleSelectArticleById} onClose={handleGoHome} />}
 

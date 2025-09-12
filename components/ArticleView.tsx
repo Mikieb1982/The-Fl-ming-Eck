@@ -1,5 +1,5 @@
-import React, { useState, useMemo, Fragment, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useMemo, Fragment, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Article, ArticleBodyBlock } from '../types';
 import { isArticleSafe, fmtDate, calculateReadTime, extractTextFromArticleBody } from '../utils/helpers';
 import { generateSummary } from '../services/apiService';
@@ -16,6 +16,7 @@ import BookmarkButton from './BookmarkButton';
 import { categoryStyleMap, BRAND } from '../constants';
 import ShareButtons from './ShareButtons';
 import Navigation from './Navigation';
+import VenueBadge from './poster/VenueBadge';
 
 
 interface ArticleViewProps {
@@ -69,6 +70,13 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fontSizeIndex, setFontSizeIndex] = useState(1); // Default to prose-lg
+  
+  const heroRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
 
   useEffect(() => {
     if (!article) return;
@@ -213,7 +221,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
             const remainingText = block.content.slice(1);
 
             return (
-                <p key={index}>
+                <p key={index} className="dark:text-slate-200">
                     {isFirstParagraph && <span className="float-left text-5xl sm:text-6xl leading-none pr-3 font-serif text-ocean dark:text-cyan-400 -mt-2">{dropCapChar}</span>}
                     {isFirstParagraph ? renderWithLinks(remainingText) : renderWithLinks(block.content)}
                 </p>
@@ -246,16 +254,17 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
         className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg overflow-hidden bg-texture-paper border border-poppy/50 dark:border-poppy/60"
       >
         {/* HERO SECTION */}
-        <div className="relative h-[60vh] min-h-[400px] text-white">
+        <div ref={heroRef} className="relative h-[60vh] min-h-[400px] text-white overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10" />
           {isLoading && <div className="absolute inset-0 w-full h-full bg-slate-200 dark:bg-slate-700 animate-pulse" />}
           {!isLoading && heroUrl && (
-            <img 
+            <motion.img
               src={heroUrl}
               alt={article.title}
               loading="eager"
               fetchPriority="high"
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover scale-110"
+              style={{ y, top: "-5%" }}
             />
           )}
           <div className="relative z-20 flex flex-col justify-end h-full p-6 md:p-8">
@@ -277,7 +286,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
         <div className="grid grid-cols-12 gap-8 p-6 md:p-8">
            {/* Main Content */}
           <main className="col-span-12 lg:col-span-9">
-             <article className={`prose ${fontSizes[fontSizeIndex]} max-w-prose mx-auto dark:prose-invert prose-headings:text-charcoal dark:prose-headings:text-slate-100 prose-p:text-charcoal dark:prose-p:text-slate-100`}>
+             <article className={`prose ${fontSizes[fontSizeIndex]} max-w-prose mx-auto dark:prose-invert prose-headings:text-charcoal dark:prose-headings:text-slate-100`}>
               {article.pullQuote && (
                 <div className="not-prose my-6">
                     <div className="relative p-6 bg-ocean/20 dark:bg-ocean/30 rounded-lg">
@@ -286,6 +295,11 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
                     </div>
                 </div>
               )}
+               {article.eventDetails && (
+                    <div className="not-prose my-6">
+                        <VenueBadge name={article.eventDetails.locationName} address={article.eventDetails.locationAddress} />
+                    </div>
+                )}
               {article.body.map(renderArticleBody)}
             </article>
 
