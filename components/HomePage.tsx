@@ -4,7 +4,6 @@ import { Article } from '../types';
 import { isArticleSafe } from '../utils/helpers';
 import MediumArticleCard from './MediumArticleCard';
 import MinimalArticleCard from './MinimalArticleCard';
-import WeatherWidget from './WeatherWidget';
 import ScheduleBand from './ScheduleBand';
 import SupportCard from './SupportCard';
 
@@ -78,7 +77,6 @@ export default function HomePage({ featureArticles, newsArticles, onSelectArticl
         {/* Sidebar */}
         <aside className="col-span-12 lg:col-span-3">
             <div className="lg:sticky lg:top-32 space-y-6">
-                <WeatherWidget />
                 <div className="p-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
                     <h3 className="font-serif font-bold text-lg text-charcoal dark:text-slate-200 mb-2">Latest News</h3>
                     <div className="divide-y divide-slate-100 dark:divide-slate-700">

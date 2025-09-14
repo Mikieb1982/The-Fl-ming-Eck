@@ -48,38 +48,30 @@ const WeatherWidget = () => {
   const weatherInfo = useMemo(() => {
     if (!weather) return { icon: null, description: 'Loading weather...' };
 
+    const iconClass = "w-6 h-6";
     const code = weather.weatherCode;
-    if (code === 0) return { icon: <SunIcon className="w-8 h-8 text-yellow-500" />, description: 'Clear sky' };
-    if ([1, 2].includes(code)) return { icon: <SunCloudIcon className="w-8 h-8 text-slate-500" />, description: 'Mainly clear' };
-    if (code === 3) return { icon: <CloudIcon className="w-8 h-8 text-slate-500" />, description: 'Overcast' };
-    if ([45, 48].includes(code)) return { icon: <CloudIcon className="w-8 h-8 text-slate-500" />, description: 'Fog' };
-    if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return { icon: <CloudRainIcon className="w-8 h-8 text-blue-500" />, description: 'Rain' };
+    if (code === 0) return { icon: <SunIcon className={`${iconClass} text-yellow-500`} />, description: 'Clear sky' };
+    if ([1, 2].includes(code)) return { icon: <SunCloudIcon className={`${iconClass} text-slate-500`} />, description: 'Mainly clear' };
+    if (code === 3) return { icon: <CloudIcon className={`${iconClass} text-slate-500`} />, description: 'Overcast' };
+    if ([45, 48].includes(code)) return { icon: <CloudIcon className={`${iconClass} text-slate-500`} />, description: 'Fog' };
+    if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return { icon: <CloudRainIcon className={`${iconClass} text-blue-500`} />, description: 'Rain' };
     
-    return { icon: <SunCloudIcon className="w-8 h-8 text-slate-500" />, description: 'Cloudy' };
+    return { icon: <SunCloudIcon className={`${iconClass} text-slate-500`} />, description: 'Cloudy' };
   }, [weather]);
-  
-  const appToday = new Date();
-  const formattedDate = appToday.toLocaleDateString('en-GB', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-  });
 
 
   return (
-    <div className="inline-flex items-center gap-4 p-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-        {isLoading && <div className="text-sm text-slate-500 animate-pulse">Loading weather...</div>}
-        {error && <div className="text-sm text-red-500">{error}</div>}
+    <div className="inline-flex items-center gap-2" title={weatherInfo.description}>
+        {isLoading && <div className="text-xs text-slate-500 dark:text-slate-400 animate-pulse">Loading...</div>}
+        {error && null /* Silently fail in the header */}
         {weather && !isLoading && (
             <>
-                <div className="flex-shrink-0" title={weatherInfo.description}>{weatherInfo.icon}</div>
-                <div>
-                    <h3 className="font-semibold text-charcoal dark:text-slate-200">
-                        Bad Belzig · {weather.temperature}°C
-                    </h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">{formattedDate}</p>
+                <div className="flex-shrink-0">
+                    {weatherInfo.icon}
                 </div>
+                <span className="text-sm font-semibold text-charcoal dark:text-slate-200">
+                    {weather.temperature}°C
+                </span>
             </>
         )}
     </div>

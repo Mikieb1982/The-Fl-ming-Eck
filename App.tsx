@@ -1,3 +1,4 @@
+
 import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -28,6 +29,55 @@ import RaffleChecker from "./components/RaffleChecker";
 import EventsCalendar from "./components/EventsCalendar";
 // FIX: Correct import path for PosterLayout to resolve module error.
 import PosterLayout from "./components/poster/PosterLayout";
+import MobileNewspaperView from "./components/MobileNewspaperView";
+
+// FIX: Refactored to a standard function declaration to resolve potential linter parsing issues.
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    if (media.matches !== matches) {
+      setMatches(media.matches);
+    }
+    const listener = () => setMatches(media.matches);
+    window.addEventListener('resize', listener);
+    return () => window.removeEventListener('resize', listener);
+  }, [matches, query]);
+  return matches;
+};
+
+// FIX: Refactored to a standard function declaration with an explicit generic type to resolve potential linter parsing issues with arrow functions.
+function usePrevious<T>(value: T): T | undefined {
+  // FIX: Provide an explicit undefined initial value to `useRef`.
+  // The error "Expected 1 arguments, but got 0" suggests the TypeScript
+  // environment requires an explicit initial value for `useRef`.
+  const ref = useRef<T | undefined>(undefined);
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
+
+const articleVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? '100%' : '-100%',
+    opacity: 0,
+    position: 'absolute',
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+    position: 'relative',
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction < 0 ? '100%' : '-100%',
+    opacity: 0,
+    position: 'absolute',
+  }),
+};
+
 
 export default function App() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -47,6 +97,8 @@ export default function App() {
   const [isBackToTopVisible, setIsBackToTopVisible] = useState(false);
   const mainContentRef = useRef<HTMLElement>(null);
   
+  const isMobile = useMediaQuery('(max-width: 767px)');
+  
   const { bookmarks } = useBookmarks();
   const sortedArticles = useMemo(() => sortByDateDesc(articles), [articles]);
   
@@ -58,8 +110,11 @@ export default function App() {
 
   const navigate = useCallback((path: string) => {
     window.location.hash = path;
-    window.scrollTo(0, 0); // Scroll to top on navigation
+    // Scroll to top on navigation is now handled within ArticleView or on view changes
   }, []);
+  
+  const prevActiveIndex = usePrevious(activeIndex);
+  const direction = (prevActiveIndex === null || prevActiveIndex === undefined || activeIndex === null || activeIndex === prevActiveIndex) ? 0 : (activeIndex > prevActiveIndex ? 1 : -1);
 
   // Listen to hash changes to update the current path
   useEffect(() => {
@@ -91,6 +146,8 @@ export default function App() {
             // Article not found, navigate to home.
             navigate('/');
         }
+    } else {
+        window.scrollTo(0, 0); // Scroll to top for non-article view changes
     }
 
     // Set all view states based on the derived values. React batches these updates.
@@ -320,21 +377,34 @@ export default function App() {
       <div className="bg-cream dark:bg-deep-blue min-h-screen overflow-x-clip">
           <Header {...headerProps} />
           
-          <main ref={mainContentRef} className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 pt-4 md:pt-8">
-              <AnimatePresence mode="wait">
-                  {currentView === 'article' && (
-                      <ArticleView 
-                          key={activeArticle?.id || 'article'}
-                          article={activeArticle} 
-                          allArticles={sortedArticles}
-                          onSelectArticle={handleSelectArticleById}
-                          onSelectTag={handleSelectTag}
-                          onClose={handleGoHome}
-                          onPrev={handlePrevArticle}
-                          onNext={handleNextArticle}
-                          currentIndex={activeIndex}
-                          totalArticles={sortedArticles.length}
-                      />
+          <main ref={mainContentRef} className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 pt-4 md:pt-8 relative">
+              <AnimatePresence custom={direction} initial={false}>
+                  {currentView === 'article' && activeArticle && (
+                      <motion.div
+                          key={activeArticle.id}
+                          custom={direction}
+                          variants={articleVariants}
+                          initial="enter"
+                          animate="center"
+                          exit="exit"
+                          transition={{
+                              x: { type: "spring", stiffness: 300, damping: 30 },
+                              opacity: { duration: 0.2 }
+                          }}
+                          className="w-full"
+                      >
+                          <ArticleView 
+                              article={activeArticle} 
+                              allArticles={sortedArticles}
+                              onSelectArticle={handleSelectArticleById}
+                              onSelectTag={handleSelectTag}
+                              onClose={handleGoHome}
+                              onPrev={handlePrevArticle}
+                              onNext={handleNextArticle}
+                              currentIndex={activeIndex}
+                              totalArticles={sortedArticles.length}
+                          />
+                      </motion.div>
                   )}
                   {currentView === 'search' && (
                       <SearchResults 
@@ -371,8 +441,17 @@ export default function App() {
                         />
                    )}
 
-                  {currentView === 'home' && (
-                      <div className="space-y-12" key="home">
+                  {currentView === 'home' && isMobile && (
+                    <MobileNewspaperView 
+                      key="home-mobile"
+                      featureArticles={featureArticles}
+                      newsArticles={newsArticles}
+                      onSelectArticle={handleSelectArticleById}
+                    />
+                  )}
+
+                  {currentView === 'home' && !isMobile && (
+                      <div className="space-y-12" key="home-desktop">
                           <HomePage 
                             featureArticles={featureArticles}
                             newsArticles={newsArticles}
@@ -387,20 +466,23 @@ export default function App() {
                   )}
               </AnimatePresence>
           </main>
+          
+          {!(isMobile && currentView === 'home') && (
+            <footer className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 mt-12 text-center text-xs text-slate-500 dark:text-slate-400 py-4 border-t border-slate-200 dark:border-slate-700 pb-24 md:pb-4">
+                <button onClick={() => setLegalPage("about")} className="hover:underline px-2">About Us</button>
+                <span>|</span>
+                <button onClick={() => setLegalPage("impressum")} className="hover:underline px-2">Impressum</button>
+                <span>|</span>
+                <button onClick={() => setLegalPage("privacy")} className="hover:underline px-2">Data Protection</button>
+                <span>|</span>
+                <button onClick={() => setLegalPage("corrections")} className="hover:underline px-2">Corrections Policy</button>
+                 <span>|</span>
+                <button onClick={() => setLegalPage("advertise")} className="hover:underline px-2">Advertise With Us</button>
+                <span>|</span>
+                <a href="https://ko-fi.com/example" target="_blank" rel="noopener noreferrer" className="hover:underline px-2">Support Us</a>
+            </footer>
+          )}
 
-          <footer className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 mt-12 text-center text-xs text-slate-500 dark:text-slate-400 py-4 border-t border-slate-200 dark:border-slate-700 pb-24 md:pb-4">
-              <button onClick={() => setLegalPage("about")} className="hover:underline px-2">About Us</button>
-              <span>|</span>
-              <button onClick={() => setLegalPage("impressum")} className="hover:underline px-2">Impressum</button>
-              <span>|</span>
-              <button onClick={() => setLegalPage("privacy")} className="hover:underline px-2">Data Protection</button>
-              <span>|</span>
-              <button onClick={() => setLegalPage("corrections")} className="hover:underline px-2">Corrections Policy</button>
-               <span>|</span>
-              <button onClick={() => setLegalPage("advertise")} className="hover:underline px-2">Advertise With Us</button>
-              <span>|</span>
-              <a href="https://ko-fi.com/example" target="_blank" rel="noopener noreferrer" className="hover:underline px-2">Support Us</a>
-          </footer>
 
           <AnimatePresence>
               {isBackToTopVisible && <BackToTopButton onClick={scrollToTop} />}

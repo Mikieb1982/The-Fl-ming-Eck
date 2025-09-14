@@ -1,5 +1,5 @@
 import React, { useState, useMemo, Fragment, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValue } from 'framer-motion';
 import { Article, ArticleBodyBlock } from '../types';
 import { isArticleSafe, fmtDate, calculateReadTime, extractTextFromArticleBody } from '../utils/helpers';
 import { generateSummary } from '../services/apiService';
@@ -72,16 +72,23 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
   const [error, setError] = useState<string | null>(null);
   const [fontSizeIndex, setFontSizeIndex] = useState(1); // Default to prose-lg
   
+  const x = useMotionValue(0);
+
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
   });
+
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const heroX = useTransform(x, [-400, 0, 400], [-50, 0, 50], { clamp: false });
 
   useEffect(() => {
     if (!article) return;
     
+    // Scroll to top when article changes
+    window.scrollTo(0, 0);
+
     const schemaData = {
         '@context': 'https://schema.org',
         '@type': 'NewsArticle',
@@ -138,6 +145,17 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
         document.getElementById('event-schema')?.remove();
     };
 }, [article]);
+
+  const swipeConfidenceThreshold = 10000;
+  const onDragEnd = (e: any, { offset, velocity }: { offset: { x: number, y: number }, velocity: { x: number, y: number } }) => {
+    const swipe = Math.abs(offset.x) * velocity.x;
+
+    if (swipe < -swipeConfidenceThreshold && currentIndex !== null && currentIndex < totalArticles - 1) {
+        onNext();
+    } else if (swipe > swipeConfidenceThreshold && currentIndex !== null && currentIndex > 0) {
+        onPrev();
+    }
+  };
 
 
   const handleGenerateSummary = async () => {
@@ -236,13 +254,13 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
 
 
   return (
-    // @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors.
     <motion.div
-      key={article.id}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.5, ease: "easeInOut" }}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.2}
+      onDragEnd={onDragEnd}
+      style={{ x }}
+      className="cursor-grab active:cursor-grabbing"
     >
         <button 
             onClick={onClose}
@@ -265,22 +283,31 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
               loading="eager"
               fetchPriority="high"
               className="absolute inset-0 w-full h-full object-cover scale-110"
-              style={{ y, top: "-5%" }}
+              style={{ y, x: heroX, top: "-5%" }}
             />
           )}
           <div className="relative z-20 flex flex-col justify-end h-full p-6 md:p-8">
-            <span className={`inline-block px-3 py-1.5 text-sm font-bold uppercase rounded-full ${categoryStyles.bg} ${categoryStyles.text} self-start drop-shadow-md`}>
-                {article.category}
-            </span>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold mt-2 tracking-tight leading-tight drop-shadow-lg">{article.title}</h1>
-            <div className="text-sm mt-4 text-slate-200 flex items-center gap-x-4 gap-y-1 flex-wrap drop-shadow-md">
-              <span>By {article.author}</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-400 hidden sm:block" />
-              <span>{fmtDate(article.date)}</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-400 hidden sm:block" />
-              <span>{readTime} min read</span>
-            </div>
           </div>
+        </div>
+
+        {/* STICKY METADATA BAR */}
+        <div className="sticky top-20 md:top-28 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-y border-slate-200 dark:border-slate-700">
+            <div className="max-w-prose mx-auto px-4 py-3 flex justify-between items-center">
+                <div className="flex-grow text-xs sm:text-sm text-slate-600 dark:text-slate-300 overflow-hidden whitespace-nowrap text-ellipsis">
+                    <span>By <strong>{article.author}</strong></span>
+                    <span className="mx-2 hidden sm:inline-block">&middot;</span>
+                    <span className="hidden sm:inline-block">{fmtDate(article.date)}</span>
+                    <span className="mx-2 hidden sm:inline-block">&middot;</span>
+                    <span className="hidden sm:inline-block">{readTime} min read</span>
+                </div>
+                <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 ml-2">
+                    <span className={`inline-block px-2 py-1 text-xs font-bold uppercase rounded-full ${categoryStyles.bg} ${categoryStyles.text}`}>
+                        {article.category}
+                    </span>
+                    <BookmarkButton articleId={article.id} />
+                </div>
+            </div>
         </div>
         
         {/* ARTICLE BODY & METADATA */}
@@ -346,9 +373,8 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
           </main>
            {/* Share & Font Tools - Sidebar */}
           <aside className="col-span-12 lg:col-span-3">
-            <div className="lg:sticky lg:top-24 h-fit">
+            <div className="lg:sticky lg:top-40 h-fit">
               <div className="flex flex-col items-start gap-y-4 border-b lg:border-b-0 lg:border-l border-slate-200 dark:border-slate-700 pb-4 lg:pb-0 lg:pl-4">
-                  <BookmarkButton articleId={article.id} asText />
                   <ShareButtons article={article} />
                   <FontSizeAdjuster 
                     onIncrease={handleIncreaseFont}

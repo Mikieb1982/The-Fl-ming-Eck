@@ -16,6 +16,8 @@ import InfoIcon from './icons/InfoIcon';
 import HeartIcon from './icons/HeartIcon';
 import TicketIcon from './icons/TicketIcon';
 import CalendarIcon from './icons/CalendarIcon';
+import WeatherWidget from './WeatherWidget';
+import SupportButton from './SupportButton';
 
 type LegalPageType = "impressum" | "privacy" | "about" | "corrections" | "advertise";
 
@@ -239,15 +241,21 @@ export default function Header(props: HeaderProps) {
             >
                 <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
                     <div className="flex items-center justify-between h-20 md:h-28">
-                        {/* Logo */}
-                        <div className="flex-shrink-0">
-                            <button 
-                                onClick={onGoHome} 
-                                className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-deep-blue focus-visible:ring-sunshine rounded-md" 
-                                aria-label="Go to homepage"
-                            >
-                                <Logo className="h-16 md:h-20 w-auto text-charcoal dark:text-seafoam" />
-                            </button>
+                        {/* Logo & Weather (Desktop) */}
+                        <div className="flex items-center gap-2 md:gap-6">
+                            <div className="flex-shrink-0">
+                                <button 
+                                    onClick={onGoHome} 
+                                    className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-deep-blue focus-visible:ring-sunshine rounded-md" 
+                                    aria-label="Go to homepage"
+                                >
+                                    <Logo className="h-16 md:h-20 w-auto text-charcoal dark:text-seafoam" />
+                                </button>
+                            </div>
+                            <div className="hidden lg:flex items-center gap-4">
+                                <WeatherWidget />
+                                <SupportButton />
+                            </div>
                         </div>
 
                         {/* Desktop Navigation & Controls */}
@@ -327,6 +335,7 @@ export default function Header(props: HeaderProps) {
 
                          {/* Mobile Controls */}
                         <div className="flex md:hidden items-center gap-2">
+                             <WeatherWidget />
                              <button
                                 onClick={() => setIsSearchOpen(true)}
                                 className="p-2 rounded-full text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
