@@ -21,6 +21,7 @@ import featureBurgEisenhardt from './feature-burg-eisenhardt';
 import featureBadBelzigHistory from './feature-bad-belzig-history';
 
 // Guides
+import guideArtTrail from './guide-art-trail';
 import guideHistoricOldTown from './guide-historic-old-town';
 import guideHofgartenkino from './guide-hofgartenkino';
 import guideNatureExperienceTrail from './guide-nature-experience-trail';
@@ -28,11 +29,14 @@ import guideNaturePark from './guide-nature-park';
 import guideSteinthermeSpa from './guide-steintherme-spa';
 import guideWiesenburgPark from './guide-wiesenburg-park';
 import guideBurgRabenstein from './guide-burg-rabenstein';
+import guideBurgenwanderweg from './guide-burgenwanderweg';
 
 // This master list must contain an import for every article file.
 // If an article is missing from this list, it will cause routing failures.
-// The order of this list determines the initial order on the homepage.
+// The articles are sorted by date within the application, so the order here does not affect the final display order.
 export const articles: Article[] = [
+  guideArtTrail,
+  guideBurgenwanderweg,
   altstadtsommerGuide2025,
   featureFlamingRebellen,
   guideBurgRabenstein,

@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { parseEventString, CalendarEvent } from '../utils/calendar';
@@ -14,6 +11,9 @@ import CheckIcon from './icons/CheckIcon';
 interface ShareEventButtonProps {
     eventString: string;
 }
+
+// FIX: Type error with framer-motion props. Casting motion component to `any` to bypass type checking issues.
+const MotionDiv = motion.div as any;
 
 export default function ShareEventButton({ eventString }: ShareEventButtonProps) {
     const [isOpen, setIsOpen] = useState(false);
@@ -79,9 +79,7 @@ export default function ShareEventButton({ eventString }: ShareEventButtonProps)
             </button>
             <AnimatePresence>
                 {isOpen && (
-                    // FIX: Suppress TypeScript error. The framer-motion props are not recognized in this environment.
-                    // @ts-ignore
-                    <motion.div
+                    <MotionDiv
                         variants={dropdownVariants}
                         initial="hidden" animate="visible" exit="hidden"
                         transition={{ duration: 0.2, ease: 'easeOut' }}
@@ -100,7 +98,7 @@ export default function ShareEventButton({ eventString }: ShareEventButtonProps)
                             </button>
                           </div>
                         </div>
-                    </motion.div>
+                    </MotionDiv>
                 )}
             </AnimatePresence>
         </div>

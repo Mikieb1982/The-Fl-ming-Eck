@@ -11,6 +11,9 @@ interface ShareButtonsProps {
   article: Article;
 }
 
+// FIX: Type error with framer-motion props. Casting motion component to `any` to bypass type checking issues.
+const MotionDiv = motion.div as any;
+
 export default function ShareButtons({ article }: ShareButtonsProps) {
   const [isCopied, setIsCopied] = useState(false);
 
@@ -72,8 +75,7 @@ export default function ShareButtons({ article }: ShareButtonsProps) {
           aria-label="Copy link"
         >
           <AnimatePresence mode="wait">
-            {/* @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors. */}
-            <motion.div
+            <MotionDiv
               key={isCopied ? 'check' : 'copy'}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -85,7 +87,7 @@ export default function ShareButtons({ article }: ShareButtonsProps) {
               ) : (
                 <CopyIcon className="w-5 h-5" />
               )}
-            </motion.div>
+            </MotionDiv>
           </AnimatePresence>
         </button>
       </div>

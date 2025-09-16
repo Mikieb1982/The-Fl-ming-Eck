@@ -10,6 +10,9 @@ interface SearchResultsProps {
   searchQuery: string;
 }
 
+// FIX: Type error with framer-motion props. Casting motion component to `any` to bypass type checking issues.
+const MotionDiv = motion.div as any;
+
 const itemVariants = {
     hidden: { y: 20, opacity: 0 },
     visible: { y: 0, opacity: 1 },
@@ -31,8 +34,7 @@ const SearchResultItem = ({ article, onSelectArticle }: { article: Article, onSe
   };
 
   return (
-    // @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'variants' to be flagged as errors.
-    <motion.div variants={itemVariants}>
+    <MotionDiv variants={itemVariants}>
         <a
             href={`/#/article/${article.id}`}
             onClick={handleClick}
@@ -51,7 +53,7 @@ const SearchResultItem = ({ article, onSelectArticle }: { article: Article, onSe
                 {article.excerpt}
             </p>
         </a>
-    </motion.div>
+    </MotionDiv>
   );
 };
 
@@ -62,8 +64,7 @@ export default function SearchResults({ articles, onSelectArticle, searchQuery }
       <h2 className="text-2xl font-serif font-bold text-slate-800 dark:text-slate-200 mb-6">
         Results for "{searchQuery}"
       </h2>
-      {/* @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors. */}
-      <motion.div
+      <MotionDiv
         initial="hidden"
         animate="visible"
         variants={{
@@ -81,7 +82,7 @@ export default function SearchResults({ articles, onSelectArticle, searchQuery }
                   <SearchResultItem key={article.id} article={article} onSelectArticle={onSelectArticle} />
               ))}
           </div>
-      </motion.div>
+      </MotionDiv>
     </>
   );
 }

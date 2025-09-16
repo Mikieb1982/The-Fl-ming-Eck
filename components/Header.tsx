@@ -18,6 +18,7 @@ import TicketIcon from './icons/TicketIcon';
 import CalendarIcon from './icons/CalendarIcon';
 import WeatherWidget from './WeatherWidget';
 import SupportButton from './SupportButton';
+import DownloadIcon from './icons/DownloadIcon';
 
 type LegalPageType = "impressum" | "privacy" | "about" | "corrections" | "advertise";
 
@@ -27,6 +28,7 @@ interface HeaderProps {
     onToggleEvents: () => void;
     onToggleCommunity: () => void;
     onToggleDirectory: () => void;
+    onToggleDownloads: () => void;
     onToggleBookmarks: () => void;
     onToggleProfile: () => void;
     setLegalPage: (page: LegalPageType | null) => void;
@@ -35,8 +37,11 @@ interface HeaderProps {
     activeView: 'home' | 'community' | 'raffle' | 'events' | 'more';
 }
 
+// FIX: Type error with framer-motion props. Casting motion component to `any` to bypass type checking issues.
+const MotionDiv = motion.div as any;
+
 function BottomNavBar(props: HeaderProps) {
-    const { onGoHome, onToggleRaffle, onToggleEvents, onToggleCommunity, onToggleDirectory, onToggleBookmarks, onToggleProfile, setLegalPage, activeView } = props;
+    const { onGoHome, onToggleRaffle, onToggleEvents, onToggleCommunity, onToggleDirectory, onToggleDownloads, onToggleBookmarks, onToggleProfile, setLegalPage, activeView } = props;
     const { user, signOut } = useUser();
     const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
 
@@ -48,13 +53,17 @@ function BottomNavBar(props: HeaderProps) {
     ];
     
     const baseButtonClass = "flex flex-col items-center justify-center flex-grow text-slate-600 dark:text-slate-300 transition-colors duration-200 pt-2 pb-1";
-    const activeButtonClass = "text-ocean dark:text-cyan-300";
+    const activeButtonClass = "text-ocean dark:text-ocean";
 
     const menuItems = (
         <div className="p-2 space-y-1">
             <button onClick={() => { onToggleDirectory(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-seafoam hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
                 <BuildingOfficeIcon className="w-5 h-5" />
                 <span>Directory</span>
+            </button>
+            <button onClick={() => { onToggleDownloads(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-seafoam hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+                <DownloadIcon className="w-5 h-5" />
+                <span>Downloads</span>
             </button>
             <button onClick={() => { onToggleBookmarks(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-seafoam hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
                 <BookmarkIcon className="w-5 h-5" />
@@ -98,7 +107,7 @@ function BottomNavBar(props: HeaderProps) {
 
     return (
         <>
-            <div className="fixed bottom-0 left-0 right-0 z-[60] h-20 bg-white/90 dark:bg-deep-blue/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-700 md:hidden">
+            <div className="fixed bottom-0 left-0 right-0 z-[60] h-20 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-700 md:hidden">
                 <div className="flex items-stretch justify-around h-full">
                     {navItems.map(item => (
                         <button key={item.label} onClick={item.action} className={`${baseButtonClass} ${activeView === item.view ? activeButtonClass : 'hover:text-poppy dark:hover:text-poppy'}`}>
@@ -118,7 +127,7 @@ function BottomNavBar(props: HeaderProps) {
             <AnimatePresence>
                 {isMoreMenuOpen && (
                     <>
-                        <motion.div
+                        <MotionDiv
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
@@ -127,12 +136,12 @@ function BottomNavBar(props: HeaderProps) {
                             className="fixed inset-0 bg-black/50 z-[70] md:hidden"
                             aria-hidden="true"
                         />
-                        <motion.div
+                        <MotionDiv
                             initial={{ x: "100%" }}
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            className="fixed top-0 right-0 h-full w-full max-w-xs z-[80] bg-cream dark:bg-slate-900 shadow-2xl md:hidden flex flex-col"
+                            className="fixed top-0 right-0 h-full w-full max-w-xs z-[80] bg-slate-50 dark:bg-slate-900 shadow-2xl md:hidden flex flex-col"
                             role="dialog"
                             aria-modal="true"
                             aria-labelledby="more-options-title"
@@ -146,7 +155,7 @@ function BottomNavBar(props: HeaderProps) {
                             <div className="overflow-y-auto flex-grow">
                                 {menuItems}
                             </div>
-                        </motion.div>
+                        </MotionDiv>
                     </>
                 )}
             </AnimatePresence>
@@ -154,9 +163,11 @@ function BottomNavBar(props: HeaderProps) {
     );
 }
 
+// FIX: Type error with framer-motion props. Casting motion component to `any` to bypass type checking issues.
+const MotionHeader = motion.header as any;
 
 export default function Header(props: HeaderProps) {
-    const { onGoHome, onToggleRaffle, onToggleEvents, onToggleCommunity, onToggleDirectory, onToggleBookmarks, onToggleProfile, searchQuery, onSearchChange, activeView } = props;
+    const { onGoHome, onToggleRaffle, onToggleEvents, onToggleCommunity, onToggleDirectory, onToggleDownloads, onToggleBookmarks, onToggleProfile, searchQuery, onSearchChange, activeView } = props;
     const { user, signOut, isLoading } = useUser();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -199,15 +210,16 @@ export default function Header(props: HeaderProps) {
 
 
     const desktopNavItems = [
-        { label: "Sommer Raffle", icon: <TicketIcon className="w-6 h-6" />, action: onToggleRaffle, view: 'raffle' },
-        { label: "What's On", icon: <CalendarIcon className="w-6 h-6" />, action: onToggleEvents, view: 'events' },
-        { label: 'Community', icon: <UsersIcon className="w-6 h-6" />, action: onToggleCommunity, view: 'community' },
-        { label: 'Directory', icon: <BuildingOfficeIcon className="w-6 h-6" />, action: onToggleDirectory, view: 'more' },
-        { label: 'Bookmarks', icon: <BookmarkIcon className="w-6 h-6" />, action: onToggleBookmarks, view: 'more' },
+        { label: "Sommer Raffle", icon: <TicketIcon className="w-5 h-5" />, action: onToggleRaffle, view: 'raffle' },
+        { label: "What's On", icon: <CalendarIcon className="w-5 h-5" />, action: onToggleEvents, view: 'events' },
+        { label: 'Community', icon: <UsersIcon className="w-5 h-5" />, action: onToggleCommunity, view: 'community' },
+        { label: 'Directory', icon: <BuildingOfficeIcon className="w-5 h-5" />, action: onToggleDirectory, view: 'more' },
+        { label: 'Downloads', icon: <DownloadIcon className="w-5 h-5" />, action: onToggleDownloads, view: 'more' },
+        { label: 'Bookmarks', icon: <BookmarkIcon className="w-5 h-5" />, action: onToggleBookmarks, view: 'more' },
     ];
     
-    const baseNavButtonClasses = "flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg text-slate-600 dark:text-slate-300 hover:bg-poppy hover:text-white dark:hover:bg-poppy dark:hover:text-white transition-colors";
-    const activeNavButtonClasses = "bg-ocean text-white dark:bg-ocean dark:text-white";
+    const baseNavButtonClasses = "flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors";
+    const activeNavButtonClasses = "bg-ocean/10 text-ocean dark:bg-ocean/20 dark:text-ocean";
     
     const handleCloseSearch = () => {
         setIsSearchOpen(false);
@@ -230,8 +242,8 @@ export default function Header(props: HeaderProps) {
 
     return (
         <>
-            <motion.header
-                className="sticky top-0 z-30 bg-white/80 dark:bg-deep-blue/80 backdrop-blur-lg border-b border-sunshine/40 dark:border-sunshine/50"
+            <MotionHeader
+                className="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200/80 dark:border-slate-700/80 shadow-sm"
                 variants={{
                     visible: { y: 0 },
                     hidden: { y: "-100%" },
@@ -240,7 +252,7 @@ export default function Header(props: HeaderProps) {
                 transition={{ duration: 0.35, ease: "easeInOut" }}
             >
                 <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-                    <div className="flex items-center justify-between h-20 md:h-28">
+                    <div className="flex items-center justify-between h-16 md:h-24">
                         {/* Logo & Weather (Desktop) */}
                         <div className="flex items-center gap-2 md:gap-6">
                             <div className="flex-shrink-0">
@@ -249,7 +261,7 @@ export default function Header(props: HeaderProps) {
                                     className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-deep-blue focus-visible:ring-sunshine rounded-md" 
                                     aria-label="Go to homepage"
                                 >
-                                    <Logo className="h-16 md:h-20 w-auto text-charcoal dark:text-seafoam" />
+                                    <Logo className="h-12 md:h-20 w-auto text-slate-800 dark:text-slate-100" />
                                 </button>
                             </div>
                             <div className="hidden lg:flex items-center gap-4">
@@ -285,13 +297,13 @@ export default function Header(props: HeaderProps) {
                                 <div className="relative" ref={userMenuRef}>
                                     {user ? (
                                         <>
-                                            <button onClick={() => setIsUserMenuOpen(prev => !prev)} className="rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sunshine">
+                                            <button onClick={() => setIsUserMenuOpen(prev => !prev)} className="rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-secondary">
                                                 <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full" />
                                             </button>
                                             
                                             <AnimatePresence>
                                                 {isUserMenuOpen && (
-                                                    <motion.div 
+                                                    <MotionDiv 
                                                         className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-slate-800 ring-1 ring-black dark:ring-slate-700 ring-opacity-5 focus:outline-none z-10 top-full"
                                                         initial={{ opacity: 0, scale: 0.95 }}
                                                         animate={{ opacity: 1, scale: 1 }}
@@ -300,21 +312,21 @@ export default function Header(props: HeaderProps) {
                                                     >
                                                         <div className="py-1">
                                                             <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
-                                                                <p className="text-sm font-semibold text-charcoal dark:text-slate-200 truncate">{user.name}</p>
+                                                                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{user.name}</p>
                                                                 <p className="text-xs text-slate-500 dark:text-slate-300 truncate">{user.email}</p>
                                                             </div>
                                                             <div className="p-1">
-                                                                <button onClick={() => { onToggleProfile(); setIsUserMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+                                                                <button onClick={() => { onToggleProfile(); setIsUserMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-slate-800 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
                                                                     <UserIcon className="w-5 h-5" />
                                                                     <span>My Profile</span>
                                                                 </button>
-                                                                <button onClick={signOut} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+                                                                <button onClick={signOut} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-slate-800 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
                                                                     <LogoutIcon className="w-5 h-5" />
                                                                     <span>Sign Out</span>
                                                                 </button>
                                                             </div>
                                                         </div>
-                                                    </motion.div>
+                                                    </MotionDiv>
                                                 )}
                                             </AnimatePresence>
                                         </>
@@ -353,7 +365,7 @@ export default function Header(props: HeaderProps) {
                                 </div>
                             )}
                              {user && (
-                                <button onClick={onToggleProfile} className="rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sunshine">
+                                <button onClick={onToggleProfile} className="rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-secondary">
                                     <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full" />
                                 </button>
                             )}
@@ -364,12 +376,12 @@ export default function Header(props: HeaderProps) {
                 {/* Search Overlay */}
                 <AnimatePresence>
                     {isSearchOpen && (
-                        <motion.div
+                        <MotionDiv
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="absolute inset-0 h-20 md:h-28 bg-white/95 dark:bg-deep-blue/95 backdrop-blur-sm z-10"
+                            className="absolute inset-0 h-16 md:h-24 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm z-10"
                         >
                             <div className="max-w-7xl mx-auto px-4 lg:px-8 h-full">
                                 <div className="flex items-center h-full gap-4">
@@ -380,7 +392,7 @@ export default function Header(props: HeaderProps) {
                                         placeholder="Search for articles, guides, and events..."
                                         value={searchQuery}
                                         onChange={(e) => onSearchChange(e.target.value)}
-                                        className="w-full bg-transparent border-none focus:ring-0 text-lg text-charcoal dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500"
+                                        className="w-full bg-transparent border-none focus:ring-0 text-lg text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500"
                                     />
                                     <button
                                         onClick={handleCloseSearch}
@@ -391,10 +403,10 @@ export default function Header(props: HeaderProps) {
                                     </button>
                                 </div>
                             </div>
-                        </motion.div>
+                        </MotionDiv>
                     )}
                 </AnimatePresence>
-            </motion.header>
+            </MotionHeader>
             <BottomNavBar {...props} />
         </>
     );

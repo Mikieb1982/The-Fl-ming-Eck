@@ -18,28 +18,20 @@
       theme: {
         extend: {
           colors: {
-            'cream': '#FDF9F4',
-            'charcoal': '#2F3D47',
-            'deep-blue': '#0D1B2A',
-            'seafoam': '#E0E1DD',
-            'sandstone-ochre': '#DDAF72',
-            'brand-green': '#24523a',
-            'sunshine': '#facc15', // yellow-400
-            'ocean': '#0891b2', // cyan-600
-            'ocean-dark': '#0e7490', // cyan-700
+            'brand': {
+              'primary': '#14b8a6', // teal-500
+              'secondary': '#f59e0b' // amber-500
+            },
             'poppy': '#ef4444', // red-500
-            'poppy-dark': '#dc2626', // red-600
-            'forest-green': '#166534', // green-800
-            'steel': '#475569', // slate-600
+            'ocean': '#14b8a6', // teal-500
+            'ocean-dark': '#0d9488', // teal-600
+            'sunshine': '#facc15', // yellow-400
+            'charcoal': '#1e293b', // slate-800
+            'seafoam': '#e2e8f0', // slate-200
           },
           fontFamily: {
             sans: ['Inter', 'sans-serif'],
             serif: ['Playfair Display', 'serif'],
-          },
-          backgroundImage: {
-            'texture-paper': "url('https://www.transparenttextures.com/patterns/paper-fibers.png')",
-            'texture-fieldstone': "url('https://www.transparenttextures.com/patterns/checkered-light-emboss.png')",
-            'texture-wood': "url('https://www.transparenttextures.com/patterns/wood-pattern.png')",
           },
           fontSize: {
             '5xl': '3rem',
@@ -168,7 +160,7 @@
     }
     </script>
 </head>
-<body class="bg-cream dark:bg-deep-blue">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 antialiased">
     <div id="root"></div>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <script type="module" src="./index.tsx"></script>

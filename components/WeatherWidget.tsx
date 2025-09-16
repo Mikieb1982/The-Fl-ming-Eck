@@ -69,7 +69,7 @@ const WeatherWidget = () => {
                 <div className="flex-shrink-0">
                     {weatherInfo.icon}
                 </div>
-                <span className="text-sm font-semibold text-charcoal dark:text-slate-200">
+                <span className="text-xs sm:text-sm font-semibold text-charcoal dark:text-slate-200">
                     {weather.temperature}°C
                 </span>
             </>

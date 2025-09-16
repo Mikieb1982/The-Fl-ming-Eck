@@ -12,6 +12,9 @@ interface RaffleCheckerProps {
   onClose: () => void;
 }
 
+// FIX: Type error with framer-motion props. Casting motion component to `any` to bypass type checking issues.
+const MotionDiv = motion.div as any;
+
 const FormView = ({ t, inputValue, onInputChange, onCheck, isChecking }: any) => (
     <>
         <label className="label" htmlFor="number-input">{t.label}</label>
@@ -126,7 +129,7 @@ export default function RaffleChecker({ onClose }: RaffleCheckerProps) {
     
     return (
         <div className="raffle-checker-page">
-            <motion.div
+            <MotionDiv
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
@@ -145,7 +148,7 @@ export default function RaffleChecker({ onClose }: RaffleCheckerProps) {
                     </div>
                     <h1 className="title">{t.title}</h1>
                      <AnimatePresence mode="wait">
-                        <motion.div
+                        <MotionDiv
                             key={result}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -168,7 +171,7 @@ export default function RaffleChecker({ onClose }: RaffleCheckerProps) {
                                     onReset={handleReset}
                                 />
                             )}
-                        </motion.div>
+                        </MotionDiv>
                     </AnimatePresence>
                 </div>
                  <button 
@@ -181,7 +184,7 @@ export default function RaffleChecker({ onClose }: RaffleCheckerProps) {
                 >
                     &larr; Back to Magazine
                 </button>
-            </motion.div>
+            </MotionDiv>
         </div>
     );
 }

@@ -19,6 +19,9 @@ import ShareButtons from './ShareButtons';
 import Navigation from './Navigation';
 import VenueBadge from './poster/VenueBadge';
 
+const MotionDiv = motion.div as any;
+// FIX: Type error with framer-motion props. Casting motion component to `any` to bypass type checking issues.
+const MotionImg = motion.img as any;
 
 interface ArticleViewProps {
   article: Article | undefined;
@@ -53,6 +56,7 @@ const renderWithLinks = (text: string) => {
             href={url}
             target="_blank"
             rel="noopener noreferrer"
+            className="text-brand-primary hover:underline"
           >
             {url}
           </a>
@@ -221,7 +225,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
             // Add a guard to ensure content is a string before rendering.
             if (typeof block.content !== 'string') return null;
             return (
-                <h3 key={index} className="text-2xl font-serif font-bold mt-8 mb-4 text-charcoal dark:text-slate-100 border-b-2 border-slate-200 dark:border-slate-700 pb-2">
+                <h3 key={index} className="text-2xl font-serif font-bold mt-8 mb-4 text-slate-900 dark:text-slate-100 border-b-2 border-slate-200 dark:border-slate-700 pb-2">
                     {renderWithLinks(block.content)}
                 </h3>
             );
@@ -240,8 +244,8 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
             const remainingText = block.content.slice(1);
 
             return (
-                <p key={index} className="dark:text-slate-200">
-                    {isFirstParagraph && <span className="float-left text-5xl sm:text-6xl leading-none pr-3 font-serif text-ocean dark:text-cyan-400 -mt-2">{dropCapChar}</span>}
+                <p key={index} className="dark:text-slate-300">
+                    {isFirstParagraph && <span className="float-left text-5xl sm:text-6xl leading-none pr-3 font-serif text-ocean dark:text-ocean -mt-2">{dropCapChar}</span>}
                     {isFirstParagraph ? renderWithLinks(remainingText) : renderWithLinks(block.content)}
                 </p>
             );
@@ -254,7 +258,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
 
 
   return (
-    <motion.div
+    <MotionDiv
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.2}
@@ -264,20 +268,20 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
     >
         <button 
             onClick={onClose}
-            className="mb-4 px-4 py-2 text-sm font-semibold text-charcoal dark:text-seafoam bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-seafoam dark:hover:bg-slate-700 transition-colors"
+            className="mb-4 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
         >
             &larr; Back to Magazine
         </button>
 
       <div
-        className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg overflow-hidden bg-texture-paper border border-poppy/50 dark:border-poppy/60"
+        className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg overflow-hidden border border-slate-200/50 dark:border-slate-800"
       >
         {/* HERO SECTION */}
         <div ref={heroRef} className="relative h-[60vh] min-h-[400px] text-white overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent z-10" />
           {isLoading && <div className="absolute inset-0 w-full h-full bg-slate-200 dark:bg-slate-700 animate-pulse" />}
           {!isLoading && heroUrl && (
-            <motion.img
+            <MotionImg
               src={heroUrl}
               alt={article.title}
               loading="eager"
@@ -314,12 +318,12 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
         <div className="grid grid-cols-12 gap-8 p-6 md:p-8">
            {/* Main Content */}
           <main className="col-span-12 lg:col-span-9">
-             <article className={`prose ${fontSizes[fontSizeIndex]} max-w-prose mx-auto dark:prose-invert prose-headings:text-charcoal dark:prose-headings:text-slate-100`}>
+             <article className={`prose ${fontSizes[fontSizeIndex]} max-w-prose mx-auto dark:prose-invert prose-headings:text-slate-900 dark:prose-headings:text-slate-100 prose-a:text-brand-primary prose-a:no-underline hover:prose-a:underline`}>
               {article.pullQuote && (
                 <div className="not-prose my-6">
-                    <div className="relative p-6 bg-ocean/20 dark:bg-ocean/30 rounded-lg">
+                    <div className="relative p-6 bg-ocean/5 dark:bg-ocean/10 rounded-lg">
                         <span className="absolute top-0 left-4 h-full w-1 bg-poppy"></span>
-                        <blockquote className="pl-4 italic text-charcoal dark:text-slate-200 text-xl md:text-2xl font-serif">“{article.pullQuote}”</blockquote>
+                        <blockquote className="pl-4 italic text-slate-700 dark:text-slate-200 text-xl md:text-2xl font-serif">“{article.pullQuote}”</blockquote>
                     </div>
                 </div>
               )}
@@ -346,7 +350,7 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
              {/* TL;DR Section */}
             <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700 max-w-prose mx-auto">
               <div className="flex items-center gap-4">
-                  <h3 className="text-lg font-serif font-bold text-charcoal dark:text-slate-200">TL;DR</h3>
+                  <h3 className="text-lg font-serif font-bold text-slate-800 dark:text-slate-200">TL;DR</h3>
                   <button 
                       onClick={handleGenerateSummary} 
                       disabled={isSummarizing}
@@ -360,14 +364,13 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
               {isSummarizing && <div className="mt-4 text-sm text-slate-500 dark:text-slate-300">Thinking...</div>}
               {error && <div className="mt-4 text-sm text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-900/50 p-3 rounded-lg">{error}</div>}
               {summary && (
-                // @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors.
-                <motion.div 
+                <MotionDiv 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-4 p-4 bg-sunshine/30 dark:bg-sunshine/40 border border-sunshine/20 dark:border-sunshine/30 rounded-lg"
+                  className="mt-4 p-4 bg-sunshine/20 dark:bg-sunshine/30 border border-sunshine/30 dark:border-sunshine/40 rounded-lg"
                 >
-                  <p className="text-charcoal dark:text-seafoam italic">{summary}</p>
-                </motion.div>
+                  <p className="text-slate-800 dark:text-slate-100 italic">{summary}</p>
+                </MotionDiv>
               )}
             </div>
           </main>
@@ -389,8 +392,8 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
         
         {/* RELATED ARTICLES */}
         {relatedArticles.length > 0 && (
-          <div className="p-6 md:p-8 border-t border-slate-200 dark:border-slate-700 bg-ocean/10 dark:bg-ocean/20">
-            <h3 className="text-2xl font-serif font-bold text-charcoal dark:text-slate-200 mb-6 text-center">More in {article.category}</h3>
+          <div className="p-6 md:p-8 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+            <h3 className="text-2xl font-serif font-bold text-slate-800 dark:text-slate-200 mb-6 text-center">More in {article.category}</h3>
             <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {relatedArticles.map(navArticle => (
                   <ArticleCard 
@@ -409,6 +412,6 @@ export default function ArticleView({ article, allArticles, onSelectArticle, onS
           isFirst={currentIndex === 0}
           isLast={currentIndex !== null && currentIndex >= totalArticles - 1}
       />
-    </motion.div>
+    </MotionDiv>
   );
 }

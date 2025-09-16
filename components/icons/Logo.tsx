@@ -4,20 +4,21 @@ import { BRAND } from '../../constants';
 export default function Logo({ className }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 520 80"
+      viewBox="0 0 400 50"
       className={className}
       aria-label={`${BRAND.title} - The Independent English-language magazine for Bad Belzig and the Hoher Fläming`}
     >
       {/* Icon: Geometric Eck/Corner */}
-      <g>
+      <g transform="scale(0.8)">
         <path d="M0 5 H25 V11 H6 V30 H0 V5 Z" fill="#c2802a" />
         <path d="M10 15 H35 V21 H16 V40 H10 V15 Z" fill="#24523a" />
       </g>
 
-      {/* Main Title */}
+      {/* Desktop Title */}
       <text
-        x="45"
-        y="36"
+        className="hidden sm:block"
+        x="40"
+        y="35"
         fontFamily="Playfair Display, serif"
         fontWeight="900"
         fontSize="38"
@@ -26,19 +27,19 @@ export default function Logo({ className }: { className?: string }) {
       >
         The Fläming Eck
       </text>
-
-      {/* Tagline Motto */}
-      <text
-        x="45"
-        y="52"
-        fontFamily="Inter, sans-serif"
-        fontWeight="500"
-        fontSize="10"
+      
+      {/* Mobile Title */}
+       <text
+        className="block sm:hidden"
+        x="40"
+        y="35"
+        fontFamily="Playfair Display, serif"
+        fontWeight="900"
+        fontSize="38"
         fill="currentColor"
-        className="text-slate-600 dark:text-slate-300"
+        letterSpacing="-0.5"
       >
-        <tspan x="45" dy="1.2em">The Independent English-language magazine</tspan>
-        <tspan x="45" dy="1.2em">for Bad Belzig and the Hoher Fläming</tspan>
+        Fläming Eck
       </text>
     </svg>
   );

@@ -12,6 +12,9 @@ interface PollProps {
   initialOptions: PollOption[];
 }
 
+// FIX: Type error with framer-motion props. Casting motion component to `any` to bypass type checking issues.
+const MotionDiv = motion.div as any;
+
 export default function Poll({ articleId, question, initialOptions }: PollProps) {
   const [options, setOptions] = useState(initialOptions);
   const [votedOption, setVotedOption] = useState<number | null>(null);
@@ -69,9 +72,7 @@ export default function Poll({ articleId, question, initialOptions }: PollProps)
       <h4 className="font-serif font-bold text-xl text-charcoal dark:text-slate-200">{question}</h4>
       <div className="mt-4 space-y-3">
         <AnimatePresence mode="wait">
-          {/* FIX: Suppress TypeScript error. The framer-motion props are not recognized in this environment. */}
-          {/* @ts-ignore */}
-          <motion.div
+          <MotionDiv
             key={votedOption === null ? 'voting' : 'results'}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -96,9 +97,7 @@ export default function Poll({ articleId, question, initialOptions }: PollProps)
                 const isVoted = index === votedOption;
                 return (
                   <div key={index} className="relative p-3 border border-slate-300 dark:border-slate-600 rounded-md overflow-hidden">
-                    {/* FIX: Suppress TypeScript error. The framer-motion props are not recognized in this environment. */}
-                    {/* @ts-ignore */}
-                    <motion.div
+                    <MotionDiv
                       className={`absolute top-0 left-0 h-full ${isVoted ? 'bg-ocean/20' : 'bg-slate-200 dark:bg-slate-700'}`}
                       initial={{ width: 0 }}
                       animate={{ width: `${percentage}%` }}
@@ -112,7 +111,7 @@ export default function Poll({ articleId, question, initialOptions }: PollProps)
                 );
               })
             )}
-          </motion.div>
+          </MotionDiv>
         </AnimatePresence>
       </div>
       {votedOption !== null && (

@@ -255,6 +255,33 @@ export interface Transportation {
     }
 }
 
+export interface VisitorCenter {
+    name: string;
+    location: string;
+    address: string;
+    description: string;
+    website?: string;
+}
+
+export interface HikingTrail {
+    name: string;
+    route: string;
+    length: string;
+    description: string;
+}
+
+export interface ObservationTower {
+    name: string;
+    location: string;
+    description: string;
+}
+
+export interface NatureOutdoors {
+    visitor_centers: VisitorCenter[];
+    key_hiking_trails: HikingTrail[];
+    observation_towers: ObservationTower[];
+}
+
 
 export interface DirectoryData {
   region: string;
@@ -265,5 +292,16 @@ export interface DirectoryData {
     tourism_hospitality: Tourism;
     culture_education_recreation: Culture;
     transportation_mobility: Transportation;
+    nature_outdoors: NatureOutdoors;
   };
+}
+
+// New Downloads Type
+export interface DownloadItem {
+  title: string;
+  description: string;
+  category: 'Hiking & Cycling' | 'Brochures & Maps' | 'Churches' | 'Nature Park Offers' | 'Accessibility';
+  url: string;
+  fileType: 'PDF';
+  size: string;
 }

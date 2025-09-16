@@ -8,10 +8,12 @@ interface LegalViewProps {
   children: React.ReactNode;
 }
 
+// FIX: Type error with framer-motion props. Casting motion component to `any` to bypass type checking issues.
+const MotionDiv = motion.div as any;
+
 export default function LegalView({ title, onClose, children }: LegalViewProps) {
   return (
-    // @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors.
-    <motion.div
+    <MotionDiv
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -22,8 +24,7 @@ export default function LegalView({ title, onClose, children }: LegalViewProps) 
       role="dialog"
       aria-labelledby="legal-title"
     >
-      {/* @ts-ignore - The TypeScript types for framer-motion seem to be broken in this environment, causing valid props like 'initial' to be flagged as errors. */}
-      <motion.div
+      <MotionDiv
         initial={{ scale: 0.95, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.95, y: 20 }}
@@ -44,7 +45,7 @@ export default function LegalView({ title, onClose, children }: LegalViewProps) 
         <div className="flex-grow p-6 overflow-y-auto">
           {children}
         </div>
-      </motion.div>
-    </motion.div>
+      </MotionDiv>
+    </MotionDiv>
   );
 }

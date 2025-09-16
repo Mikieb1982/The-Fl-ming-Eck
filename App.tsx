@@ -1,5 +1,6 @@
 
 import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
+// FIX: Type error with framer-motion props. Casting motion component to `any` to bypass type checking issues.
 import { AnimatePresence, motion } from "framer-motion";
 
 import { Article, Post, Reply } from "./types";
@@ -14,14 +15,14 @@ import Impressum from "./components/Impressum";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import CommunityView from "./components/CommunityView";
 import BackToTopButton from "./components/BackToTopButton";
+import NotebookLMWidget from "./components/NotebookLMWidget";
 import DirectoryView from "./components/DirectoryView";
+import DownloadsView from "./components/DownloadsView";
 import HomePage from "./components/HomePage";
 import Header from "./components/Header";
 import BookmarksView from "./components/BookmarksView";
 import ProfileView from "./components/ProfileView";
 import { useBookmarks } from "./context/BookmarkContext";
-// FIX: Import the ArticleCard component to resolve a 'Cannot find name' error.
-import ArticleCard from "./components/ArticleCard";
 import AboutUs from "./components/AboutUs";
 import CorrectionsPolicy from "./components/CorrectionsPolicy";
 import AdvertiseWithUs from "./components/AdvertiseWithUs";
@@ -29,22 +30,6 @@ import RaffleChecker from "./components/RaffleChecker";
 import EventsCalendar from "./components/EventsCalendar";
 // FIX: Correct import path for PosterLayout to resolve module error.
 import PosterLayout from "./components/poster/PosterLayout";
-import MobileNewspaperView from "./components/MobileNewspaperView";
-
-// FIX: Refactored to a standard function declaration to resolve potential linter parsing issues.
-function useMediaQuery(query: string) {
-  const [matches, setMatches] = useState(false);
-  useEffect(() => {
-    const media = window.matchMedia(query);
-    if (media.matches !== matches) {
-      setMatches(media.matches);
-    }
-    const listener = () => setMatches(media.matches);
-    window.addEventListener('resize', listener);
-    return () => window.removeEventListener('resize', listener);
-  }, [matches, query]);
-  return matches;
-};
 
 // FIX: Refactored to a standard function declaration with an explicit generic type to resolve potential linter parsing issues with arrow functions.
 function usePrevious<T>(value: T): T | undefined {
@@ -78,6 +63,9 @@ const articleVariants = {
   }),
 };
 
+// FIX: Type error with framer-motion props. Casting motion component to `any` to bypass type checking issues.
+const MotionDiv = motion.div as any;
+
 
 export default function App() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -87,6 +75,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCommunityOpen, setIsCommunityOpen] = useState(false);
   const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
+  const [isDownloadsOpen, setIsDownloadsOpen] = useState(false);
   const [isRaffleOpen, setIsRaffleOpen] = useState(false);
   const [isBookmarksOpen, setIsBookmarksOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -96,8 +85,6 @@ export default function App() {
   const [legalPage, setLegalPage] = useState<"impressum" | "privacy" | "about" | "corrections" | "advertise" | null>(null);
   const [isBackToTopVisible, setIsBackToTopVisible] = useState(false);
   const mainContentRef = useRef<HTMLElement>(null);
-  
-  const isMobile = useMediaQuery('(max-width: 767px)');
   
   const { bookmarks } = useBookmarks();
   const sortedArticles = useMemo(() => sortByDateDesc(articles), [articles]);
@@ -130,6 +117,7 @@ export default function App() {
     const path = currentPath;
     const isCommunity = path === '/community';
     const isDirectory = path === '/directory';
+    const isDownloads = path === '/downloads';
     const isRaffle = path === '/raffle';
     const isBookmarks = path === '/bookmarks';
     const isProfile = path === '/profile';
@@ -154,6 +142,7 @@ export default function App() {
     setActiveIndex(articleIndex);
     setIsCommunityOpen(isCommunity);
     setIsDirectoryOpen(isDirectory);
+    setIsDownloadsOpen(isDownloads);
     setIsRaffleOpen(isRaffle);
     setIsBookmarksOpen(isBookmarks);
     setIsProfileOpen(isProfile);
@@ -220,6 +209,10 @@ export default function App() {
           title = `Community Directory | ${BRAND.title}`;
           description = "Your guide to essential services and points of interest in Bad Belzig and the Hoher Fläming.";
           path = `/directory`;
+      } else if (isDownloadsOpen) {
+          title = `Downloads | ${BRAND.title}`;
+          description = "Downloadable maps, brochures, and guides for the Hoher Fläming region.";
+          path = `/downloads`;
       } else if (isRaffleOpen) {
           title = `ALTSTADT SOMMER Raffle Checker | ${BRAND.title}`;
           description = "Check your Altstadtsommer raffle ticket number.";
@@ -241,7 +234,7 @@ export default function App() {
       const canonicalUrl = path === '/' ? baseUrl : `${baseUrl}/#${path}`;
       canonicalTag.setAttribute('href', canonicalUrl);
 
-  }, [activeArticle, isCommunityOpen, isDirectoryOpen, isRaffleOpen, isBookmarksOpen, isEventsPage]);
+  }, [activeArticle, isCommunityOpen, isDirectoryOpen, isDownloadsOpen, isRaffleOpen, isBookmarksOpen, isEventsPage]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -319,14 +312,13 @@ export default function App() {
     );
   }, [searchQuery, sortedArticles]);
   
-  const remainingArticles = useMemo(() => featureArticles.slice(3), [featureArticles]);
-  
-  let currentView: 'home' | 'article' | 'search' | 'community' | 'directory' | 'bookmarks' | 'profile' | 'raffle' | 'poster' | 'events' = 'home';
+  let currentView: 'home' | 'article' | 'search' | 'community' | 'directory' | 'downloads' | 'bookmarks' | 'profile' | 'raffle' | 'poster' | 'events' = 'home';
   if (isPosterOpen) currentView = 'poster';
   else if (searchQuery) currentView = 'search';
   else if (activeArticle) currentView = 'article';
   else if (isCommunityOpen) currentView = 'community';
   else if (isDirectoryOpen) currentView = 'directory';
+  else if (isDownloadsOpen) currentView = 'downloads';
   else if (isRaffleOpen) currentView = 'raffle';
   else if (isBookmarksOpen) currentView = 'bookmarks';
   else if (isProfileOpen) currentView = 'profile';
@@ -338,7 +330,7 @@ export default function App() {
     ? 'community'
     : isRaffleOpen
     ? 'raffle'
-    : isDirectoryOpen || isBookmarksOpen || isProfileOpen
+    : isDirectoryOpen || isDownloadsOpen || isBookmarksOpen || isProfileOpen
     ? 'more'
     : 'home';
 
@@ -348,6 +340,7 @@ export default function App() {
       onToggleEvents: () => navigate('/events'),
       onToggleCommunity: () => navigate('/community'),
       onToggleDirectory: () => navigate('/directory'),
+      onToggleDownloads: () => navigate('/downloads'),
       onToggleBookmarks: () => navigate('/bookmarks'),
       onToggleProfile: () => navigate('/profile'),
       setLegalPage: setLegalPage,
@@ -374,13 +367,13 @@ export default function App() {
 
 
   return (
-      <div className="bg-cream dark:bg-deep-blue min-h-screen overflow-x-clip">
+      <div className="bg-slate-50 dark:bg-slate-900 min-h-screen overflow-x-clip">
           <Header {...headerProps} />
           
           <main ref={mainContentRef} className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 pt-4 md:pt-8 relative">
               <AnimatePresence custom={direction} initial={false}>
                   {currentView === 'article' && activeArticle && (
-                      <motion.div
+                      <MotionDiv
                           key={activeArticle.id}
                           custom={direction}
                           variants={articleVariants}
@@ -404,7 +397,7 @@ export default function App() {
                               currentIndex={activeIndex}
                               totalArticles={sortedArticles.length}
                           />
-                      </motion.div>
+                      </MotionDiv>
                   )}
                   {currentView === 'search' && (
                       <SearchResults 
@@ -429,6 +422,7 @@ export default function App() {
                       />
                   )}
                   {currentView === 'directory' && <DirectoryView key="directory" onClose={handleGoHome} />}
+                  {currentView === 'downloads' && <DownloadsView key="downloads" onClose={handleGoHome} />}
                   {currentView === 'bookmarks' && <BookmarksView key="bookmarks" articles={articles} onSelectArticle={handleSelectArticleById} onClose={handleGoHome} />}
                   {currentView === 'profile' && <ProfileView key="profile" posts={posts} articles={articles} onSelectArticle={handleSelectArticleById} onClose={handleGoHome} />}
                    {currentView === 'events' && (
@@ -441,34 +435,19 @@ export default function App() {
                         />
                    )}
 
-                  {currentView === 'home' && isMobile && (
-                    <MobileNewspaperView 
-                      key="home-mobile"
-                      featureArticles={featureArticles}
-                      newsArticles={newsArticles}
-                      onSelectArticle={handleSelectArticleById}
-                    />
-                  )}
-
-                  {currentView === 'home' && !isMobile && (
-                      <div className="space-y-12" key="home-desktop">
-                          <HomePage 
-                            featureArticles={featureArticles}
-                            newsArticles={newsArticles}
-                            onSelectArticle={handleSelectArticleById} 
-                          />
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                              {remainingArticles.map(article => (
-                                  <ArticleCard key={article.id} article={article} onClick={() => handleSelectArticleById(article.id)} />
-                              ))}
-                          </div>
-                      </div>
+                  {currentView === 'home' && (
+                      <HomePage 
+                        key="home"
+                        featureArticles={featureArticles}
+                        newsArticles={newsArticles}
+                        onSelectArticle={handleSelectArticleById} 
+                      />
                   )}
               </AnimatePresence>
           </main>
           
-          {!(isMobile && currentView === 'home') && (
-            <footer className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 mt-12 text-center text-xs text-slate-500 dark:text-slate-400 py-4 border-t border-slate-200 dark:border-slate-700 pb-24 md:pb-4">
+          <footer className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 mt-12 text-center text-xs text-slate-500 dark:text-slate-400 py-4 border-t border-slate-200 dark:border-slate-700 pb-24 md:pb-4">
+              <div>
                 <button onClick={() => setLegalPage("about")} className="hover:underline px-2">About Us</button>
                 <span>|</span>
                 <button onClick={() => setLegalPage("impressum")} className="hover:underline px-2">Impressum</button>
@@ -476,13 +455,14 @@ export default function App() {
                 <button onClick={() => setLegalPage("privacy")} className="hover:underline px-2">Data Protection</button>
                 <span>|</span>
                 <button onClick={() => setLegalPage("corrections")} className="hover:underline px-2">Corrections Policy</button>
-                 <span>|</span>
+                <span>|</span>
                 <button onClick={() => setLegalPage("advertise")} className="hover:underline px-2">Advertise With Us</button>
                 <span>|</span>
                 <a href="https://ko-fi.com/example" target="_blank" rel="noopener noreferrer" className="hover:underline px-2">Support Us</a>
-            </footer>
-          )}
+              </div>
+          </footer>
 
+          <NotebookLMWidget />
 
           <AnimatePresence>
               {isBackToTopVisible && <BackToTopButton onClick={scrollToTop} />}

@@ -6,12 +6,16 @@ import MediumArticleCard from './MediumArticleCard';
 import MinimalArticleCard from './MinimalArticleCard';
 import ScheduleBand from './ScheduleBand';
 import SupportCard from './SupportCard';
+import ArticleCard from './ArticleCard';
 
 interface HomePageProps {
   featureArticles: Article[];
   newsArticles: Article[];
   onSelectArticle: (id: string) => void;
 }
+
+// FIX: Type error with framer-motion props. Casting motion component to `any` to bypass type checking issues.
+const MotionDiv = motion.div as any;
 
 function MainFeature({ article, onSelectArticle }: { article: Article, onSelectArticle: (id: string) => void }) {
   if (!isArticleSafe(article)) return null;
@@ -32,7 +36,7 @@ function MainFeature({ article, onSelectArticle }: { article: Article, onSelectA
       onClick={handleClick}
       className="group relative block h-[60vh] min-h-[400px] w-full rounded-2xl overflow-hidden shadow-lg cursor-pointer text-white"
     >
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10" />
       <img
         src={heroUrl}
         alt={article.title}
@@ -50,48 +54,60 @@ function MainFeature({ article, onSelectArticle }: { article: Article, onSelectA
 }
 
 export default function HomePage({ featureArticles, newsArticles, onSelectArticle }: HomePageProps) {
-  const mainFeature = featureArticles[0];
-  const secondaryFeatures = featureArticles.slice(1, 3);
+    const mainFeature = featureArticles[0];
+    const secondaryFeatures = featureArticles.slice(1, 3);
+    const remainingFeatures = featureArticles.slice(3);
 
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="grid grid-cols-12 gap-8">
-        {/* Main Content Area */}
-        <div className="col-span-12 lg:col-span-9">
-          {mainFeature && (
-            <MainFeature article={mainFeature} onSelectArticle={onSelectArticle} />
-          )}
+    return (
+        <MotionDiv
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-12"
+        >
+            {/* Top section: Hero + Secondary + News */}
+            <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div className="lg:col-span-8">
+                    {mainFeature && <MainFeature article={mainFeature} onSelectArticle={onSelectArticle} />}
+                </div>
+                <aside className="lg:col-span-4 space-y-6">
+                    <div className="p-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <h3 className="font-serif font-bold text-lg text-slate-800 dark:text-slate-200 mb-2">Latest News</h3>
+                        <div className="divide-y divide-slate-100 dark:divide-slate-700/50">
+                            {newsArticles.slice(0, 5).map(article => (
+                                <MinimalArticleCard key={article.id} article={article} onClick={() => onSelectArticle(article.id)} />
+                            ))}
+                        </div>
+                    </div>
+                    <SupportCard />
+                </aside>
+            </section>
 
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-            {secondaryFeatures.map(article => (
-              <MediumArticleCard key={article.id} article={article} onClick={() => onSelectArticle(article.id)} />
-            ))}
-          </div>
-        </div>
+            <ScheduleBand />
 
-        {/* Sidebar */}
-        <aside className="col-span-12 lg:col-span-3">
-            <div className="lg:sticky lg:top-32 space-y-6">
-                <div className="p-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
-                    <h3 className="font-serif font-bold text-lg text-charcoal dark:text-slate-200 mb-2">Latest News</h3>
-                    <div className="divide-y divide-slate-100 dark:divide-slate-700">
-                        {newsArticles.slice(0, 5).map(article => (
-                            <MinimalArticleCard key={article.id} article={article} onClick={() => onSelectArticle(article.id)} />
+            {secondaryFeatures.length > 0 && (
+                <section>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {secondaryFeatures.map(article => (
+                            <MediumArticleCard key={article.id} article={article} onClick={() => onSelectArticle(article.id)} />
                         ))}
                     </div>
-                </div>
-                 <SupportCard />
-            </div>
-        </aside>
-      </div>
-      
-      <ScheduleBand />
-      
-    </motion.div>
-  );
+                </section>
+            )}
+
+            {remainingFeatures.length > 0 && (
+                <section>
+                    <h2 className="text-3xl font-serif font-bold text-slate-800 dark:text-slate-100 mb-6 border-b-2 border-brand-primary pb-2">
+                        More Stories
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {remainingFeatures.map(article => (
+                            <ArticleCard key={article.id} article={article} onClick={() => onSelectArticle(article.id)} />
+                        ))}
+                    </div>
+                </section>
+            )}
+        </MotionDiv>
+    );
 }

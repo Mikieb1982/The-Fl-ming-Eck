@@ -39,7 +39,7 @@ export default function ArticleCard({ article, onClick }: ArticleCardProps) {
     <a
       href={`/#/article/${article.id}`}
       onClick={handleClick}
-      className="group cursor-pointer flex flex-col h-full rounded-lg overflow-hidden bg-white dark:bg-slate-800 shadow-md hover:shadow-xl dark:shadow-none dark:hover:shadow-lg dark:hover:shadow-poppy/10 transition-all duration-300 ease-in-out group-hover:-translate-y-1 border border-slate-200 dark:border-slate-700 dark:hover:bg-slate-700 relative"
+      className="group cursor-pointer flex flex-col h-full rounded-lg overflow-hidden bg-white dark:bg-slate-800 shadow-sm hover:shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1 border border-slate-200 dark:border-slate-700 relative"
     >
       <div className="absolute top-2 right-2 z-10 bg-white/70 dark:bg-slate-700/70 backdrop-blur-sm rounded-full">
         <BookmarkButton articleId={article.id} />
@@ -59,7 +59,7 @@ export default function ArticleCard({ article, onClick }: ArticleCardProps) {
         <span className={`inline-block px-2 py-1 text-xs font-bold uppercase rounded-full ${categoryStyles.bg} ${categoryStyles.text} self-start`}>
             {article.category}
         </span>
-        <h3 className="text-lg sm:text-xl font-serif font-bold mt-2 text-charcoal dark:text-slate-200 group-hover:text-ocean dark:group-hover:text-cyan-300 transition-colors flex-grow group-hover:underline decoration-ocean dark:decoration-cyan-400 select-none">{article.title}</h3>
+        <h3 className="text-lg sm:text-xl font-serif font-bold mt-2 text-slate-800 dark:text-slate-100 group-hover:text-brand-primary dark:group-hover:text-brand-primary transition-colors flex-grow group-hover:underline decoration-brand-primary dark:decoration-brand-primary select-none">{article.title}</h3>
         <p className="text-sm text-slate-600 dark:text-slate-300 mt-2 line-clamp-3 select-none">{article.excerpt}</p>
         
         <div className="mt-auto pt-2">
@@ -72,7 +72,7 @@ export default function ArticleCard({ article, onClick }: ArticleCardProps) {
                     ))}
                 </div>
             )}
-            <p className="font-mono text-xs text-slate-600 dark:text-slate-300 select-none">{readTime} min read</p>
+            <p className="font-mono text-xs text-slate-500 dark:text-slate-400 select-none">{readTime} min read</p>
         </div>
       </div>
     </a>

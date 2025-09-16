@@ -15,6 +15,9 @@ interface EventsCalendarProps {
   isPage?: boolean;
 }
 
+// FIX: Type error with framer-motion props. Casting motion component to `any` to bypass type checking issues.
+const MotionDiv = motion.div as any;
+
 // Helper component for filter buttons
 const FilterButton = ({ label, isActive, onClick }: { label: string; isActive: boolean; onClick: () => void; }) => (
   <button
@@ -218,13 +221,13 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle, isPag
         aria-controls="filter-panel"
       >
         <span className="font-semibold text-charcoal dark:text-slate-200">Filter by Date & Category</span>
-        <motion.div animate={{ rotate: isFilterVisible ? 180 : 0 }} transition={{ duration: 0.2 }}>
+        <MotionDiv animate={{ rotate: isFilterVisible ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronDownIcon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-        </motion.div>
+        </MotionDiv>
       </button>
       <AnimatePresence initial={false}>
         {isFilterVisible && (
-          <motion.div
+          <MotionDiv
             id="filter-panel"
             key="content"
             initial="collapsed"
@@ -264,7 +267,7 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle, isPag
                 </div>
               </div>
             </div>
-          </motion.div>
+          </MotionDiv>
         )}
       </AnimatePresence>
     </>
@@ -310,7 +313,7 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle, isPag
 
   if (isPage) {
     return (
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
@@ -333,7 +336,7 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle, isPag
         <div className="space-y-4">
           {renderEventList()}
         </div>
-      </motion.div>
+      </MotionDiv>
     );
   }
 
@@ -341,7 +344,7 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle, isPag
     <AnimatePresence>
       {isOpen && (
         <>
-          <motion.div
+          <MotionDiv
             key="backdrop"
             variants={backdropVariants}
             initial="hidden"
@@ -351,7 +354,7 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle, isPag
             className="fixed inset-0 bg-black/60 z-40"
             transition={{ duration: 0.3 }}
           />
-          <motion.div
+          <MotionDiv
             key="sidebar"
             variants={sidebarVariants}
             initial="closed"
@@ -382,7 +385,7 @@ export default function EventsCalendar({ isOpen, onClose, onSelectArticle, isPag
             <div className="flex-grow overflow-y-auto p-4 space-y-4">
               {renderEventList()}
             </div>
-          </motion.div>
+          </MotionDiv>
         </>
       )}
     </AnimatePresence>
