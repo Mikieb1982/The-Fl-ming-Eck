@@ -17,6 +17,25 @@ const WeatherWidget = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Use a fixed "today" for consistency across the app
+  const appToday = useMemo(() => new Date('2025-08-27T12:00:00Z'), []);
+
+  const formattedDateLong = useMemo(() => {
+    return appToday.toLocaleDateString('en-GB', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
+  }, [appToday]);
+
+  const formattedDateShort = useMemo(() => {
+    return appToday.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+    });
+  }, [appToday]);
+
+
   useEffect(() => {
     async function fetchWeather() {
       setIsLoading(true);
@@ -61,19 +80,30 @@ const WeatherWidget = () => {
 
 
   return (
-    <div className="inline-flex items-center gap-2" title={weatherInfo.description}>
-        {isLoading && <div className="text-xs text-slate-500 dark:text-slate-400 animate-pulse">Loading...</div>}
-        {error && null /* Silently fail in the header */}
-        {weather && !isLoading && (
-            <>
-                <div className="flex-shrink-0">
-                    {weatherInfo.icon}
-                </div>
-                <span className="text-xs sm:text-sm font-semibold text-charcoal dark:text-slate-200">
-                    {weather.temperature}°C
-                </span>
-            </>
-        )}
+    <div className="flex items-center gap-2" title={weatherInfo.description}>
+        <span className="text-xs sm:text-sm font-semibold text-charcoal dark:text-slate-200 hidden md:inline">
+            {formattedDateLong}
+        </span>
+        <span className="text-xs sm:text-sm font-semibold text-charcoal dark:text-slate-200 md:hidden">
+            {formattedDateShort}
+        </span>
+
+        <div className="w-px h-5 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+
+        <div className="flex items-center gap-1">
+            {isLoading && <div className="text-xs text-slate-500 dark:text-slate-400 animate-pulse">Loading...</div>}
+            {error && null /* Silently fail in the header */}
+            {weather && !isLoading && (
+                <>
+                    <div className="flex-shrink-0">
+                        {weatherInfo.icon}
+                    </div>
+                    <span className="text-xs sm:text-sm font-semibold text-charcoal dark:text-slate-200">
+                        {weather.temperature}°C
+                    </span>
+                </>
+            )}
+        </div>
     </div>
   );
 };
