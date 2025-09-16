@@ -1,7 +1,11 @@
-// FIX: Create full content for types.ts to resolve module and type errors.
-export interface PollOption {
-  text: string;
-  votes: number;
+
+
+export interface EventDetails {
+  startDate: string; // ISO string
+  endDate?: string; // ISO string
+  locationName: string;
+  locationAddress?: string;
+  isOnline?: boolean;
 }
 
 export type ArticleBodyBlock =
@@ -9,28 +13,40 @@ export type ArticleBodyBlock =
   | { type: 'subheading'; content: string }
   | { type: 'audio'; src: string; caption?: string }
   | { type: 'video'; youtubeId: string; caption?: string }
-  | { type: 'poll'; question: string; options: PollOption[] };
-
-export interface EventDetails {
-    startDate: string;
-    endDate?: string;
-    locationName: string;
-    locationAddress?: string;
-    isOnline?: boolean;
-}
+  | { type: 'poll'; question: string; options: { text: string; votes: number }[] };
 
 export interface Article {
   id: string;
   title: string;
   author: string;
-  date: string;
+  date: string; // ISO date string
   category: string;
   excerpt: string;
   hero: string[];
-  body: ArticleBodyBlock[];
   pullQuote?: string;
-  tags?: string[];
+  body: ArticleBodyBlock[];
   eventDetails?: EventDetails;
+  tags?: string[];
+}
+
+export interface ValidationCheck {
+  id:string;
+  english: boolean;
+  fresh: boolean;
+  ageDays: number;
+  hasRequired: boolean;
+}
+
+export interface ValidationResult {
+  checks: ValidationCheck[];
+  allEnglish: boolean;
+  allFresh: boolean;
+  allRequired: boolean;
+}
+
+export interface SelfTest {
+  name: string;
+  pass: boolean;
 }
 
 export interface Reply {
@@ -52,257 +68,248 @@ export interface Post {
   tags?: string[];
 }
 
-export interface ValidationCheck {
-  id: string;
-  english: boolean;
-  fresh: boolean;
-  ageDays: number;
-  hasRequired: boolean;
-}
-
-export interface ValidationResult {
-  checks: ValidationCheck[];
-  allEnglish: boolean;
-  allFresh: boolean;
-  allRequired: boolean;
-}
-
-export interface SelfTest {
-    pass: boolean;
-    name: string;
-}
-
+// User Profile Type
 export interface User {
   name: string;
   email: string;
   picture: string;
 }
 
-export interface DownloadItem {
-  title: string;
-  description: string;
-  category: 'Nature Park Offers' | 'Accessibility' | 'Brochures & Maps' | 'Hiking & Cycling' | 'Churches';
-  url: string;
-  fileType: string;
-  size: string;
+// New Directory Types
+export interface EmergencyNumbers {
+  police: string;
+  fire_rescue: string;
 }
 
-export interface UsefulLink {
-    german_title: string;
-    english_title: string;
-    url: string;
-    summary: string;
+export interface CivicEntry {
+  name: string;
+  address: string;
+  phone?: string;
+  hours?: string;
 }
 
-interface Specialization {
-    specialization: string;
-    doctors: string[];
+export interface CivicInfrastructure {
+  emergency_numbers: EmergencyNumbers;
+  municipal_administration: CivicEntry;
+  tourist_information: CivicEntry;
+  police: CivicEntry;
 }
 
-interface IndependentPractice {
-    name: string;
-    specialization: string;
-    address: string;
-    phone?: string;
+export interface Hospital {
+  name: string;
+  address: string;
+  phone: string;
+  emergency_phone: string;
+  website: string;
 }
 
-interface Pharmacy {
-    name: string;
-    address: string;
-    phone: string;
+export interface Specialization {
+  specialization: string;
+  doctors: string[];
 }
 
-interface Supermarket {
-    name: string;
-    address: string;
+export interface MedicalCenter {
+  name: string;
+  address: string;
+  phone: string;
+  specializations: Specialization[];
 }
 
-interface Bank {
-    name: string;
-    address: string;
-    services: string[];
+export interface Practice {
+  name: string;
+  specialization: string;
+  address: string;
+  phone?: string;
+  doctors?: string[];
 }
 
-interface PostalLocation {
-    name: string;
-    address: string;
+export interface Pharmacy {
+  name: string;
+  address: string;
+  phone: string;
 }
 
-interface Accommodation {
+export interface Healthcare {
+  hospital: Hospital;
+  medical_center: MedicalCenter;
+  independent_practices: Practice[];
+  pharmacies: Pharmacy[];
+}
+
+export interface RetailEntry {
+  name: string;
+  address: string;
+}
+
+export interface BankEntry extends RetailEntry {
+  services: string[];
+}
+
+export interface PostalService {
+  provider: string;
+  model: string;
+  locations: RetailEntry[];
+}
+
+export interface Commerce {
+  retail_shopping: {
+    supermarkets: RetailEntry[];
+    drugstores: RetailEntry[];
+    bakeries: RetailEntry[];
+    butchers: RetailEntry[];
+    bookstores: RetailEntry[];
+    florists: RetailEntry[];
+  };
+  financial_postal_services: {
+    banks: BankEntry[];
+    postal_services: PostalService;
+  };
+}
+
+export interface Accommodation {
+  name: string;
+  type: string;
+  address: string;
+  phone: string;
+  website: string;
+}
+
+export interface Restaurant {
+  name: string;
+  cuisine: string;
+  address?: string;
+}
+
+export interface Tourism {
+  accommodation: Accommodation[];
+  gastronomy: {
+    restaurants: {
+      german_regional: Restaurant[];
+      international: Restaurant[];
+    };
+    cafes_bistros_ice_cream: Restaurant[];
+    bars_pubs: Restaurant[];
+  };
+}
+
+export interface Attraction {
     name: string;
     type: string;
-    address: string;
-    phone: string;
-    website: string;
-}
-
-interface Restaurant {
-    name: string;
-    cuisine: string;
-    address: string;
-}
-
-interface Cafe {
-    name: string;
-    cuisine: string;
-    address: string;
-}
-
-interface Pub {
-    name: string;
-    cuisine: string;
-    address: string;
-}
-
-interface Attraction {
-    name: string;
-    type: string;
-    facilities: { [key: string]: string };
+    facilities?: Record<string, string>;
     hours?: string;
 }
 
-interface TaxiCompany {
+export interface Culture {
+    key_attractions: Attraction[];
+}
+
+export interface RailTransport {
+    station: string;
+    address: string;
+    key_service: string;
+    destinations: string;
+    frequency: string;
+}
+
+export interface BusTransport {
+    operator: string;
+    tourist_line: {
+        name: string;
+        frequency: string;
+        route: string;
+        details: string;
+    };
+    regional_lines: string;
+}
+
+export interface TaxiCompany {
     name: string;
     phone: string;
     services: string[];
 }
 
-interface VisitorCenter {
+export interface TaxiService {
+    note: string;
+    companies: TaxiCompany[];
+    fares: {
+        base_fare: string;
+        per_km_rate: string;
+        waiting_time_hourly: string;
+    };
+}
+
+export interface RideSharing {
+    provider: string;
+    service: string;
+    details: string;
+}
+
+export interface Transportation {
+    public_transport: {
+        rail: RailTransport;
+        bus: BusTransport;
+    };
+    private_transport: {
+        taxi_services: TaxiService;
+        ride_sharing: RideSharing;
+    }
+}
+
+export interface VisitorCenter {
     name: string;
     location: string;
     address: string;
     description: string;
-    website: string;
+    website?: string;
 }
 
-interface HikingTrail {
+export interface HikingTrail {
     name: string;
     route: string;
     length: string;
     description: string;
 }
 
-interface ObservationTower {
+export interface ObservationTower {
     name: string;
     location: string;
     description: string;
 }
 
+export interface NatureOutdoors {
+    visitor_centers: VisitorCenter[];
+    key_hiking_trails: HikingTrail[];
+    observation_towers: ObservationTower[];
+}
+
+
 export interface DirectoryData {
-    region: string;
-    directory: {
-        civic_infrastructure_emergency_services: {
-            emergency_numbers: {
-                police: string;
-                fire_rescue: string;
-            };
-            municipal_administration: {
-                name: string;
-                address: string;
-                phone: string;
-                hours: string;
-            };
-            tourist_information: {
-                name: string;
-                address: string;
-                phone: string;
-                hours: string;
-            };
-            police: {
-                name: string;
-                address: string;
-                phone: string;
-            };
-        };
-        healthcare_wellness: {
-            hospital: {
-                name: string;
-                address: string;
-                phone: string;
-                emergency_phone: string;
-                website: string;
-            };
-            medical_center: {
-                name: string;
-                address: string;
-                phone: string;
-                specializations: Specialization[];
-            };
-            independent_practices: IndependentPractice[];
-            pharmacies: Pharmacy[];
-        };
-        commerce_services: {
-            retail_shopping: {
-                supermarkets: Supermarket[];
-                drugstores: Supermarket[];
-                bakeries: Supermarket[];
-                butchers: Supermarket[];
-                bookstores: Supermarket[];
-                florists: Supermarket[];
-            };
-            financial_postal_services: {
-                banks: Bank[];
-                postal_services: {
-                    provider: string;
-                    model: string;
-                    locations: PostalLocation[];
-                };
-            };
-        };
-        tourism_hospitality: {
-            accommodation: Accommodation[];
-            gastronomy: {
-                restaurants: {
-                    german_regional: Restaurant[];
-                    international: Restaurant[];
-                };
-                cafes_bistros_ice_cream: Cafe[];
-                bars_pubs: Pub[];
-            };
-        };
-        culture_education_recreation: {
-            key_attractions: Attraction[];
-        };
-        transportation_mobility: {
-            public_transport: {
-                rail: {
-                    station: string;
-                    address: string;
-                    key_service: string;
-                    destinations: string;
-                    frequency: string;
-                    url?: string;
-                };
-                bus: {
-                    operator: string;
-                    regional_lines: Array<{
-                        name: string;
-                        description: string;
-                        url: string;
-                    }>;
-                };
-            };
-            private_transport: {
-                taxi_services: {
-                    note: string;
-                    companies: TaxiCompany[];
-                    fares: {
-                        base_fare: string;
-                        per_km_rate: string;
-                        waiting_time_hourly: string;
-                    };
-                };
-                ride_sharing: {
-                    provider: string;
-                    service: string;
-                    details: string;
-                };
-            };
-        };
-        nature_outdoors: {
-            visitor_centers: VisitorCenter[];
-            key_hiking_trails: HikingTrail[];
-            observation_towers: ObservationTower[];
-        };
-    };
+  region: string;
+  directory: {
+    civic_infrastructure_emergency_services: CivicInfrastructure;
+    healthcare_wellness: Healthcare;
+    commerce_services: Commerce;
+    tourism_hospitality: Tourism;
+    culture_education_recreation: Culture;
+    transportation_mobility: Transportation;
+    nature_outdoors: NatureOutdoors;
+  };
+}
+
+// New Downloads Type
+export interface DownloadItem {
+  title: string;
+  description: string;
+  category: 'Hiking & Cycling' | 'Brochures & Maps' | 'Churches' | 'Nature Park Offers' | 'Accessibility';
+  url: string;
+  fileType: 'PDF';
+  size: string;
+}
+
+// New Useful Links Type
+export interface UsefulLink {
+  german_title: string;
+  english_title: string;
+  url: string;
+  summary: string;
 }
