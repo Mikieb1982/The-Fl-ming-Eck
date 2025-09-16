@@ -1,4 +1,5 @@
 
+
 import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
 // FIX: Type error with framer-motion props. Casting motion component to `any` to bypass type checking issues.
 import { AnimatePresence, motion } from "framer-motion";
@@ -18,6 +19,7 @@ import BackToTopButton from "./components/BackToTopButton";
 import NotebookLMWidget from "./components/NotebookLMWidget";
 import DirectoryView from "./components/DirectoryView";
 import DownloadsView from "./components/DownloadsView";
+import LinksView from "./components/LinksView";
 import HomePage from "./components/HomePage";
 import Header from "./components/Header";
 import BookmarksView from "./components/BookmarksView";
@@ -76,6 +78,7 @@ export default function App() {
   const [isCommunityOpen, setIsCommunityOpen] = useState(false);
   const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
   const [isDownloadsOpen, setIsDownloadsOpen] = useState(false);
+  const [isLinksOpen, setIsLinksOpen] = useState(false);
   const [isRaffleOpen, setIsRaffleOpen] = useState(false);
   const [isBookmarksOpen, setIsBookmarksOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -118,6 +121,7 @@ export default function App() {
     const isCommunity = path === '/community';
     const isDirectory = path === '/directory';
     const isDownloads = path === '/downloads';
+    const isLinks = path === '/links';
     const isRaffle = path === '/raffle';
     const isBookmarks = path === '/bookmarks';
     const isProfile = path === '/profile';
@@ -143,6 +147,7 @@ export default function App() {
     setIsCommunityOpen(isCommunity);
     setIsDirectoryOpen(isDirectory);
     setIsDownloadsOpen(isDownloads);
+    setIsLinksOpen(isLinks);
     setIsRaffleOpen(isRaffle);
     setIsBookmarksOpen(isBookmarks);
     setIsProfileOpen(isProfile);
@@ -213,6 +218,10 @@ export default function App() {
           title = `Downloads | ${BRAND.title}`;
           description = "Downloadable maps, brochures, and guides for the Hoher Fläming region.";
           path = `/downloads`;
+      } else if (isLinksOpen) {
+          title = `Useful Links | ${BRAND.title}`;
+          description = "Essential links for residents of Bad Belzig.";
+          path = `/links`;
       } else if (isRaffleOpen) {
           title = `ALTSTADT SOMMER Raffle Checker | ${BRAND.title}`;
           description = "Check your Altstadtsommer raffle ticket number.";
@@ -234,7 +243,7 @@ export default function App() {
       const canonicalUrl = path === '/' ? baseUrl : `${baseUrl}/#${path}`;
       canonicalTag.setAttribute('href', canonicalUrl);
 
-  }, [activeArticle, isCommunityOpen, isDirectoryOpen, isDownloadsOpen, isRaffleOpen, isBookmarksOpen, isEventsPage]);
+  }, [activeArticle, isCommunityOpen, isDirectoryOpen, isDownloadsOpen, isLinksOpen, isRaffleOpen, isBookmarksOpen, isEventsPage]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -312,13 +321,14 @@ export default function App() {
     );
   }, [searchQuery, sortedArticles]);
   
-  let currentView: 'home' | 'article' | 'search' | 'community' | 'directory' | 'downloads' | 'bookmarks' | 'profile' | 'raffle' | 'poster' | 'events' = 'home';
+  let currentView: 'home' | 'article' | 'search' | 'community' | 'directory' | 'downloads' | 'links' | 'bookmarks' | 'profile' | 'raffle' | 'poster' | 'events' = 'home';
   if (isPosterOpen) currentView = 'poster';
   else if (searchQuery) currentView = 'search';
   else if (activeArticle) currentView = 'article';
   else if (isCommunityOpen) currentView = 'community';
   else if (isDirectoryOpen) currentView = 'directory';
   else if (isDownloadsOpen) currentView = 'downloads';
+  else if (isLinksOpen) currentView = 'links';
   else if (isRaffleOpen) currentView = 'raffle';
   else if (isBookmarksOpen) currentView = 'bookmarks';
   else if (isProfileOpen) currentView = 'profile';
@@ -330,7 +340,7 @@ export default function App() {
     ? 'community'
     : isRaffleOpen
     ? 'raffle'
-    : isDirectoryOpen || isDownloadsOpen || isBookmarksOpen || isProfileOpen
+    : isDirectoryOpen || isDownloadsOpen || isLinksOpen || isBookmarksOpen || isProfileOpen
     ? 'more'
     : 'home';
 
@@ -341,6 +351,7 @@ export default function App() {
       onToggleCommunity: () => navigate('/community'),
       onToggleDirectory: () => navigate('/directory'),
       onToggleDownloads: () => navigate('/downloads'),
+      onToggleLinks: () => navigate('/links'),
       onToggleBookmarks: () => navigate('/bookmarks'),
       onToggleProfile: () => navigate('/profile'),
       setLegalPage: setLegalPage,
@@ -423,6 +434,7 @@ export default function App() {
                   )}
                   {currentView === 'directory' && <DirectoryView key="directory" onClose={handleGoHome} />}
                   {currentView === 'downloads' && <DownloadsView key="downloads" onClose={handleGoHome} />}
+                  {currentView === 'links' && <LinksView key="links" onClose={handleGoHome} />}
                   {currentView === 'bookmarks' && <BookmarksView key="bookmarks" articles={articles} onSelectArticle={handleSelectArticleById} onClose={handleGoHome} />}
                   {currentView === 'profile' && <ProfileView key="profile" posts={posts} articles={articles} onSelectArticle={handleSelectArticleById} onClose={handleGoHome} />}
                    {currentView === 'events' && (

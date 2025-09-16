@@ -7,7 +7,7 @@ const article: Article = {
   date: "2025-09-06",
   category: "Guides",
   excerpt: "Discover a unique synthesis of nature and creativity on the Hoher Fläming's internationally acclaimed 'Kunstwanderweg', a hiking trail that features contemporary art installations set against a backdrop of forests and fields.",
-  hero: ["https://images.unsplash.com/photo-1501250987900-24981f785834?q=80&w=2070"],
+  hero: ["https://i.imgur.com/PKIWQGf.jpeg"],
   pullQuote: "The trail invites you to not just look at art, but to experience it as part of the journey.",
   body: [
     { type: 'paragraph', content: "The International Art Trail, or 'Kunstwanderweg', is one of the Hoher Fläming's most distinctive attractions. It's a hiking experience that transforms the landscape into an open-air gallery, where contemporary sculptures and installations surprise and provoke thought along the way. The trail invites you to not just look at art, but to experience it as part of your journey through the region's serene nature." },

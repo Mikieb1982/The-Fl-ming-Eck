@@ -19,6 +19,7 @@ import CalendarIcon from './icons/CalendarIcon';
 import WeatherWidget from './WeatherWidget';
 import SupportButton from './SupportButton';
 import DownloadIcon from './icons/DownloadIcon';
+import LinkIcon from './icons/LinkIcon';
 
 type LegalPageType = "impressum" | "privacy" | "about" | "corrections" | "advertise";
 
@@ -29,6 +30,7 @@ interface HeaderProps {
     onToggleCommunity: () => void;
     onToggleDirectory: () => void;
     onToggleDownloads: () => void;
+    onToggleLinks: () => void;
     onToggleBookmarks: () => void;
     onToggleProfile: () => void;
     setLegalPage: (page: LegalPageType | null) => void;
@@ -41,7 +43,7 @@ interface HeaderProps {
 const MotionDiv = motion.div as any;
 
 function BottomNavBar(props: HeaderProps) {
-    const { onGoHome, onToggleRaffle, onToggleEvents, onToggleCommunity, onToggleDirectory, onToggleDownloads, onToggleBookmarks, onToggleProfile, setLegalPage, activeView } = props;
+    const { onGoHome, onToggleRaffle, onToggleEvents, onToggleCommunity, onToggleDirectory, onToggleDownloads, onToggleLinks, onToggleBookmarks, onToggleProfile, setLegalPage, activeView } = props;
     const { user, signOut } = useUser();
     const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
 
@@ -64,6 +66,10 @@ function BottomNavBar(props: HeaderProps) {
             <button onClick={() => { onToggleDownloads(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-seafoam hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
                 <DownloadIcon className="w-5 h-5" />
                 <span>Downloads</span>
+            </button>
+            <button onClick={() => { onToggleLinks(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-seafoam hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+                <LinkIcon className="w-5 h-5" />
+                <span>Useful Links</span>
             </button>
             <button onClick={() => { onToggleBookmarks(); setIsMoreMenuOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-charcoal dark:text-seafoam hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
                 <BookmarkIcon className="w-5 h-5" />
@@ -167,7 +173,7 @@ function BottomNavBar(props: HeaderProps) {
 const MotionHeader = motion.header as any;
 
 export default function Header(props: HeaderProps) {
-    const { onGoHome, onToggleRaffle, onToggleEvents, onToggleCommunity, onToggleDirectory, onToggleDownloads, onToggleBookmarks, onToggleProfile, searchQuery, onSearchChange, activeView } = props;
+    const { onGoHome, onToggleRaffle, onToggleEvents, onToggleCommunity, onToggleDirectory, onToggleDownloads, onToggleLinks, onToggleBookmarks, onToggleProfile, searchQuery, onSearchChange, activeView } = props;
     const { user, signOut, isLoading } = useUser();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -215,6 +221,7 @@ export default function Header(props: HeaderProps) {
         { label: 'Community', icon: <UsersIcon className="w-5 h-5" />, action: onToggleCommunity, view: 'community' },
         { label: 'Directory', icon: <BuildingOfficeIcon className="w-5 h-5" />, action: onToggleDirectory, view: 'more' },
         { label: 'Downloads', icon: <DownloadIcon className="w-5 h-5" />, action: onToggleDownloads, view: 'more' },
+        { label: 'Useful Links', icon: <LinkIcon className="w-5 h-5" />, action: onToggleLinks, view: 'more' },
         { label: 'Bookmarks', icon: <BookmarkIcon className="w-5 h-5" />, action: onToggleBookmarks, view: 'more' },
     ];
     

@@ -240,23 +240,31 @@ export const directoryData: DirectoryData = {
       ]
     },
     transportation_mobility: {
+      // FIX: Updated `public_transport` to conform to the `DirectoryData` type. `regional_lines` is now an array of objects and the invalid `tourist_line` property was removed.
       public_transport: {
         rail: {
           station: "Bad Belzig station",
           address: "Am Bahnhof 11, 14806 Bad Belzig",
           key_service: "Regionalexpress RE7",
           destinations: "Direct connection to Berlin Hauptbahnhof (~41 mins) and Dessau.",
-          frequency: "Hourly"
+          frequency: "Hourly",
+          url: "https://www.vbb.de/fahrinfo"
         },
         bus: {
           operator: "regiobus Potsdam Mittelmark GmbH",
-          tourist_line: {
-            name: "Burgenlinie 572",
-            frequency: "Year-round, 7 days a week, 5 daily trips.",
-            route: "Connects Bad Belzig train station with Burg Eisenhardt, Raben, and Wiesenburg.",
-            details: "Schedule is coordinated with train arrivals/departures."
-          },
-          regional_lines: "Connect Bad Belzig with Görzke, Ziesar, and Brandenburg an der Havel."
+          regional_lines: [
+            { name: "555", description: "(Bad Belzig –) Niemegk – Treuenbrietzen", url: "https://www.regiobus-pm.de/wp-content/uploads/2024/07/555_240819.pdf" },
+            { name: "572 (Burgenlinie)", description: "Bad Belzig – Niemegk – Raben – Wiesenburg", url: "https://www.regiobus-pm.de/wp-content/uploads/2024/07/572_240819.pdf" },
+            { name: "580", description: "Bad Belzig – Golzow – Brandenburg", url: "https://www.regiobus-pm.de/wp-content/uploads/2024/07/580_240819.pdf" },
+            { name: "581", description: "Bad Belzig – Golzow – Lehnin", url: "https://www.regiobus-pm.de/wp-content/uploads/2024/07/581_240819.pdf" },
+            { name: "582", description: "Bad Belzig – Niemegk", url: "https://www.regiobus-pm.de/wp-content/uploads/2024/07/582_240819.pdf" },
+            { name: "583", description: "Bad Belzig – Baitz – Brück", url: "https://www.regiobus-pm.de/wp-content/uploads/2024/07/583_240819.pdf" },
+            { name: "584", description: "Bad Belzig – Wiesenburg – Görzke", url: "https://www.regiobus-pm.de/wp-content/uploads/2024/07/584_240819.pdf" },
+            { name: "585", description: "Bad Belzig – Wiesenburg", url: "https://www.regiobus-pm.de/wp-content/uploads/2024/07/585_240819.pdf" },
+            { name: "586", description: "Bad Belzig – Lüsse – Neschholz – Hohenspringe", url: "https://www.regiobus-pm.de/wp-content/uploads/2024/07/586_240819.pdf" },
+            { name: "587", description: "Bad Belzig – Lüsse – Fredersdorf – Linthe", url: "https://www.regiobus-pm.de/wp-content/uploads/2024/07/587_240819.pdf" },
+            { name: "588 (PlusBus)", description: "Bad Belzig – Lehnin – Potsdam", url: "https://www.regiobus-pm.de/wp-content/uploads/2024/07/588_240819.pdf" }
+          ]
         }
       },
       private_transport: {

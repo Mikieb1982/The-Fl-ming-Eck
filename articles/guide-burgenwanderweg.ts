@@ -7,7 +7,7 @@ const article: Article = {
   date: "2025-09-07",
   category: "Guides",
   excerpt: "Lace up your boots for the Burgenwanderweg, a 147-kilometer journey connecting the four great castles of the Hoher Fläming and weaving through a landscape shaped by ice and history.",
-  hero: ["https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=2070"],
+  hero: ["https://i.imgur.com/gJhk11B.png?1"],
   pullQuote: "Four castles, one trail: a journey through centuries of borderland history.",
   body: [
     { type: 'paragraph', content: "The Hoher Fläming is a land of castles, a historical borderland where powerful fortresses once guarded contested territories. The Burgenwanderweg (Castle Hiking Trail) is the ultimate way to experience this legacy. Spanning 147 kilometers, this long-distance trail connects the four great 'stone witnesses' of the region: Burg Eisenhardt in Bad Belzig, Burg Rabenstein, Schloss Wiesenburg, and Burg Ziesar." },
